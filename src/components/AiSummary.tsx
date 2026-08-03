@@ -40,6 +40,9 @@ export function AiSummary({ id }: { id: string }) {
     borderRadius: 16, padding: 16, boxShadow: "0 1px 2px rgba(17,17,26,0.04)",
   };
 
+  // Not configured is an ops state, not a user state: show nothing.
+  if (state.kind === "not-configured") return null;
+
   return (
     <div style={{ ...card, marginBottom: 14 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: state.kind === "ok" ? 10 : 0 }}>
