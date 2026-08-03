@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Inter", "Geist", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+@supports (font-variation-settings: normal) {
+  :root {
+    font-family: "Inter var", "Inter", system-ui, sans-serif;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--ck-bg);
+  color: var(--ck-title);
+}
+
+/* Counts, phone numbers, money read as tabular numerics everywhere. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Respect reduced-motion: springs collapse to instant. */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Inputs take a soft focus ring in the active stage color (--ck-ring set by
+   the Quick-Add sheet on its form container). */
+.ck-input {
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+.ck-input:focus {
+  border-color: var(--ck-ring, #141414);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--ck-ring, #141414) 14%, transparent);
+}
+
+@keyframes ck-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Raised capture FAB. The whole tab-bar chain must NOT clip, or iOS Safari
+   shears the part of the circle (and its cradle ring) that rises above the
+   bar. overflow:visible + contain:none defeats that clipping. */
+ion-tabs,
+ion-tab-bar,
+ion-tab-button {
+  overflow: visible;
+}
+ion-tab-bar {
+  contain: none;
+  --color: #9a927f;          /* inactive warm gray */
+  --color-selected: #c2531f; /* active terracotta (warm Brisk) */
+}
+
+/* Global spinner (the AI card has its own scoped twin). */
+.ck-spin {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--ck-hairline);
+  border-top-color: var(--ck-tint);
+  border-radius: 999px;
+  animation: ck-spin 0.7s linear infinite;
+  display: inline-block;
+}
+@keyframes ck-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Desktop: read the mobile app as a device on a faint radial field.
+   ion-app is normally position:fixed/inset:0 (so max-width is ignored). We
+   make it a centered, fixed-width column AND a containing block (contain:
+   layout) so its fixed-position overlays — the bottom-sheet modal and the
+   portaled FAB — stay inside the phone frame instead of filling the window. */
+@media (min-width: 600px) {
+  body {
+    background: radial-gradient(120% 90% at 50% 0%, #faf8f4 0%, #f7f5f0 45%, #e9e4da 100%) fixed;
+  }
+  ion-app {
+    position: relative;
+    width: 100%;
+    max-width: 412px;
+    height: 100dvh;
+    max-height: 900px;
+    margin: clamp(0px, calc((100dvh - 900px) / 2), 40px) auto;
+    border-radius: 30px;
+    overflow: hidden;
+    contain: layout;
+    box-shadow: 0 24px 70px rgba(17, 17, 26, 0.16);
+  }
+}
+.ck-fab {
+  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* FAB is centered with translateX(-50%); keep it while scaling on press. */
+.ck-fab:active {
+  transform: translateX(-50%) scale(0.92);
+}
+
+/* New lead flies into the list after Quick-Add (FLIP-style entrance). */
+@keyframes ck-flyin {
+  0% {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Hide scrollbars on the horizontal stage-tab scroller, keep it swipeable. */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

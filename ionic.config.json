@@ -1,0 +1,7 @@
+{
+  "name": "CK CRM",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
