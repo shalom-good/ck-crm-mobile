@@ -90,7 +90,7 @@ export function SwipeRow({
   const close = () => setX(0);
 
   return (
-    <div style={{ position: "relative", overflow: "hidden", borderRadius: 16 }}>
+    <div style={{ position: "relative", overflow: "hidden", borderRadius: 20 }}>
       {/* right-swipe advance affordance */}
       {canAdvance && (
         <div
@@ -111,7 +111,8 @@ export function SwipeRow({
         </div>
       )}
 
-      {/* left-swipe action rail */}
+      {/* left-swipe action rail; invisible until the row actually opens so
+          nothing peeks around the card's corner radius at rest */}
       <div
         style={{
           position: "absolute",
@@ -120,6 +121,8 @@ export function SwipeRow({
           right: 0,
           width: LEFT_REVEAL,
           display: "flex",
+          opacity: x < -8 ? 1 : 0,
+          transition: dragging ? "none" : "opacity 120ms",
         }}
       >
         <SwipeAction color="var(--ck-tint)" label="Call" onClick={() => { onCall?.(); close(); }}>
