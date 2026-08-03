@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Preferences } from "@capacitor/preferences";
 import { setAuthToken, setOnUnauthorized, fetchMe, type ApiUser } from "./mobileApi";
+import { enablePushAfterSignIn } from "./push";
 
 /**
  * Real sign-in: email → 6-digit code → JWT from /api/mobile/auth/verify.
@@ -115,6 +116,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(newUser);
     setStatus("signedIn");
     await prefSet(SESSION_KEY, JSON.stringify({ token: newToken, user: newUser }));
+    // Native only; quietly no-ops on web and when permission is denied.
+    void enablePushAfterSignIn();
   }, []);
 
   const signOut = useCallback(async () => { await clearSession(); }, [clearSession]);

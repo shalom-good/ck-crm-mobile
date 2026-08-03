@@ -78,6 +78,11 @@ export async function requestCode(email: string): Promise<{ ok: boolean }> {
   return api("/auth/request-code", { method: "POST", body: JSON.stringify({ email }), skipAuth: true });
 }
 
+/** Native push registration: hand the device token to the server. */
+export async function registerPushToken(token: string, platform: string): Promise<{ ok: boolean }> {
+  return api("/push-token", { method: "POST", body: JSON.stringify({ token, platform }) });
+}
+
 export async function verifyCode(email: string, code: string): Promise<{ token: string; user: ApiUser }> {
   return api("/auth/verify", { method: "POST", body: JSON.stringify({ email, code }), skipAuth: true });
 }
