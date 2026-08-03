@@ -34,7 +34,7 @@ interface VM {
   cashMonths: { label: string; income: number | null; expenses: number | null; net: number | null }[];
   latestNet: number | null;
   latestNetLabel: string | null;
-  plans: { name: string; dot: string; sub: string | null }[];
+  plans: { name: string; dot: string; sub: string | null; status?: string | null; tone?: "green" | "red" | "gray"; noteCount?: number | null }[];
   notes: { meta: string; text: string }[];
   phone: string | null;
   email: string | null;
@@ -79,11 +79,16 @@ function vmFromBrisk(p: Raw): VM {
   const plans = (Array.isArray(p?.plans) ? p.plans : []).map((pl: Raw) => ({
     name: String(pl?.name ?? "Plan"),
     dot: String(pl?.dot ?? "var(--ck-tint)"),
-    sub: pl?.summary ? clip(String(pl.summary)) : (pl?.owner && pl.owner !== "Unassigned" ? String(pl.owner) : (pl?.status ? String(pl.status) : null)),
+    sub: pl?.owner && pl.owner !== "Unassigned"
+      ? [String(pl.owner), pl?.role ? String(pl.role) : null].filter(Boolean).join(" · ")
+      : (pl?.summary ? clip(String(pl.summary)) : null),
+    status: pl?.status ? String(pl.status) : null,
+    tone: pl?.tone === "red" ? "red" as const : pl?.tone === "gray" ? "gray" as const : "green" as const,
+    noteCount: typeof pl?.noteCount === "number" ? pl.noteCount : null,
   }));
   const debtTotal = p?.debt?.total ?? p?.debt?.current ?? null;
   if (debtTotal != null && !plans.some((pl: { name: string }) => /debt/i.test(pl.name))) {
-    plans.push({ name: "Debt", dot: "#C2531F", sub: `${money(Number(debtTotal))} on file` });
+    plans.push({ name: "Debt", dot: "#C2531F", sub: `${money(Number(debtTotal))} on file`, status: null, tone: "green" as const, noteCount: null });
   }
 
   const notesRaw: Raw[] = Array.isArray(p?.caseNotes) ? p.caseNotes : [];
@@ -338,14 +343,26 @@ export function FamilyDetailPage() {
           {vm && vm.plans.length > 0 && (
             <Card>
               <CardTitle>PLANS</CardTitle>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {vm.plans.slice(0, 4).map((pl) => (
-                  <div key={pl.name} style={{ flex: "1 0 44%", display: "flex", alignItems: "center", gap: 8, background: "var(--ck-paper)", border: "1px solid var(--ck-hairline)", borderRadius: 14, padding: "11px 12px", minWidth: 0 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {vm.plans.slice(0, 6).map((pl) => (
+                  <div key={pl.name} style={{ display: "flex", alignItems: "center", gap: 9, background: "var(--ck-paper)", border: "1px solid var(--ck-hairline)", borderRadius: 14, padding: "11px 12px", minWidth: 0 }}>
                     <span style={{ width: 9, height: 9, borderRadius: 999, background: pl.dot, flexShrink: 0 }} />
-                    <div style={{ minWidth: 0 }}>
-                      <div style={{ fontSize: 12.5, fontWeight: 700, color: "var(--ck-title)" }}>{pl.name}</div>
-                      {pl.sub && <div style={{ fontSize: 10, color: "var(--ck-label)", marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pl.sub}</div>}
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: "var(--ck-title)" }}>
+                        {pl.name}
+                        {typeof pl.noteCount === "number" && pl.noteCount > 0 && (
+                          <span style={{ fontWeight: 500, color: "var(--ck-muted)", marginLeft: 6, fontSize: 11 }}>{pl.noteCount} notes</span>
+                        )}
+                      </div>
+                      {pl.sub && <div style={{ fontSize: 11, color: "var(--ck-label)", marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pl.sub}</div>}
                     </div>
+                    {pl.status && (
+                      <span style={{
+                        fontSize: 10.5, fontWeight: 700, padding: "3px 8px", borderRadius: 999, whiteSpace: "nowrap", flexShrink: 0,
+                        background: pl.tone === "red" ? "#FAE5DE" : pl.tone === "gray" ? "var(--ck-hairline)" : "#EAF3DE",
+                        color: pl.tone === "red" ? "#B4351F" : pl.tone === "gray" ? "var(--ck-muted)" : "#27500A",
+                      }}>{pl.status}</span>
+                    )}
                   </div>
                 ))}
               </div>
