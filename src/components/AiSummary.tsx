@@ -61,11 +61,6 @@ export function AiSummary({ id }: { id: string }) {
           <span className="ai-spin" /> Reading the record and writing the rundown…
         </div>
       )}
-      {state.kind === "not-configured" && (
-        <div style={{ fontSize: 12.5, color: "var(--ck-muted)", lineHeight: 1.5 }}>
-          AI summary isn’t turned on yet. The <code>ANTHROPIC_API_KEY</code> edge secret needs to be set on Supabase.
-        </div>
-      )}
       {state.kind === "error" && (
         <div style={{ fontSize: 12.5, color: "var(--ck-danger)" }}>
           Couldn’t generate. <button type="button" onClick={run} style={{ background: "none", border: 0, color: "var(--ck-tint)", fontWeight: 600 }}>Try again</button>
