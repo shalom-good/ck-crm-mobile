@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth";
 import { money } from "@/lib/format";
 import { greetingWord } from "@/lib/quotes";
 import { Av, Bars, Btn, Card, CardTitle, CountUp, Empty, Eyebrow, Evt, Pill, Row, Strip, Track, CalendarArt, PlantArt, type Stat } from "@/components/gv";
+import { FamBell } from "@/components/FamBell";
 
 /**
  * The family's home — the client portal, in the app. Reads the SAME
@@ -61,9 +62,12 @@ export function FamilyHomePage() {
           {/* top bar */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
             <img src="/ck-logo.png" alt="Collective Kindness" style={{ width: 128, height: "auto" }} />
-            <button aria-label="Menu" onClick={menu} style={{ background: "none", border: 0, padding: 0, cursor: "pointer" }}>
-              <Av name={d?.name || family?.name || "F"} size={38} round tint="mint" />
-            </button>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <FamBell />
+              <button aria-label="Menu" onClick={menu} style={{ background: "none", border: 0, padding: 0, cursor: "pointer" }}>
+                <Av name={d?.name || family?.name || "F"} size={38} round tint="mint" />
+              </button>
+            </div>
           </div>
 
           <h1 className="gv-h1 gv-rise" style={{ marginTop: 18 }}>{greeting}</h1>
@@ -243,7 +247,7 @@ function Body({ d }: { d: PortalHome }) {
           {/* ── coming up ── */}
           {meetings.length > 0 && (
             <>
-              <Eyebrow>Coming up</Eyebrow>
+              <Eyebrow right="All meetings" onRight={() => router.push("/fam/meetings")}>Coming up</Eyebrow>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {meetings.slice(0, 4).map((m, k) => (
                   <Evt

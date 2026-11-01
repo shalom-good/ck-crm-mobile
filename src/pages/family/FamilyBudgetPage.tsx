@@ -1,3 +1,4 @@
+import { FamBell } from "@/components/FamBell";
 import { useMemo, useState } from "react";
 import { IonPage, IonContent, IonRefresher, IonRefresherContent, type RefresherEventDetail } from "@ionic/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -67,10 +68,15 @@ export function FamilyBudgetPage() {
       <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
         <IonRefresher slot="fixed" onIonRefresh={refresh}><IonRefresherContent /></IonRefresher>
         <div style={{ padding: "calc(env(safe-area-inset-top) + 14px) 16px 120px" }}>
-          <h1 className="gv-h1 gv-rise">My budget</h1>
-          <p className="gv-sub gv-rise" style={{ "--i": 1, marginTop: 6 } as React.CSSProperties}>
-            {q.isLoading ? "Adding it up…" : !d ? `Opens after your first session with ${budgeterFirst}.` : started ? `Built with ${budgeterFirst}. One line per thing, nothing hidden.` : `${d.budgeter?.name || "Your budgeter"} starts it with you in your first session.`}
-          </p>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+            <div style={{ minWidth: 0 }}>
+              <h1 className="gv-h1 gv-rise">My budget</h1>
+              <p className="gv-sub gv-rise" style={{ "--i": 1, marginTop: 6 } as React.CSSProperties}>
+                {q.isLoading ? "Adding it up…" : !d ? `Opens after your first session with ${budgeterFirst}.` : started ? `Built with ${budgeterFirst}. One line per thing, nothing hidden.` : `${d.budgeter?.name || "Your budgeter"} starts it with you in your first session.`}
+              </p>
+            </div>
+            <FamBell style={{ marginTop: 4 }} />
+          </div>
 
           {q.isError && (
             <Card i={i++} style={{ marginTop: 18 }}>

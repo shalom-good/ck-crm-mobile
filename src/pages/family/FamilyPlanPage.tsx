@@ -1,3 +1,4 @@
+import { FamBell } from "@/components/FamBell";
 import { useState } from "react";
 import { IonPage, IonContent, IonRefresher, IonRefresherContent, type RefresherEventDetail } from "@ionic/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -78,7 +79,10 @@ export function FamilyPlanPage() {
                 {q.isLoading ? "Opening your plan…" : !plan ? "Being written with your team." : signed ? `Signed ${fmtLong(plan.signedAt)}.` : target ? `Working toward ${fmtLong(String(target).slice(0, 10))}.` : "Read it through, then sign it together."}
               </p>
             </div>
-            {plan && <Pill tint={signed ? "mint" : plan.signingAllowed ? "lime" : "yellow"} i={0} style={{ marginTop: 6 }}>{signed ? "Signed" : plan.signingAllowed ? "Ready to sign" : "In review"}</Pill>}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
+              {plan && <Pill tint={signed ? "mint" : plan.signingAllowed ? "lime" : "yellow"} i={0}>{signed ? "Signed" : plan.signingAllowed ? "Ready to sign" : "In review"}</Pill>}
+              <FamBell />
+            </div>
           </div>
 
           {q.isError && !q.data && (

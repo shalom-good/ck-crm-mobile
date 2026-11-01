@@ -1,3 +1,4 @@
+import { FamBell } from "@/components/FamBell";
 import { IonPage, IonContent, useIonRouter } from "@ionic/react";
 import { useQuery } from "@tanstack/react-query";
 import { Check, Clock } from "@phosphor-icons/react";
@@ -16,8 +17,13 @@ export function FamilyLearnPage() {
     <IonPage>
       <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
         <div style={{ padding: "calc(env(safe-area-inset-top) + 14px) 16px 120px" }}>
-          <h1 className="gv-h1 gv-rise">CK Academy</h1>
-          <p className="gv-sub gv-rise" style={{ "--i": 1, marginTop: 6 } as React.CSSProperties}>Eight short episodes on money that lasts. Watch in any order; about an hour all together.</p>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+            <div style={{ minWidth: 0 }}>
+              <h1 className="gv-h1 gv-rise">CK Academy</h1>
+              <p className="gv-sub gv-rise" style={{ "--i": 1, marginTop: 6 } as React.CSSProperties}>Eight short episodes on money that lasts. Watch in any order; about an hour all together.</p>
+            </div>
+            <FamBell style={{ marginTop: 4 }} />
+          </div>
 
           <Card i={2} style={{ marginTop: 16 }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 10 }}>
