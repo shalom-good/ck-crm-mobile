@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton, IonRefresher, IonRefresherContent, useIonRouter, type RefresherEventDetail } from "@ionic/react";
+import { BackButton } from "@/components/BackButton";
+import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonRefresher, IonRefresherContent, useIonRouter, type RefresherEventDetail } from "@ionic/react";
 import { CaretRight, ArrowSquareOut } from "@phosphor-icons/react";
 import { useFamilyAlerts, type FamilyAlert } from "@/lib/familyAlerts";
 import { Btn, Card, Eyebrow, Pill, PlantArt } from "@/components/gv";
@@ -48,7 +49,7 @@ export function FamilyAlertsPage() {
     <IonPage>
       <IonHeader className="ion-no-border">
         <IonToolbar>
-          <IonButtons slot="start"><IonBackButton defaultHref="/fam/home" text="" /></IonButtons>
+          <IonButtons slot="start"><BackButton href="/fam/home" /></IonButtons>
         </IonToolbar>
       </IonHeader>
       <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>

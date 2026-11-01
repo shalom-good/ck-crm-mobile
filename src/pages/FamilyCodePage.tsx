@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton, useIonRouter } from "@ionic/react";
+import { useSwipeBack } from "@/lib/swipeBack";
+import { BackButton } from "@/components/BackButton";
+import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, useIonRouter } from "@ionic/react";
 import { familyLogin, PORTAL_WEB_URL } from "@/lib/portalApi";
 import { ApiError } from "@/lib/mobileApi";
 import { useAuth } from "@/lib/auth";
@@ -14,6 +16,7 @@ const LEN = 7;
  * gentle inline line, never harsh.
  */
 export function FamilyCodePage() {
+  const swipe = useSwipeBack("/start");
   const router = useIonRouter();
   const { signInFamily } = useAuth();
   const [code, setCode] = useState("");
@@ -44,10 +47,10 @@ export function FamilyCodePage() {
   };
 
   return (
-    <IonPage>
+    <IonPage ref={swipe as React.RefObject<HTMLElement>}>
       <IonHeader className="ion-no-border">
         <IonToolbar>
-          <IonButtons slot="start"><IonBackButton defaultHref="/start" text="" /></IonButtons>
+          <IonButtons slot="start"><BackButton href="/start" /></IonButtons>
         </IonToolbar>
       </IonHeader>
       <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>

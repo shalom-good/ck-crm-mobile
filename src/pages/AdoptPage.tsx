@@ -1,4 +1,6 @@
-import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton } from "@ionic/react";
+import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons } from "@ionic/react";
+import { useSwipeBack } from "@/lib/swipeBack";
+import { BackButton } from "@/components/BackButton";
 import { CRM_HOST } from "@/lib/mobileApi";
 
 /**
@@ -10,11 +12,12 @@ import { CRM_HOST } from "@/lib/mobileApi";
  * app. One source of truth, so the two surfaces never drift.
  */
 export function AdoptPage() {
+  const swipe = useSwipeBack("/start/donor");
   return (
-    <IonPage>
+    <IonPage ref={swipe as React.RefObject<HTMLElement>}>
       <IonHeader className="ion-no-border">
         <IonToolbar>
-          <IonButtons slot="start"><IonBackButton defaultHref="/start/donor" text="" /></IonButtons>
+          <IonButtons slot="start"><BackButton href="/start/donor" /></IonButtons>
         </IonToolbar>
       </IonHeader>
       <IonContent scrollY={false} style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>

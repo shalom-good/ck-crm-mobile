@@ -1,4 +1,6 @@
-import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton, useIonRouter } from "@ionic/react";
+import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, useIonRouter } from "@ionic/react";
+import { useSwipeBack } from "@/lib/swipeBack";
+import { BackButton } from "@/components/BackButton";
 import { ArrowSquareOut, CaretRight } from "@phosphor-icons/react";
 import { GiftArt } from "@/components/gv";
 import { GIVE_URL } from "@/lib/mobileApi";
@@ -11,12 +13,13 @@ import { openExternal } from "@/lib/external";
  * browser.
  */
 export function DonorStartPage() {
+  const swipe = useSwipeBack("/start");
   const router = useIonRouter();
   return (
-    <IonPage>
+    <IonPage ref={swipe as React.RefObject<HTMLElement>}>
       <IonHeader className="ion-no-border">
         <IonToolbar>
-          <IonButtons slot="start"><IonBackButton defaultHref="/start" text="" /></IonButtons>
+          <IonButtons slot="start"><BackButton href="/start" /></IonButtons>
         </IonToolbar>
       </IonHeader>
       <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>

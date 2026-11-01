@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
-import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton } from "@ionic/react";
+import { BackButton } from "@/components/BackButton";
+import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons } from "@ionic/react";
 import { Sparkle, Microphone, ArrowUp, CaretRight } from "@phosphor-icons/react";
 import { useRole } from "@/lib/roles";
 import { Card } from "@/components/gv";
@@ -47,7 +48,7 @@ export function AskPage() {
     <IonPage>
       <IonHeader className="ion-no-border">
         <IonToolbar>
-          <IonButtons slot="start"><IonBackButton defaultHref="/tabs/home" text="" /></IonButtons>
+          <IonButtons slot="start"><BackButton href="/tabs/home" /></IonButtons>
           <div style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 800, fontSize: 17, color: "var(--gv-ink)", letterSpacing: "-.01em" }}>
             <Sparkle size={18} weight="fill" color="var(--gv-go)" /> CK AI
           </div>

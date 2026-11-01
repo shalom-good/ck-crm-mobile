@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { BackButton } from "@/components/BackButton";
 import { useParams } from "react-router";
-import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton } from "@ionic/react";
+import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons } from "@ionic/react";
 import { Phone, ChatText, CaretDown, CaretRight, Check } from "@phosphor-icons/react";
 import { useAppData } from "@/lib/appData";
 import { money } from "@/lib/format";
@@ -60,7 +61,7 @@ export function JobFunnelDetailPage() {
     <IonPage>
       <IonHeader className="ion-no-border">
         <IonToolbar>
-          <IonButtons slot="start"><IonBackButton defaultHref="/tabs/job-funnel" text="" /></IonButtons>
+          <IonButtons slot="start"><BackButton href="/tabs/job-funnel" /></IonButtons>
           <div className="gv-meta" style={{ textAlign: "center", fontWeight: 700, padding: "0 8px" }}>Job Funnel</div>
           <IonButtons slot="end"><span style={{ width: 40 }} /></IonButtons>
         </IonToolbar>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { BackButton } from "@/components/BackButton";
 import { useParams } from "react-router";
-import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton } from "@ionic/react";
+import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons } from "@ionic/react";
 import { Phone, ChatCircleText, NotePencil, Envelope, ArrowSquareOut } from "@phosphor-icons/react";
 import { useAppData } from "@/lib/appData";
 import { useUI } from "@/lib/ui";
@@ -288,7 +289,7 @@ export function FamilyDetailPage() {
     <IonPage>
       <IonHeader className="ion-no-border">
         <IonToolbar>
-          <IonButtons slot="start"><IonBackButton defaultHref="/tabs/families" text="" /></IonButtons>
+          <IonButtons slot="start"><BackButton href="/tabs/families" /></IonButtons>
           <span className="gv-eyebrow" style={{ padding: "0 8px" }}>Family profile</span>
         </IonToolbar>
       </IonHeader>

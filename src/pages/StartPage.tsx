@@ -4,7 +4,7 @@ import { CaretRight } from "@phosphor-icons/react";
 import { HouseArt, GiftArt, AcademyMark } from "@/components/gv";
 import { quoteForToday } from "@/lib/quotes";
 import { SESSION_ENDED_KEY } from "@/lib/auth";
-import { ACADEMY_URL, GIVE_URL } from "@/lib/mobileApi";
+import { GIVE_URL } from "@/lib/mobileApi";
 import { openExternal } from "@/lib/external";
 
 /**
@@ -49,7 +49,7 @@ export function StartPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 16 }}>
             <Door i={3} art={<HouseArt width={64} strokeWidth={6.5} still />} title="I'm a CK family" sub="Open your page with the 7-letter code from your case manager." onClick={() => router.push("/start/family")} />
             <Door i={4} art={<GiftArt width={58} strokeWidth={4.4} />} title="I'm a donor" sub="Your gifts, and what they did" onClick={() => router.push("/start/donor")} />
-            <Door i={5} art={<span style={{ width: 52, height: 52, borderRadius: 14, background: "var(--gv-mint, #DDF3E6)", display: "grid", placeItems: "center" }}><AcademyMark size={28} color="var(--gv-mintInk, #1F5E3A)" /></span>} title="CK Academy" sub="Courses on money that lasts, for couples and families." onClick={() => void openExternal(ACADEMY_URL)} />
+            <Door i={5} art={<span style={{ width: 52, height: 52, borderRadius: 14, background: "var(--gv-mint, #DDF3E6)", display: "grid", placeItems: "center" }}><AcademyMark size={28} color="var(--gv-mintInk, #1F5E3A)" /></span>} title="CK Academy" sub="Courses on money that lasts, for couples and families." onClick={() => router.push("/start/academy")} />
           </div>
 
           {/* the one forest button */}

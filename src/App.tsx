@@ -17,7 +17,7 @@ import { useUI } from "@/lib/ui";
 import { useAuth } from "@/lib/auth";
 import { useLock, useLockGuard } from "@/lib/lock";
 
-setupIonicReact({ mode: "ios" });
+setupIonicReact({ mode: "ios", swipeBackEnabled: true });
 
 /* Route-level code splitting. The doors (start, family code, team sign-in)
    ship in the start-up chunk; each world loads the first time a signed-in
@@ -38,6 +38,7 @@ const AskPage = lazy(() => import("@/pages/AskPage").then((m) => ({ default: m.A
 const DesignPage = lazy(() => import("@/pages/DesignPage").then((m) => ({ default: m.DesignPage })));
 const FamilyTabs = lazy(() => import("@/pages/family/FamilyTabs").then((m) => ({ default: m.FamilyTabs })));
 const DonorStartPage = lazy(() => import("@/pages/DonorStartPage").then((m) => ({ default: m.DonorStartPage })));
+const AcademyStartPage = lazy(() => import("@/pages/AcademyStartPage").then((m) => ({ default: m.AcademyStartPage })));
 const AdoptPage = lazy(() => import("@/pages/AdoptPage").then((m) => ({ default: m.AdoptPage })));
 
 /** The quiet paper splash: while the session restores and while a route's
@@ -195,6 +196,7 @@ export function App() {
           <Route exact path="/start/family" render={() => (status === "signedIn" ? <Redirect to={home} /> : <FamilyCodePage />)} />
           <Route exact path="/start/team" render={() => (status === "signedIn" ? <Redirect to={home} /> : <TeamLoginPage />)} />
           <Route exact path="/start/donor" render={() => (status === "signedIn" ? <Redirect to={home} /> : <Lazy page={DonorStartPage} />)} />
+          <Route exact path="/start/academy" render={() => <Lazy page={AcademyStartPage} />} />
           {/* Adopt a family: open to anyone, signed in or not (the page carries its own donor sign-in). */}
           <Route exact path="/start/adopt" render={() => <Lazy page={AdoptPage} />} />
           <Route exact path="/adopt" render={() => <Lazy page={AdoptPage} />} />

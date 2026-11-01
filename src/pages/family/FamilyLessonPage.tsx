@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { BackButton } from "@/components/BackButton";
 import { useParams } from "react-router";
-import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton, useIonRouter } from "@ionic/react";
+import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, useIonRouter } from "@ionic/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Check, CaretRight } from "@phosphor-icons/react";
 import { LESSONS, lessonEmbed } from "@/lib/lessons";
@@ -39,7 +40,7 @@ export function FamilyLessonPage() {
     <IonPage>
       <IonHeader className="ion-no-border">
         <IonToolbar>
-          <IonButtons slot="start"><IonBackButton defaultHref="/fam/learn" text="" /></IonButtons>
+          <IonButtons slot="start"><BackButton href="/fam/learn" /></IonButtons>
           <span className="gv-eyebrow" style={{ paddingLeft: 4 }}>Episode {lesson.roman}</span>
         </IonToolbar>
       </IonHeader>

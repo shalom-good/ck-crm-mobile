@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { BackButton } from "@/components/BackButton";
 import { useParams } from "react-router";
 import {
-  IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton,
+  IonPage, IonContent, IonHeader, IonToolbar, IonButtons,
   IonRefresher, IonRefresherContent, useIonActionSheet,
   useIonViewDidEnter, useIonViewWillLeave, type RefresherEventDetail,
 } from "@ionic/react";
@@ -194,7 +195,7 @@ export function ChatThreadPage() {
     <IonPage>
       <IonHeader className="ion-no-border">
         <IonToolbar>
-          <IonButtons slot="start"><IonBackButton defaultHref="/tabs/chats" text="" /></IonButtons>
+          <IonButtons slot="start"><BackButton href="/tabs/chats" /></IonButtons>
           <span className="gv-eyebrow" style={{ padding: "0 8px" }}>Experts chat</span>
         </IonToolbar>
         {/* Family strip under the toolbar */}
