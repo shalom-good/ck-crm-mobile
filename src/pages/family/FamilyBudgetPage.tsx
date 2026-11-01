@@ -123,7 +123,7 @@ export function FamilyBudgetPage() {
                       const flag = l.state === "flag";
                       const who = k.key === "income" && l.details?.who ? String(l.details.who) : null;
                       return (
-                        <Row key={l.id}>
+                        <Row key={l.id} style={{ minHeight: 44 }}>
                           <span className="t">
                             <b style={{ fontWeight: 600 }}>{l.label || l.category}</b>
                             {(who || flag || l.period === "annual") && <span>{[who, l.period === "annual" ? "yearly, spread monthly" : null, flag ? `${budgeterFirst} will go over this` : null].filter(Boolean).join(" · ")}</span>}

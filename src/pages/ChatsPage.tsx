@@ -128,7 +128,7 @@ function StartRow({ item, onOpen }: { item: StartableChat; onOpen: () => void })
         <Plus size={16} weight="bold" />
       </span>
       <span className="t"><b style={{ fontWeight: 600 }}>{item.name}</b></span>
-      <CaretRight size={16} weight="bold" color="var(--gv-quiet)" style={{ flex: "none" }} />
+      <CaretRight size={16} weight="bold" color="var(--gv-quiet)" style={{ flex: "none" }} aria-hidden />
     </Row>
   );
 }

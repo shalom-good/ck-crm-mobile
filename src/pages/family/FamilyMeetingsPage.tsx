@@ -30,6 +30,19 @@ const gcalUrl = (m: Raw) => {
   return `https://calendar.google.com/calendar/render?${p.toString()}`;
 };
 
+/** Day-of-month over a short month, on a 36px white tile inside an Evt row
+ *  (14px number, 11px bold uppercase month: nothing under the type floor). */
+function DateTile({ iso }: { iso?: string | null }) {
+  const d = iso ? new Date(iso) : null;
+  const ok = !!d && !Number.isNaN(d.getTime());
+  return (
+    <span aria-hidden style={{ width: 36, height: 36, margin: 0, borderRadius: 10, background: "var(--gv-card)", display: "grid", placeItems: "center", alignContent: "center", textAlign: "center", lineHeight: 1, flex: "none" }}>
+      <b className="tnum" style={{ display: "block", fontSize: 14, fontWeight: 800, color: "var(--gv-ink)" }}>{ok ? d!.getDate() : ""}</b>
+      <span style={{ display: "block", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", color: "var(--gv-mid)", textTransform: "uppercase", margin: "2px 0 0" }}>{ok ? d!.toLocaleDateString("en-US", { month: "short" }) : ""}</span>
+    </span>
+  );
+}
+
 export function FamilyMeetingsPage() {
   const qc = useQueryClient();
   const q = useQuery({ queryKey: ["portalHome"], queryFn: fetchPortalHome, staleTime: 60_000, retry: 1 });
@@ -75,7 +88,7 @@ export function FamilyMeetingsPage() {
                 const on = sel === k;
                 return (
                   <button key={k} onClick={() => setSel(on ? null : k)} style={{ border: 0, background: on ? "var(--gv-lime)" : "transparent", borderRadius: 14, padding: "8px 0 6px", display: "flex", flexDirection: "column", alignItems: "center", gap: 3, cursor: "pointer", font: "inherit", color: "var(--gv-mid)" }}>
-                    <small style={{ fontSize: 11, fontWeight: 600 }}>{day.toLocaleDateString("en-US", { weekday: "short" }).slice(0, 3)}</small>
+                    <small style={{ fontSize: 12, fontWeight: 600 }}>{day.toLocaleDateString("en-US", { weekday: "short" }).slice(0, 3)}</small>
                     <b className="tnum" style={{ fontSize: 16, fontWeight: 800, color: "var(--gv-ink)", width: 30, height: 30, display: "grid", placeItems: "center", borderRadius: "50%", boxShadow: k === 0 && !on ? "inset 0 0 0 2px var(--gv-go)" : "none" }}>{day.getDate()}</b>
                     <i style={{ width: 6, height: 6, borderRadius: "50%", background: has ? "var(--gv-coral)" : "transparent" }} />
                   </button>
@@ -103,7 +116,7 @@ export function FamilyMeetingsPage() {
             {shown.map((m, k) => (
               <Card key={k} i={i++} style={{ padding: 0, overflow: "hidden" }}>
                 <Evt tint={k === 0 && sel == null ? "yellow" : "lavender"}
-                  icon={<span style={{ textAlign: "center", lineHeight: 1 }}><b style={{ display: "block", fontSize: 12, color: "var(--gv-ink)" }}>{new Date(m.startTime).getDate()}</b><span style={{ fontSize: 8.5, fontWeight: 700, color: "var(--gv-mid)", textTransform: "uppercase" }}>{new Date(m.startTime).toLocaleDateString("en-US", { month: "short" })}</span></span>}
+                  icon={<DateTile iso={m.startTime} />}
                   title={m.title || "Meeting"}
                   sub={`${fmtDay(m.startTime)} · ${fmtTime(m.startTime)}${m.host ? ` · with ${m.host}` : ""}`} />
                 <div style={{ display: "flex", gap: 8, padding: "10px 14px 12px", flexWrap: "wrap" }}>
@@ -127,7 +140,7 @@ export function FamilyMeetingsPage() {
                       <Row key={k}>
                         <Av name={String(m.name || "Team")} size={38} round />
                         <span className="t"><b>{m.name}</b><span>{m.role}</span></span>
-                        <a href={m.calendly} target="_blank" rel="noreferrer" className="gv-pill sky" style={{ textDecoration: "none" }}><CalendarBlank size={13} weight="bold" /> Book</a>
+                        <Btn sm ghost href={m.calendly} ariaLabel={`Book with ${m.name || "your team"}`} style={{ minWidth: 44, flex: "none" }}><CalendarBlank size={15} weight="bold" /> Book</Btn>
                       </Row>
                     ))}
                   </div>

@@ -19,6 +19,9 @@ import { enablePushAfterSignIn } from "./push";
 
 const SESSION_KEY = "ck_session";
 const VIEW_AS_KEY = "ck_view_as";
+/** Set (sessionStorage) when a 401 ended the session, so the start screen
+ *  can say so once. An explicit sign-out never sets it. */
+export const SESSION_ENDED_KEY = "ck_session_ended";
 
 /** Emails that always get the admin "View as" control, even if the token
  *  arrives without admin:true. */
@@ -78,7 +81,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [family, setFamily] = useState<FamilySession | null>(null);
   const [viewAs, setViewAsState] = useState<{ email: string; name: string; role: string } | null>(null);
 
-  const clearSession = useCallback(async () => {
+  const clearSession = useCallback(async (reason?: "unauthorized") => {
+    if (reason === "unauthorized") {
+      try { sessionStorage.setItem(SESSION_ENDED_KEY, "1"); } catch { /* noop */ }
+    }
     setAuthToken(null);
     setPortalToken(null);
     setToken(null);
@@ -93,7 +99,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // 401 anywhere → sign out (token expired, roster removal, code revoked).
   useEffect(() => {
-    setOnUnauthorized(() => { void clearSession(); });
+    setOnUnauthorized(() => { void clearSession("unauthorized"); });
     return () => setOnUnauthorized(null);
   }, [clearSession]);
 

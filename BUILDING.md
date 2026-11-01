@@ -21,6 +21,14 @@ npm run build
 vercel --prod --yes        # project: ck-crm-mobile.vercel.app
 ```
 
+## iOS lock screen
+
+The app locks team sessions behind Face ID / the passcode (src/lib/lock.ts). The
+iOS project needs `NSFaceIDUsageDescription` in `ios/App/App/Info.plist`
+(added locally 2026-10-31; re-add after a fresh `cap add ios`):
+
+    CK locks the app so only you can open your families.
+
 ## Android
 
 Toolchain lives in `~/ck-android-tools` (JDK 17 + Android SDK, no Android

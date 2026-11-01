@@ -17,7 +17,7 @@ reference is the Dribbble shot "Emitly – Email Marketing CRM Platform"
 | headings, numbers | `--gv-ink` | #1C2E29 |
 | body | `--gv-text` | #223632 |
 | meta | `--gv-mid` | #5F6D68 |
-| labels | `--gv-quiet` | #86928C |
+| labels | `--gv-quiet` | #637069 (4.7:1 on paper) |
 | THE action | `--gv-go` | #2E5146 |
 | the one live thing | `--gv-lime` | #D7F36E |
 | the one emphasised bar | `--gv-coral` | #E8714F |
@@ -57,6 +57,11 @@ on a pastel, 12px corners for families, round for people.
   `prefers-reduced-motion` turns all of it off.
 - Everything must fit at 390 and 320 wide: no `nowrap` on copy, ellipsis on
   single-line names, `minWidth: 0` on flex children.
+- Type floor is 12px for anything that carries words; 11px only for uppercase
+  eyebrows with letter spacing. Quiet text must stay at or above 4.5:1.
+- Every tappable thing has a 44px hit area (48 preferred); a visual control may
+  be smaller if its hit area is padded (`a.gv-pill` and `button.gv-pill` get it
+  automatically). Coral is for numbers 18px and bolder, never small text.
 
 ## Primitives (src/components/gv.tsx)
 

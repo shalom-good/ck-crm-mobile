@@ -2,9 +2,15 @@
  * familyAlerts.ts — "what needs you" for a family, derived on the device
  * from the portal payloads (there is no server-side alert feed for
  * clients yet). Ordered by urgency; the bell badge counts the ones that
- * ask for an action. Each alert knows where in the app it is handled.
+ * ask for an action AND have not been opened on the Alerts screen yet.
+ * Each alert knows where in the app it is handled.
+ *
+ * "Seen" lives on the device: the alert keys a person has already looked
+ * at (Capacitor Preferences, localStorage as the fallback, last 200 keys).
  */
+import { useCallback, useEffect, useRef, useSyncExternalStore } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Preferences } from "@capacitor/preferences";
 import { fetchAcademyProgress, fetchBudget, fetchPortalHome, type PortalHome } from "./portalApi";
 import { LESSONS } from "./lessons";
 import type { Tint } from "@/components/gv";
@@ -18,7 +24,11 @@ export interface FamilyAlert {
   to: string;           // in-app route
   href?: string;        // external link (booking etc.)
   when?: string;        // ISO for time-based alerts
+  /** Already opened on the Alerts screen (persisted on the device). */
+  seen: boolean;
 }
+/** What deriveAlerts produces before the device's seen set is applied. */
+export type DerivedAlert = Omit<FamilyAlert, "seen">;
 
 const HOURS = 3600_000;
 const fmtWhen = (iso: string) => {
@@ -30,8 +40,8 @@ const fmtWhen = (iso: string) => {
   return `${day} · ${d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`;
 };
 
-export function deriveAlerts(me: PortalHome | undefined, budget: PortalHome | null | undefined, academy: { watched: number[]; allDone: boolean } | undefined): FamilyAlert[] {
-  const out: FamilyAlert[] = [];
+export function deriveAlerts(me: PortalHome | undefined, budget: PortalHome | null | undefined, academy: { watched: number[]; allDone: boolean } | undefined): DerivedAlert[] {
+  const out: DerivedAlert[] = [];
   if (!me) return out;
   const gate = me.interviewGate;
   const next = me.nextStep;
@@ -96,12 +106,97 @@ export function deriveAlerts(me: PortalHome | undefined, budget: PortalHome | nu
   return out.sort((a, b) => rank[a.level] - rank[b.level]);
 }
 
-/** Shared hook: the three portal reads, cached under the same keys the tabs use. */
+// ── seen state (device-local) ────────────────────────────────────────
+
+const SEEN_KEY = "ck_alerts_seen";
+const SEEN_MAX = 200;
+
+interface SeenSnapshot { loaded: boolean; keys: ReadonlySet<string> }
+let seenOrder: string[] = [];                     // oldest → newest
+let seenSnap: SeenSnapshot = { loaded: false, keys: new Set() };
+let seenLoading: Promise<void> | null = null;
+const seenSubs = new Set<() => void>();
+
+function subscribeSeen(fn: () => void) {
+  seenSubs.add(fn);
+  return () => { seenSubs.delete(fn); };
+}
+const getSeen = () => seenSnap;
+
+function publishSeen(order: string[]) {
+  seenOrder = order.slice(-SEEN_MAX);
+  seenSnap = { loaded: true, keys: new Set(seenOrder) };
+  seenSubs.forEach((fn) => fn());
+}
+
+async function readSeen(): Promise<string[]> {
+  let raw: string | null = null;
+  try {
+    raw = (await Preferences.get({ key: SEEN_KEY })).value ?? null;
+  } catch {
+    try { raw = localStorage.getItem(SEEN_KEY); } catch { raw = null; }
+  }
+  try {
+    const parsed: unknown = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed.filter((k): k is string => typeof k === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+async function writeSeen(order: string[]) {
+  const value = JSON.stringify(order);
+  try {
+    await Preferences.set({ key: SEEN_KEY, value });
+  } catch {
+    try { localStorage.setItem(SEEN_KEY, value); } catch { /* noop */ }
+  }
+}
+
+function loadSeen(): Promise<void> {
+  if (!seenLoading) seenLoading = readSeen().then(publishSeen);
+  return seenLoading;
+}
+
+/** Remember these alert keys as seen. Keys already seen move to the newest
+ *  end so a long-lived alert is not evicted by the 200-key cap. */
+export async function markAlertsSeen(keys: string[]): Promise<void> {
+  await loadSeen();
+  const uniq = Array.from(new Set(keys));
+  if (!uniq.length) return;
+  const moving = new Set(uniq);
+  const next = [...seenOrder.filter((k) => !moving.has(k)), ...uniq].slice(-SEEN_MAX);
+  if (next.length === seenOrder.length && next.every((k, i) => k === seenOrder[i])) return;
+  publishSeen(next);
+  await writeSeen(next);
+}
+
+/** Shared hook: the three portal reads, cached under the same keys the tabs
+ *  use, with the device's seen set applied. `count` = unseen alerts that ask
+ *  for an action (the bell badge); `markAllSeen()` clears it. */
 export function useFamilyAlerts() {
   const me = useQuery({ queryKey: ["portalHome"], queryFn: fetchPortalHome, staleTime: 60_000, retry: 1 });
   const budget = useQuery({ queryKey: ["budget"], queryFn: fetchBudget, staleTime: 60_000, retry: 1 });
   const academy = useQuery({ queryKey: ["academy"], queryFn: fetchAcademyProgress, staleTime: 60_000, retry: 1 });
-  const alerts = deriveAlerts(me.data, budget.data, academy.data);
-  const count = alerts.filter((a) => a.level !== "fyi").length;
-  return { alerts, count, loading: me.isLoading, error: me.isError && !me.data, refetch: () => { void me.refetch(); void budget.refetch(); void academy.refetch(); } };
+
+  useEffect(() => { void loadSeen(); }, []);
+  const seen = useSyncExternalStore(subscribeSeen, getSeen, getSeen);
+
+  const alerts: FamilyAlert[] = deriveAlerts(me.data, budget.data, academy.data).map((a) => ({ ...a, seen: seen.keys.has(a.key) }));
+  // Until the seen set is read, show no badge rather than a flash of the full count.
+  const count = seen.loaded ? alerts.filter((a) => a.level !== "fyi" && !a.seen).length : 0;
+
+  const keysRef = useRef<string[]>([]);
+  keysRef.current = alerts.map((a) => a.key);
+  const markAllSeen = useCallback(() => markAlertsSeen(keysRef.current), []);
+
+  return {
+    alerts,
+    count,
+    seenLoaded: seen.loaded,
+    loading: me.isLoading,
+    error: me.isError && !me.data,
+    refetch: () => { void me.refetch(); void budget.refetch(); void academy.refetch(); },
+    markAllSeen,
+  };
 }

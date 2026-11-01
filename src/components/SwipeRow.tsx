@@ -17,13 +17,13 @@ interface Props {
 }
 
 const ACTION_W = touch.swipeAction; // 56dp per action
-const LEFT_REVEAL = ACTION_W * 3; // Call + Message + Archive
+const LEFT_REVEAL = ACTION_W * 3; // Call + Text + Archive
 const COMMIT = 96; // right-swipe distance that commits an advance
 
 /**
  * One card row with two gestures:
  *  - swipe right  → reveals a green check + stage name, commits an advance on release past threshold (haptic)
- *  - swipe left   → snaps open to three tap targets: Call, Message, Archive
+ *  - swipe left   → snaps open to three tap targets: Call, Text, Archive
  * Both gestures have a kebab-menu fallback elsewhere, per the commandments.
  */
 export function SwipeRow({
@@ -134,7 +134,7 @@ export function SwipeRow({
         <SwipeAction color="var(--gv-go)" label="Call" onClick={() => { onCall?.(); close(); }}>
           <Phone size={20} weight="regular" color="#fff" />
         </SwipeAction>
-        <SwipeAction color="var(--gv-skyInk)" label="Message" onClick={() => { onMessage?.(); close(); }}>
+        <SwipeAction color="var(--gv-skyInk)" label="Text" onClick={() => { onMessage?.(); close(); }}>
           <ChatCircle size={20} weight="regular" color="#fff" />
         </SwipeAction>
         <SwipeAction color="var(--gv-quiet)" label="Archive" onClick={() => { onArchive?.(); close(); }}>
@@ -199,7 +199,7 @@ function SwipeAction({
       }}
     >
       {children}
-      <span style={{ color: "#fff", fontSize: 11, fontWeight: 700 }}>{label}</span>
+      <span style={{ color: "#fff", fontSize: 12, fontWeight: 700 }}>{label}</span>
     </button>
   );
 }

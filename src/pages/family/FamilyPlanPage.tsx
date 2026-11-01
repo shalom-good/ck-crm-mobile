@@ -136,7 +136,7 @@ export function FamilyPlanPage() {
                   {tasks.length > 0 && (
                     <div style={{ marginTop: 8 }}>
                       {tasks.map((t, k) => (
-                        <Row key={k} style={{ padding: "9px 0" }}>
+                        <Row key={k} style={{ padding: "9px 0", minHeight: 44 }}>
                           <span style={{ width: 22, height: 22, borderRadius: 7, background: "var(--gv-yellow)", color: "var(--gv-yellowInk)", display: "grid", placeItems: "center", flex: "none" }}><span style={{ width: 7, height: 7, borderRadius: 2, background: "currentColor", opacity: .5 }} /></span>
                           <span className="t"><b style={{ whiteSpace: "normal", fontWeight: 600 }}>{typeof t === "string" ? t : String((t as Raw)?.text ?? (t as Raw)?.label ?? "")}</b></span>
                         </Row>
@@ -159,7 +159,7 @@ export function FamilyPlanPage() {
                 {meetings.slice(0, 5).map((m, k) => (
                   <Evt key={k} i={i++} tint={k === 0 ? "yellow" : "lavender"} title={m.title || "Meeting"}
                     sub={[m.startTime ? `${fmtDay(m.startTime)} · ${fmtTime(m.startTime)}` : null, m.host ? `with ${m.host}` : null].filter(Boolean).join(" · ")}
-                    right={m.joinUrl ? <a href={m.joinUrl} target="_blank" rel="noreferrer" className="gv-pill" style={{ background: "rgba(255,255,255,.8)", color: "var(--gv-ink)", textDecoration: "none" }}><VideoCamera size={13} weight="bold" /> Join</a> : undefined} />
+                    right={m.joinUrl ? <Btn sm ghost href={m.joinUrl} ariaLabel={`Join ${m.title || "meeting"}`} style={{ minWidth: 44, flex: "none" }}><VideoCamera size={15} weight="bold" /> Join</Btn> : undefined} />
                 ))}
               </div>
             </>
@@ -215,9 +215,10 @@ function SignCard({ plan, signers, required, i }: { plan: Raw; signers: Raw[]; r
           <>
             <CardTitle right={<Pill tint="lime">{doneCount} of {required}</Pill>}>{doneCount === 0 ? "First signature" : "Second signature"}</CardTitle>
             <input className="gv-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Type your full name" autoComplete="name" aria-label="Your full name" />
-            <label style={{ display: "flex", gap: 10, alignItems: "flex-start", marginTop: 12, fontSize: 13.5, lineHeight: 1.5, color: "var(--gv-text)", cursor: "pointer" }}>
-              <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} style={{ width: 20, height: 20, marginTop: 1, accentColor: "#2E5146" }} />
-              <span>I read the plan, and I agree to show up for the steps my family chose.</span>
+            {/* The whole 48px row is the control: a tap anywhere on the label toggles the box. */}
+            <label style={{ display: "flex", gap: 12, alignItems: "center", minHeight: 48, marginTop: 8, padding: "6px 2px", fontSize: 13.5, lineHeight: 1.5, color: "var(--gv-text)", cursor: "pointer", userSelect: "none", WebkitTapHighlightColor: "transparent" }}>
+              <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} style={{ width: 24, height: 24, margin: 0, flex: "none", accentColor: "#2E5146", cursor: "pointer" }} />
+              <span style={{ minWidth: 0 }}>I read the plan, and I agree to show up for the steps my family chose.</span>
             </label>
             {err && <div className="gv-gentle" style={{ marginTop: 10 }}>{err}</div>}
             <Btn block disabled={!name.trim() || !agreed || busy} onClick={() => void sign()} style={{ marginTop: 14 }}>{busy ? "Signing…" : "Sign the plan"}</Btn>

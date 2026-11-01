@@ -96,6 +96,19 @@ export function FamilyHomePage() {
   );
 }
 
+/** Day-of-month over a short month, on a 36px white tile inside an Evt row
+ *  (14px number, 11px bold uppercase month: nothing under the type floor). */
+function DateTile({ iso }: { iso?: string | null }) {
+  const d = iso ? new Date(iso) : null;
+  const ok = !!d && !Number.isNaN(d.getTime());
+  return (
+    <span aria-hidden style={{ width: 36, height: 36, margin: 0, borderRadius: 10, background: "var(--gv-card)", display: "grid", placeItems: "center", alignContent: "center", textAlign: "center", lineHeight: 1, flex: "none" }}>
+      <b className="tnum" style={{ display: "block", fontSize: 14, fontWeight: 800, color: "var(--gv-ink)" }}>{ok ? d!.getDate() : ""}</b>
+      <span style={{ display: "block", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", color: "var(--gv-mid)", textTransform: "uppercase", margin: "2px 0 0" }}>{ok ? d!.toLocaleDateString("en-US", { month: "short" }) : ""}</span>
+    </span>
+  );
+}
+
 function Loading() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 18 }}>
@@ -254,10 +267,10 @@ function Body({ d }: { d: PortalHome }) {
                     key={k}
                     i={i++}
                     tint={k === 0 ? "yellow" : "lavender"}
-                    icon={<span style={{ textAlign: "center", lineHeight: 1 }}><b style={{ display: "block", fontSize: 12, color: "var(--gv-ink)" }}>{m.startTime ? new Date(m.startTime).getDate() : ""}</b><span style={{ fontSize: 8.5, fontWeight: 700, color: "var(--gv-mid)", textTransform: "uppercase" }}>{m.startTime ? new Date(m.startTime).toLocaleDateString("en-US", { month: "short" }) : ""}</span></span>}
+                    icon={<DateTile iso={m.startTime} />}
                     title={m.title || "Meeting"}
                     sub={[m.startTime ? `${fmtDay(m.startTime)} · ${fmtTime(m.startTime)}` : null, m.host ? `with ${m.host}` : null].filter(Boolean).join(" · ")}
-                    right={m.joinUrl ? <a href={m.joinUrl} target="_blank" rel="noreferrer" className="gv-pill" style={{ background: "rgba(255,255,255,.8)", color: "var(--gv-ink)", textDecoration: "none" }}><VideoCamera size={13} weight="bold" /> Join</a> : undefined}
+                    right={m.joinUrl ? <Btn sm ghost href={m.joinUrl} ariaLabel={`Join ${m.title || "meeting"}`} style={{ minWidth: 44, flex: "none" }}><VideoCamera size={15} weight="bold" /> Join</Btn> : undefined}
                   />
                 ))}
               </div>
@@ -359,14 +372,14 @@ function Body({ d }: { d: PortalHome }) {
               <Row key={k}>
                 <Av name={String(m.name || "Team")} size={40} round />
                 <span className="t"><b>{m.name}</b><span>{m.role}</span></span>
-                {m.whatsapp && <a href={m.whatsapp} target="_blank" rel="noreferrer" className="gv-pill mint" style={{ textDecoration: "none" }}><ChatCircleText size={13} weight="bold" /> WhatsApp</a>}
+                {m.whatsapp && <Btn sm ghost href={m.whatsapp} ariaLabel={`WhatsApp ${m.name || "your team"}`} style={{ minWidth: 44, flex: "none" }}><ChatCircleText size={15} weight="bold" /> WhatsApp</Btn>}
               </Row>
             ))}
             {coordinator && (
               <Row>
                 <Av name={String(coordinator.name || "CK")} size={40} round tint="apricot" />
                 <span className="t"><b>{coordinator.name}</b><span style={{ whiteSpace: "normal" }}>{coordinator.role}</span></span>
-                {coordinator.whatsapp && <a href={coordinator.whatsapp} target="_blank" rel="noreferrer" className="gv-pill mint" style={{ textDecoration: "none" }}><Phone size={13} weight="bold" /> Reach out</a>}
+                {coordinator.whatsapp && <Btn sm ghost href={coordinator.whatsapp} ariaLabel={`Reach out to ${coordinator.name || "the coordinator"}`} style={{ minWidth: 44, flex: "none" }}><Phone size={15} weight="bold" /> Reach out</Btn>}
               </Row>
             )}
           </Card>

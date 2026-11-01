@@ -21,8 +21,8 @@
   --gv-ink: #1C2E29;        /* headings, numbers */
   --gv-text: #223632;       /* body */
   --gv-mid: #5F6D68;        /* meta */
-  --gv-quiet: #86928C;      /* labels */
-  --gv-faint: #AEB7B2;
+  --gv-quiet: #637069;      /* labels — 4.7:1 on paper (was #86928C, 2.9:1) */
+  --gv-faint: #8A968F;      /* decorative only, never for words */
   --gv-go: #2E5146;         /* forest — THE action color */
   --gv-go-deep: #214948;
   --gv-lime: #D7F36E;       /* the ONE live thing on a screen */

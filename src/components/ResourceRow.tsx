@@ -31,7 +31,7 @@ export function ResourceRow({ resource, onOpen, i }: Props) {
           </div>
         )}
       </div>
-      <CaretRight size={16} weight="bold" color="var(--gv-quiet)" style={{ flex: "none" }} />
+      <CaretRight size={16} weight="bold" color="var(--gv-quiet)" style={{ flex: "none" }} aria-hidden />
     </Card>
   );
 }

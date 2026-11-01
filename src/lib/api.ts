@@ -1,6 +1,11 @@
-import { supabase } from "./supabase";
 import type { Family, JobFunnelClient, Resource } from "./types";
 import type { RoleKey } from "./roles";
+
+/*
+ * The Supabase client is imported lazily inside each function so
+ * supabase-js stays out of the start-up chunk (nothing here runs before a
+ * teammate is signed in and on a screen that needs it).
+ */
 
 export interface ProviderFamilies {
   provider: { name: string; email: string; roles: string[] };
@@ -10,6 +15,7 @@ export interface ProviderFamilies {
 
 /** Fetch a provider's scoped caseload via the edge function. */
 export async function fetchProviderFamilies(email: string, role: RoleKey): Promise<Family[]> {
+  const { supabase } = await import("./supabase");
   const { data, error } = await supabase.functions.invoke<ProviderFamilies>("provider-families", {
     body: { email, role },
   });
@@ -25,6 +31,7 @@ export interface ProviderJobFunnel {
 
 /** Fetch a worker's scoped Job Funnel caseload via the edge function. */
 export async function fetchProviderJobFunnel(email: string, role: RoleKey): Promise<JobFunnelClient[]> {
+  const { supabase } = await import("./supabase");
   const { data, error } = await supabase.functions.invoke<ProviderJobFunnel>("provider-job-funnel", {
     body: { email, role },
   });
@@ -34,6 +41,7 @@ export async function fetchProviderJobFunnel(email: string, role: RoleKey): Prom
 
 /** Fetch real client payments scoped to the worker's caseload (edge fn). */
 export async function fetchProviderPayments(email: string, role: RoleKey): Promise<import("./types").Payment[]> {
+  const { supabase } = await import("./supabase");
   const { data, error } = await supabase.functions.invoke<{ payments: import("./types").Payment[] }>("provider-payments", {
     body: { email, role },
   });
@@ -43,6 +51,7 @@ export async function fetchProviderPayments(email: string, role: RoleKey): Promi
 
 /** Fetch the full resources directory via the edge function. */
 export async function fetchResources(): Promise<Resource[]> {
+  const { supabase } = await import("./supabase");
   const { data, error } = await supabase.functions.invoke<{ resources: Resource[] }>("resources-list", { body: {} });
   if (error) throw error;
   return data?.resources ?? [];
@@ -57,6 +66,7 @@ export interface FamilyAiSummary {
 
 /** Thorough auto-run AI rundown for a family / JF client (edge function). */
 export async function fetchFamilyAiSummary(id: string): Promise<FamilyAiSummary> {
+  const { supabase } = await import("./supabase");
   const { data, error } = await supabase.functions.invoke<FamilyAiSummary>("family-ai-summary", {
     body: { id },
   });
@@ -108,6 +118,7 @@ export interface FamilyDetail {
 
 /** Full family profile detail (status, cash flow, debt, notes) — edge fn. */
 export async function fetchFamilyDetail(id: string): Promise<FamilyDetail | null> {
+  const { supabase } = await import("./supabase");
   const { data, error } = await supabase.functions.invoke<FamilyDetail>("family-detail", {
     body: { id },
   });

@@ -6,13 +6,17 @@ interface Props {
   subtitle?: string;
   /** Number of mutations queued offline; shows the pill when > 0. */
   queued?: number;
+  /** Each icon renders only when its handler exists: no dead buttons. */
   onSearch?: () => void;
   onFilter?: () => void;
+  /** True while the page's inline search field is open (icon reads pressed). */
+  searchActive?: boolean;
 }
 
-/** Screen header: gv-h1 title + gv-meta subtitle left, two 36px white
- *  hairline icon buttons (gv-ib) right. */
-export function Header({ title, subtitle, queued = 0, onSearch, onFilter }: Props) {
+/** Screen header: gv-h1 title + gv-meta subtitle left; on the right, a
+ *  44px white hairline icon button (gv-ib) per handler that was passed. */
+export function Header({ title, subtitle, queued = 0, onSearch, onFilter, searchActive = false }: Props) {
+  const hit = { width: 44, height: 44 } as const;
   return (
     <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, padding: "8px 16px 4px" }}>
       <div style={{ minWidth: 0 }}>
@@ -27,14 +31,26 @@ export function Header({ title, subtitle, queued = 0, onSearch, onFilter }: Prop
           )}
         </div>
       </div>
-      <div style={{ display: "flex", gap: 8, marginTop: 2, flex: "none" }}>
-        <button className="gv-ib" aria-label="Search" onClick={onSearch}>
-          <MagnifyingGlass size={18} weight="regular" />
-        </button>
-        <button className="gv-ib" aria-label="Filter" onClick={onFilter}>
-          <FunnelSimple size={18} weight="regular" />
-        </button>
-      </div>
+      {(onSearch || onFilter) && (
+        <div style={{ display: "flex", gap: 8, flex: "none" }}>
+          {onSearch && (
+            <button
+              className="gv-ib"
+              aria-label={searchActive ? "Close search" : "Search"}
+              aria-pressed={searchActive}
+              onClick={onSearch}
+              style={{ ...hit, ...(searchActive ? { background: "var(--gv-upBg)", color: "var(--gv-up)", boxShadow: "none" } : null) }}
+            >
+              <MagnifyingGlass size={18} weight={searchActive ? "bold" : "regular"} />
+            </button>
+          )}
+          {onFilter && (
+            <button className="gv-ib" aria-label="Filter" onClick={onFilter} style={hit}>
+              <FunnelSimple size={18} weight="regular" />
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

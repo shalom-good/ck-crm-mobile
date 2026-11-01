@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
 import { IonPage, IonContent, useIonRouter } from "@ionic/react";
 import { House, UsersThree, CaretRight } from "@phosphor-icons/react";
 import { HouseArt } from "@/components/gv";
 import { quoteForToday } from "@/lib/quotes";
+import { SESSION_ENDED_KEY } from "@/lib/auth";
 
 /**
  * The one place to start. A soft green panel with the CK lockup and a
@@ -11,6 +13,18 @@ import { quoteForToday } from "@/lib/quotes";
 export function StartPage() {
   const router = useIonRouter();
   const quote = quoteForToday();
+
+  // A 401 brought the person here (lib/auth sets the flag): say so once.
+  const [sessionEnded, setSessionEnded] = useState(false);
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem(SESSION_ENDED_KEY) === "1") {
+        sessionStorage.removeItem(SESSION_ENDED_KEY);
+        setSessionEnded(true);
+      }
+    } catch { /* noop */ }
+  }, []);
+
   return (
     <IonPage>
       <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
@@ -30,6 +44,12 @@ export function StartPage() {
             <Door i={3} tint="mint" icon={<House size={22} weight="regular" color="var(--gv-mintInk)" />} title="I'm a family" sub="Open your page with the 7-letter code from your case manager." onClick={() => router.push("/start/family")} />
             <Door i={4} tint="sky" icon={<UsersThree size={22} weight="regular" color="var(--gv-skyInk)" />} title="I'm on the CK team" sub="Sign in with your team email." onClick={() => router.push("/start/team")} />
           </div>
+
+          {sessionEnded && (
+            <div role="status" className="gv-note gv-rise" style={{ "--i": 5, marginTop: 12 } as React.CSSProperties}>
+              Your session ended. Sign in again to continue.
+            </div>
+          )}
 
           <figure className="gv-rise" style={{ "--i": 6, margin: "auto 6px 0", paddingTop: 28 } as React.CSSProperties}>
             <blockquote style={{ margin: 0, fontSize: 15, fontWeight: 700, lineHeight: 1.4, color: "var(--gv-ink)", textWrap: "balance" } as React.CSSProperties}>&ldquo;{quote.text}&rdquo;</blockquote>

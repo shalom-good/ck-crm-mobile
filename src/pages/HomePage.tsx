@@ -180,7 +180,7 @@ function LinkCard({ label, sub, icon, tint, onClick, i }: { label: string; sub: 
       <span className="gv-tile" style={{ background: `var(--gv-${tint})` }}>{icon}</span>
       <span style={{ minWidth: 0 }}>
         <span style={{ display: "block", fontSize: 13.5, fontWeight: 700, color: "var(--gv-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{label}</span>
-        <span style={{ display: "block", fontSize: 11.5, lineHeight: 1.3, color: "var(--gv-mid)", marginTop: 1 }}>{sub}</span>
+        <span style={{ display: "block", fontSize: 12, lineHeight: 1.3, color: "var(--gv-mid)", marginTop: 1 }}>{sub}</span>
       </span>
     </Card>
   );
