@@ -245,20 +245,26 @@ export function CalendarArt({ width = 200 }: { width?: number }) {
 export function GiftArt({ width = 160, strokeWidth = 2.4 }: { width?: number; strokeWidth?: number }) {
   return (
     <svg className="gv-draw" width={width} viewBox="0 0 200 200" fill="none" stroke="#1C2E29" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      {/* wrist edges running off the left */}
-      <path d="M12 136l30-10" />
-      <path d="M12 180l38 2" />
-      {/* palm bottom, curling fingers, the raised index finger */}
-      <path d="M50 182c24 2 52 6 80 4 26-2 40-16 42-32l6-28c2-10-12-14-16-4l-12 26" />
-      <path d="M150 148c-4 12-14 20-26 22" />
-      <path d="M142 162c-4 8-10 12-18 14" />
-      {/* thumb lying across the palm, under the plant */}
-      <path d="M42 126c6-16 24-18 36-6l30 24" />
-      {/* the plant */}
-      <line x1="108" y1="146" x2="108" y2="84" stroke="#2E5146" />
-      <path d="M108 126c-20 0-32-12-32-28 18 0 32 10 32 28z" stroke="#2E5146" />
-      <path className="fill" d="M108 112c0-18 12-30 30-30 0 18-12 30-30 30z" fill="#D7F36E" stroke="none" />
-      <path d="M108 112c0-18 12-30 30-30 0 18-12 30-30 30z" stroke="#B9D44A" />
+      {/* an open hand, palm up: four relaxed fingers, a spread thumb, a sprout standing in the palm */}
+      <path d="M48 114V76a11 11 0 0 1 22 0v36" />
+      <path d="M76 112V58a11 11 0 0 1 22 0v54" />
+      <path d="M104 112V62a11 11 0 0 1 22 0v52" />
+      <path d="M132 118V80a11 11 0 0 1 22 0v48" />
+      <path d="M154 128c12-10 32-6 34 10 1 12-10 22-20 32l-8 8" />
+      <path d="M48 114v50c0 18 12 28 32 28h56c12 0 20-6 24-14" />
+      <line x1="100" y1="180" x2="100" y2="130" stroke="#2E5146" />
+      <path d="M100 166c-18 0-30-11-30-25 16 0 30 9 30 25z" stroke="#2E5146" />
+      <path className="fill" d="M100 150c0-18 14-30 32-30 0 18-14 30-32 30z" fill="#D7F36E" stroke="none" />
+      <path d="M100 150c0-18 14-30 32-30 0 18-14 30-32 30z" stroke="#B9D44A" />
+    </svg>
+  );
+}
+
+/** The CK Academy mark (the "A" with three rungs), from the Academy site's icons.tsx. */
+export function AcademyMark({ size = 30, color = "currentColor" }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} viewBox="0 0 163.5547 168.4608" fill={color} aria-hidden>
+      <path d="M34.497,152.0641h94.5608v16.3968h34.497L102.0964,13.7905c-3.3081-8.3255-11.3604-13.7905-20.319-13.7905h0c-8.9587,0-17.0109,5.4651-20.319,13.7905L0,168.4608h34.497v-16.3968ZM71.6203,42.5797h20.3137v16.4066h-20.3137v-16.4066ZM59.1213,79.0747h45.3116v16.4063h-45.3116v-16.4063ZM47.3047,115.5691h68.9453v16.4066H47.3047v-16.4066Z" />
     </svg>
   );
 }

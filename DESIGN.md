@@ -67,7 +67,7 @@ on a pastel, 12px corners for families, round for people.
 
 `Card`, `Eyebrow`, `CardTitle`, `Pill`, `Btn`, `Strip`, `CountUp`, `Bars`,
 `Track`, `Av`, `Row`, `Evt`, `Chips`, `Empty`, and the drawings `HouseArt`,
-`TeamArt`, `CalendarArt`, `PlantArt`, `GiftArt`, `BookArt`. Older components
+`TeamArt`, `CalendarArt`, `PlantArt`, `GiftArt`, `AcademyMark (the Academy's own "A" mark on a mint tile)`. Older components
 still read the `--ck-*` names, which are remapped onto the Grove tokens.
 
 ## Shell
@@ -87,7 +87,7 @@ subline and a chevron, rising in with the `--i` stagger:
 - **I'm a donor** (`GiftArt`, a hand holding a plant) → `/start/donor`, a
   short page that says the donor portal lives on the web for now and opens
   `DONOR_HOST/donor` in the system browser (email + six-digit code there).
-- **CK Academy** (`BookArt`) → `ACADEMY_URL` in the system browser.
+- **CK Academy** (`AcademyMark (the Academy's own "A" mark on a mint tile)`) → `ACADEMY_URL` in the system browser.
 
 Below the doors sits the screen's one forest button, **Donate**
 (`GIVE_URL`, system browser). At the foot a quiet 13px text link, **Team

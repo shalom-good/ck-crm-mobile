@@ -35,7 +35,8 @@ export const MOBILE_HOST = "https://ck-crm.vercel.app";
 export const DONOR_HOST = "https://crm.collectivekindness.net";
 export const DONOR_PORTAL_URL = `${DONOR_HOST}/donor`;
 /** Public web addresses the start screen opens outside the app. */
-export const ACADEMY_URL = "https://ck-academy.vercel.app";
+// The Academy course site (NEXT_PUBLIC_SITE_URL of the ck-academy repo). Swap for the public domain once it points at Vercel.
+export const ACADEMY_URL = "https://ck-academy-template.vercel.app";
 export const GIVE_URL = "https://collectivekindness.net/give";
 export const isNativeShell = typeof window !== "undefined" && window.location.protocol === "capacitor:";
 export const API_BASE = isNativeShell || (import.meta as any).env?.VITE_API_DIRECT === "1"
