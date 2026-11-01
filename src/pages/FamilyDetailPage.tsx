@@ -1,21 +1,24 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton } from "@ionic/react";
-import { Phone, ChatCircleText, NotePencil } from "@phosphor-icons/react";
+import { Phone, ChatCircleText, NotePencil, Envelope, ArrowSquareOut } from "@phosphor-icons/react";
 import { useAppData } from "@/lib/appData";
 import { useUI } from "@/lib/ui";
 import { ROLE_BY_KEY, type RoleKey } from "@/lib/roles";
 import { money } from "@/lib/format";
 import { fetchFamilyDetail, type FamilyDetail } from "@/lib/api";
 import { fetchBriskProfile } from "@/lib/mobileApi";
-import { tintFor, monogram } from "@/lib/colorHash";
+import { tintFor } from "@/lib/colorHash";
 import { AiSummary } from "@/components/AiSummary";
+import { Av, Bars, Btn, Card, CardTitle, Pill, Row, Strip, Track, type Bar, type Stat } from "@/components/gv";
 
 /**
- * Family profile — the warm-Brisk mobile profile (approved mockup):
- * name header + "Nd since touch", the 5-segment journey stepper, care
- * team tiles, the cash-flow card (sage in / terracotta out bars), plan
- * chips, latest notes with "Read full", and Call / WhatsApp / Note.
+ * Family profile — the staff view of one family in the Grove look, the
+ * same structure as the CRM's family profile: square initials + name,
+ * the touch pill, the 5-step journey track (done forest, current lime),
+ * a stat strip, care team, cash flow (grey income bars, the latest month
+ * coral when the net is negative / forest when positive), plans, latest
+ * notes, the AI rundown, and Call / WhatsApp / Note.
  *
  * Data: GET /api/mobile/families/:recId (the desktop brisk profile
  * object) first; the older family-detail edge function as fallback.
@@ -23,6 +26,7 @@ import { AiSummary } from "@/components/AiSummary";
  */
 
 const JOURNEY = ["Applied", "Intake", "Success Plan", "Active care", "Graduation"];
+const CRM_URL = "https://crm.collectivekindness.net";
 
 type Raw = Record<string, any>;
 
@@ -36,6 +40,8 @@ interface VM {
   latestNetLabel: string | null;
   plans: { name: string; dot: string; sub: string | null; status?: string | null; tone?: "green" | "red" | "gray"; noteCount?: number | null }[];
   notes: { meta: string; text: string }[];
+  noteCount: number | null;
+  debt: number | null;
   phone: string | null;
   email: string | null;
   summary: string | null;
@@ -64,6 +70,22 @@ const prettyJoined = (s: string) =>
     ? new Date(`${s.slice(0, 10)}T12:00:00`).toLocaleDateString("en-US", { month: "long", year: "numeric" })
     : s;
 
+/** "2026-05" / "May 2026" / "May" → "May" for the bar labels. */
+const monthShort = (s: string) => {
+  if (/^\d{4}-\d{2}/.test(s)) {
+    const d = new Date(`${s.slice(0, 7)}-15T12:00:00`);
+    if (!Number.isNaN(d.getTime())) return d.toLocaleDateString("en-US", { month: "short" });
+  }
+  return s.trim().split(/\s+/)[0].slice(0, 3);
+};
+
+/** Strip-sized money: "$1,240", "$12.4k", "-$300". */
+const compactMoney = (n: number) => {
+  const a = Math.abs(n);
+  const body = a >= 10000 ? `$${(a / 1000).toFixed(a >= 100000 ? 0 : 1).replace(/\.0$/, "")}k` : money(a);
+  return `${n < 0 ? "-" : ""}${body}`;
+};
+
 function vmFromBrisk(p: Raw): VM {
   const monthlyRaw: Raw[] = Array.isArray(p?.money?.monthly) ? p.money.monthly : [];
   const cashMonths = monthlyRaw.slice(-4).map((m) => ({
@@ -78,7 +100,7 @@ function vmFromBrisk(p: Raw): VM {
 
   const plans = (Array.isArray(p?.plans) ? p.plans : []).map((pl: Raw) => ({
     name: String(pl?.name ?? "Plan"),
-    dot: String(pl?.dot ?? "var(--ck-tint)"),
+    dot: String(pl?.dot ?? "var(--gv-mintInk)"),
     sub: pl?.owner && pl.owner !== "Unassigned"
       ? [String(pl.owner), pl?.role ? String(pl.role) : null].filter(Boolean).join(" · ")
       : (pl?.summary ? clip(String(pl.summary)) : null),
@@ -88,7 +110,7 @@ function vmFromBrisk(p: Raw): VM {
   }));
   const debtTotal = p?.debt?.total ?? p?.debt?.current ?? null;
   if (debtTotal != null && !plans.some((pl: { name: string }) => /debt/i.test(pl.name))) {
-    plans.push({ name: "Debt", dot: "#C2531F", sub: `${money(Number(debtTotal))} on file`, status: null, tone: "green" as const, noteCount: null });
+    plans.push({ name: "Debt", dot: "var(--gv-lavenderInk)", sub: `${money(Number(debtTotal))} on file`, status: null, tone: "green" as const, noteCount: null });
   }
 
   const notesRaw: Raw[] = Array.isArray(p?.caseNotes) ? p.caseNotes : [];
@@ -119,13 +141,15 @@ function vmFromBrisk(p: Raw): VM {
     latestNetLabel: cashMonths.length ? cashMonths[cashMonths.length - 1].label : null,
     plans,
     notes,
+    noteCount: typeof p?.noteCount === "number" ? p.noteCount : notesRaw.length ? notesRaw.length : null,
+    debt: debtTotal != null && Number.isFinite(Number(debtTotal)) ? Number(debtTotal) : null,
     phone: p?.phone ?? null,
     email: p?.email ?? null,
     summary: p?.caseSummary ?? null,
   };
 }
 
-function vmFromFallback(detail: FamilyDetail | null, fam: { name: string; city?: string; state?: string; phone: string; email: string; assignments: Partial<Record<RoleKey, string>>; stage?: string; lifecycleStatus?: string; currentMonthlyNet?: number | null } | undefined): VM {
+function vmFromFallback(detail: FamilyDetail | null, fam: { name: string; city?: string; state?: string; phone: string; email: string; assignments: Partial<Record<RoleKey, string>>; stage?: string; lifecycleStatus?: string; currentMonthlyNet?: number | null; estimatedDebt?: number } | undefined): VM {
   const hist = detail?.cashFlowHistory ?? [];
   const cashMonths = hist.slice(-4).map((r) => ({ label: r.monthLabel, income: r.income, expenses: r.expenses, net: r.net }));
   const latestNet = detail?.cashflow?.net ?? fam?.currentMonthlyNet ?? (cashMonths.length ? cashMonths[cashMonths.length - 1].net : null);
@@ -140,10 +164,15 @@ function vmFromFallback(detail: FamilyDetail | null, fam: { name: string; city?:
     text: c.latest.text,
   })).filter((n) => n.text);
 
+  const debtRaw = detail?.debt?.current ?? detail?.debt?.atAssessment ?? null;
+  const debt = debtRaw != null ? Number(debtRaw) : (fam?.estimatedDebt ?? 0) > 0 ? Number(fam!.estimatedDebt) : null;
+
   const plans: VM["plans"] = [];
   if (detail?.debt?.current != null || detail?.debt?.atAssessment != null) {
-    plans.push({ name: "Debt", dot: "#C2531F", sub: `${money(Number(detail?.debt?.current ?? detail?.debt?.atAssessment))} on file` });
+    plans.push({ name: "Debt", dot: "var(--gv-lavenderInk)", sub: `${money(Number(detail?.debt?.current ?? detail?.debt?.atAssessment))} on file` });
   }
+
+  const allNotes = detail?.notesByCategory?.counts?.all;
 
   return {
     name: fam?.name ?? "Family",
@@ -159,11 +188,15 @@ function vmFromFallback(detail: FamilyDetail | null, fam: { name: string; city?:
     latestNetLabel: cashMonths.length ? cashMonths[cashMonths.length - 1].label : null,
     plans,
     notes,
+    noteCount: typeof allNotes === "number" && allNotes > 0 ? allNotes : null,
+    debt,
     phone: fam?.phone ?? null,
     email: fam?.email ?? null,
     summary: null,
   };
 }
+
+const PLAN_TINT = { green: "mint", red: "rose", gray: "none" } as const;
 
 export function FamilyDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -205,97 +238,155 @@ export function FamilyDetailPage() {
 
   const days = family?.daysSinceLastNote ?? null;
   const name = vm?.name ?? family?.name ?? "Family";
-  const tint = tintFor(name);
   const phone = (vm?.phone || family?.phone || "").trim();
   const tel = phone.replace(/[^0-9+]/g, "");
   const wa = tel.replace(/^\+/, "").replace(/^0+/, "");
 
-  const maxBar = useMemo(() => {
-    const vals = (vm?.cashMonths ?? []).flatMap((m) => [m.income ?? 0, m.expenses ?? 0]);
-    return Math.max(1, ...vals);
-  }, [vm?.cashMonths]);
-
-  const hasBars = (vm?.cashMonths ?? []).some((m) => m.income != null || m.expenses != null);
+  const hasBars = (vm?.cashMonths ?? []).some((m) => m.income != null);
   const showCash = vm != null && (vm.latestNet != null || hasBars);
+  const email = (vm?.email || family?.email || "").trim();
+  const crmUrl = `${CRM_URL}/families/${encodeURIComponent(id)}`;
+
+  // When the rich profile comes back thin (roster-only fields), an
+  // "At a glance" card keeps the page from ever reading blank.
+  const sparse = state !== "loading"
+    && (vm == null || (vm.team.length === 0 && !showCash && vm.plans.length === 0 && vm.notes.length === 0));
+  const glanceRows: { label: string; value: string }[] = [];
+  if (sparse && family) {
+    glanceRows.push({ label: "Program", value: family.program });
+    const status = family.lifecycleStatus || family.stage;
+    if (status) glanceRows.push({ label: "Status", value: String(status) });
+    if (family.assignments.case_manager) glanceRows.push({ label: "Case manager", value: family.assignments.case_manager });
+    if (typeof family.currentMonthlyNet === "number") {
+      glanceRows.push({ label: "Monthly net", value: `${family.currentMonthlyNet < 0 ? "-" : "+"}${money(Math.abs(family.currentMonthlyNet))}` });
+    }
+    if ((family.estimatedDebt ?? 0) > 0) glanceRows.push({ label: "Est. debt", value: money(family.estimatedDebt!) });
+    if ((family.amountPaid ?? 0) > 0) glanceRows.push({ label: "Paid so far", value: money(family.amountPaid!) });
+    if (days != null) glanceRows.push({ label: "Last note", value: days <= 0 ? "Today" : `${days}d ago` });
+  }
+
+  // The stat strip: only the numbers that exist, at most four.
+  const stats: Stat[] = [];
+  const net = vm?.latestNet ?? family?.currentMonthlyNet ?? null;
+  if (typeof net === "number") stats.push({ label: "Net a month", value: compactMoney(net), warn: net < 0 });
+  if (vm?.debt != null && vm.debt > 0) stats.push({ label: "Debt on file", value: compactMoney(vm.debt) });
+  if (vm?.noteCount != null) stats.push({ label: "Notes", value: vm.noteCount });
+  if (days != null) stats.push({ label: "Since touch", value: days <= 0 ? "Today" : days, unit: days <= 0 ? undefined : "d" });
+
+  // Cash-flow bars: income per month in grey, the latest month coloured
+  // by the sign of the net.
+  const bars: Bar[] = (vm?.cashMonths ?? []).map((m, k, arr) => {
+    const last = k === arr.length - 1;
+    const neg = (m.net ?? vm?.latestNet ?? 0) < 0;
+    return { label: monthShort(m.label), value: m.income ?? 0, on: last && neg, go: last && !neg };
+  });
+
+  const journey = vm?.journeyIndex;
+  let i = 0;
 
   return (
     <IonPage>
       <IonHeader className="ion-no-border">
-        <IonToolbar style={{ "--background": "var(--ck-bg)" } as React.CSSProperties}>
+        <IonToolbar>
           <IonButtons slot="start"><IonBackButton defaultHref="/tabs/families" text="" /></IonButtons>
-          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.09em", color: "var(--ck-label)", padding: "0 8px" }}>FAMILY PROFILE</div>
+          <span className="gv-eyebrow" style={{ padding: "0 8px" }}>Family profile</span>
         </IonToolbar>
       </IonHeader>
 
-      <IonContent style={{ "--background": "var(--ck-bg)" } as React.CSSProperties}>
-        <div style={{ padding: "4px 18px 40px" }}>
+      <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
+        <div style={{ padding: "4px 16px calc(40px + env(safe-area-inset-bottom))" }}>
+          <style>{`
+            .fd-strip .gv-st { padding: 12px 10px 10px; }
+            .fd-strip .gv-st .v { font-size: 20px; }
+            @media (max-width: 359px) {
+              .fd-strip .gv-st { padding: 11px 7px 9px; }
+              .fd-strip .gv-st .v { font-size: 16px; }
+              .fd-strip .gv-st small { font-size: 10.5px; }
+              .fd-actions .gv-btn svg { display: none; }
+            }
+          `}</style>
+
           {/* Name header */}
-          <div style={{ display: "flex", alignItems: "center", gap: 13 }}>
-            <div style={{ width: 54, height: 54, borderRadius: 999, background: tint.bg, color: tint.fg, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 18, flexShrink: 0 }}>
-              {monogram(name)}
-            </div>
-            <div style={{ minWidth: 0 }}>
-              <h1 style={{ margin: 0, fontSize: 23, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--ck-title)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{name}</h1>
-              <div style={{ fontSize: 12, color: "var(--ck-body)", marginTop: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {vm?.metaLine ? `${vm.metaLine} · ` : ""}
+          <div className="gv-rise" style={{ display: "flex", alignItems: "center", gap: 13, ...({ "--i": i++ } as React.CSSProperties) }}>
+            <Av name={name} size={54} />
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <h1 className="gv-h1" style={{ fontSize: 24, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{name}</h1>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 5, minWidth: 0 }}>
+                {vm?.metaLine && (
+                  <span className="gv-meta" style={{ minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{vm.metaLine}</span>
+                )}
                 {days != null && (
-                  <span style={{ color: days >= 4 ? "var(--ck-danger)" : "var(--ck-ok-fg)", fontWeight: 700 }}>
+                  <Pill tint={days >= 4 ? "rose" : "mint"} sm style={{ flex: "none" }}>
                     {days <= 0 ? "touched today" : `${days}d since touch`}
-                  </span>
+                  </Pill>
                 )}
               </div>
             </div>
           </div>
 
           {family?.directorFlag && (
-            <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 8, padding: "9px 12px", borderRadius: 12, background: "var(--ck-warn-bg)", fontSize: 13, color: "var(--ck-warn-fg)", fontWeight: 500 }}>
-              <span style={{ width: 7, height: 7, borderRadius: 999, background: "var(--ck-danger)", flex: "none" }} />
+            <div className="gv-gentle gv-rise" style={{ marginTop: 12, ...({ "--i": i++ } as React.CSSProperties) }}>
               {family.directorFlag}
             </div>
           )}
 
-          {/* Journey stepper */}
-          <div style={{ display: "flex", gap: 6, marginTop: 14 }}>
-            {JOURNEY.map((_, i) => (
-              <div key={i} style={{
-                flex: 1, height: 6, borderRadius: 3,
-                background: vm == null ? "var(--ck-line-medium)"
-                  : i < vm.journeyIndex ? "var(--ck-success)"
-                  : i === vm.journeyIndex ? "var(--ck-tint)"
-                  : "var(--ck-line-medium)",
-              }} />
-            ))}
-          </div>
-          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 7 }}>
-            {JOURNEY.map((label, i) => (
-              <span key={label} style={{
-                fontSize: 9.5, fontWeight: i === vm?.journeyIndex ? 700 : 600, letterSpacing: "0.02em",
-                color: i === vm?.journeyIndex ? "var(--ck-tint)" : "var(--ck-muted)",
-              }}>{label}</span>
-            ))}
+          {/* Journey: done forest, current lime */}
+          <div className="gv-rise" style={{ marginTop: 16, ...({ "--i": i++ } as React.CSSProperties) }}>
+            <Track total={JOURNEY.length} done={journey ?? 0} current={journey} />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(5, minmax(0, 1fr))", gap: 5, marginTop: 7 }}>
+              {JOURNEY.map((label, k) => (
+                <span key={label} style={{
+                  fontSize: 10, lineHeight: 1.2, textAlign: "center", minWidth: 0,
+                  fontWeight: k === journey ? 800 : 600,
+                  color: k === journey ? "var(--gv-ink)" : "var(--gv-quiet)",
+                }}>{label}</span>
+              ))}
+            </div>
           </div>
 
           {state === "loading" && (
             <div style={{ padding: "30px 0", display: "flex", justifyContent: "center" }}><span className="ck-spin" /></div>
           )}
           {state === "error" && (
-            <Card><p style={{ margin: 0, fontSize: 13.5, color: "var(--ck-body)", lineHeight: 1.5 }}>Could not load this profile. This may be on us. Go back and try again.</p></Card>
+            <Card i={i++} flat style={{ marginTop: 14 }}>
+              <p className="gv-sub" style={{ fontSize: 13.5 }}>Could not load this profile. This may be on us. Go back and try again.</p>
+            </Card>
+          )}
+
+          {/* The numbers */}
+          {stats.length > 0 && state !== "loading" && (
+            <div className="fd-strip" style={{ marginTop: 14 }}>
+              <Strip i={i++} stats={stats.slice(0, 4)} />
+            </div>
+          )}
+
+          {/* At a glance — roster-only fallback so the page never reads blank */}
+          {glanceRows.length > 0 && (
+            <Card i={i++} style={{ marginTop: 12 }}>
+              <CardTitle>At a glance</CardTitle>
+              <div>
+                {glanceRows.map((r) => (
+                  <Row key={r.label} style={{ padding: "9px 0", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--gv-quiet)" }}>{r.label}</span>
+                    <span className="tnum" style={{ fontSize: 13, fontWeight: 700, color: "var(--gv-ink)", textAlign: "right", minWidth: 0, overflowWrap: "anywhere" }}>{r.value}</span>
+                  </Row>
+                ))}
+              </div>
+            </Card>
           )}
 
           {/* Care team */}
           {vm && vm.team.length > 0 && (
-            <Card>
-              <CardTitle>CARE TEAM</CardTitle>
-              <div style={{ display: "flex", gap: 8, overflowX: "auto" }} className="no-scrollbar">
-                {vm.team.slice(0, 4).map((t) => {
+            <Card i={i++} style={{ marginTop: 12 }}>
+              <CardTitle>Care team</CardTitle>
+              <div className="no-scrollbar" style={{ display: "flex", gap: 6, overflowX: "auto", margin: "0 -4px", padding: "0 4px" }}>
+                {vm.team.slice(0, 6).map((t) => {
                   const tt = t.bg && t.fg ? { bg: t.bg, fg: t.fg } : tintFor(t.name);
                   return (
-                    <div key={`${t.name}-${t.role}`} style={{ flex: "1 0 30%", minWidth: 96, background: "var(--ck-paper)", border: "1px solid var(--ck-hairline)", borderRadius: 14, padding: "10px 8px", textAlign: "center" }}>
-                      <div style={{ width: 34, height: 34, borderRadius: 999, margin: "0 auto 6px", background: tt.bg, color: tt.fg, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 12 }}>
-                        {monogram(t.name)}
-                      </div>
-                      <div style={{ fontSize: 11.5, fontWeight: 700, color: "var(--ck-title)", lineHeight: 1.15 }}>{t.name}</div>
-                      <div style={{ fontSize: 9.5, color: "var(--ck-label)", marginTop: 2 }}>{t.role}</div>
+                    <div key={`${t.name}-${t.role}`} style={{ flex: "0 0 auto", width: 84, textAlign: "center", minWidth: 0 }}>
+                      <Av name={t.name} size={44} round style={{ margin: "0 auto 6px", background: tt.bg, color: tt.fg }} />
+                      <div style={{ fontSize: 12, fontWeight: 700, color: "var(--gv-ink)", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.name}</div>
+                      {t.role && <div style={{ fontSize: 11, color: "var(--gv-quiet)", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.role}</div>}
                     </div>
                   );
                 })}
@@ -305,35 +396,16 @@ export function FamilyDetailPage() {
 
           {/* Cash flow */}
           {showCash && (
-            <Card>
-              <CardTitle>CASH FLOW</CardTitle>
-              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                <div style={{ flexShrink: 0 }}>
-                  <div className="tnum" style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em", color: vm!.latestNet != null && vm!.latestNet < 0 ? "var(--ck-danger)" : "var(--ck-success)" }}>
-                    {vm!.latestNet != null ? `${vm!.latestNet < 0 ? "-" : "+"}${money(Math.abs(vm!.latestNet))}` : "No net yet"}
-                  </div>
-                  <div style={{ fontSize: 10.5, color: "var(--ck-body)", marginTop: 2 }}>
-                    per month{vm!.latestNetLabel ? ` · ${vm!.latestNetLabel}` : ""}
-                  </div>
-                </div>
-                {hasBars && (
-                  <div style={{ flex: 1, display: "flex", alignItems: "flex-end", gap: 5, height: 44 }}>
-                    {vm!.cashMonths.map((m, i) => (
-                      <span key={i} style={{ flex: 1, display: "flex", alignItems: "flex-end", gap: 3, height: "100%" }}>
-                        <span title={`${m.label} in`} style={{ flex: 1, height: `${Math.max(6, Math.round(((m.income ?? 0) / maxBar) * 100))}%`, background: "var(--ck-bar-in)", borderRadius: "4px 4px 2px 2px" }} />
-                        <span title={`${m.label} out`} style={{ flex: 1, height: `${Math.max(6, Math.round(((m.expenses ?? 0) / maxBar) * 100))}%`, background: "var(--ck-bar-out)", borderRadius: "4px 4px 2px 2px" }} />
-                      </span>
-                    ))}
-                  </div>
-                )}
+            <Card i={i++} style={{ marginTop: 12 }}>
+              <CardTitle right={vm!.latestNetLabel ? <span className="gv-meta">{vm!.latestNetLabel}</span> : undefined}>Cash flow</CardTitle>
+              <div className="tnum" style={{ fontSize: 28, lineHeight: 1.05, fontWeight: 800, letterSpacing: "-.02em", color: vm!.latestNet != null && vm!.latestNet < 0 ? "var(--gv-coral)" : "var(--gv-go)" }}>
+                {vm!.latestNet != null ? `${vm!.latestNet < 0 ? "-" : "+"}${money(Math.abs(vm!.latestNet))}` : "No net yet"}
               </div>
+              <div className="gv-meta" style={{ marginTop: 3 }}>net a month</div>
               {hasBars && (
-                <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
-                  <Legend color="var(--ck-bar-in)" label="In" />
-                  <Legend color="var(--ck-bar-out)" label="Out" />
-                  <span style={{ marginLeft: "auto", fontSize: 10, color: "var(--ck-muted)" }}>
-                    {vm!.cashMonths.map((m) => m.label).filter(Boolean).join(" · ")}
-                  </span>
+                <div style={{ marginTop: 14 }}>
+                  <Bars bars={bars} height={56} />
+                  <div className="gv-meta" style={{ marginTop: 6, fontSize: 11 }}>Income by month</div>
                 </div>
               )}
             </Card>
@@ -341,29 +413,23 @@ export function FamilyDetailPage() {
 
           {/* Plans */}
           {vm && vm.plans.length > 0 && (
-            <Card>
-              <CardTitle>PLANS</CardTitle>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <Card i={i++} style={{ marginTop: 12, paddingTop: 14 }}>
+              <CardTitle>Plans</CardTitle>
+              <div>
                 {vm.plans.slice(0, 6).map((pl) => (
-                  <div key={pl.name} style={{ display: "flex", alignItems: "center", gap: 9, background: "var(--ck-paper)", border: "1px solid var(--ck-hairline)", borderRadius: 14, padding: "11px 12px", minWidth: 0 }}>
-                    <span style={{ width: 9, height: 9, borderRadius: 999, background: pl.dot, flexShrink: 0 }} />
-                    <div style={{ minWidth: 0, flex: 1 }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: "var(--ck-title)" }}>
-                        {pl.name}
-                        {typeof pl.noteCount === "number" && pl.noteCount > 0 && (
-                          <span style={{ fontWeight: 500, color: "var(--ck-muted)", marginLeft: 6, fontSize: 11 }}>{pl.noteCount} notes</span>
-                        )}
-                      </div>
-                      {pl.sub && <div style={{ fontSize: 11, color: "var(--ck-label)", marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pl.sub}</div>}
-                    </div>
-                    {pl.status && (
-                      <span style={{
-                        fontSize: 10.5, fontWeight: 700, padding: "3px 8px", borderRadius: 999, whiteSpace: "nowrap", flexShrink: 0,
-                        background: pl.tone === "red" ? "#FAE5DE" : pl.tone === "gray" ? "var(--ck-hairline)" : "#EAF3DE",
-                        color: pl.tone === "red" ? "#B4351F" : pl.tone === "gray" ? "var(--ck-muted)" : "#27500A",
-                      }}>{pl.status}</span>
-                    )}
-                  </div>
+                  <Row key={pl.name} style={{ padding: "10px 0" }}>
+                    <span style={{ width: 10, height: 10, borderRadius: 999, background: pl.dot, flex: "none" }} />
+                    <span className="t">
+                      <b>{pl.name}</b>
+                      {pl.sub && <span>{pl.sub}</span>}
+                    </span>
+                    <span style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 3, flex: "none" }}>
+                      {pl.status && <Pill tint={PLAN_TINT[pl.tone ?? "green"]} sm>{pl.status}</Pill>}
+                      {typeof pl.noteCount === "number" && pl.noteCount > 0 && (
+                        <span className="gv-meta tnum" style={{ fontSize: 11 }}>{pl.noteCount} {pl.noteCount === 1 ? "note" : "notes"}</span>
+                      )}
+                    </span>
+                  </Row>
                 ))}
               </div>
             </Card>
@@ -371,84 +437,68 @@ export function FamilyDetailPage() {
 
           {/* Latest notes */}
           {vm && vm.notes.length > 0 && (
-            <Card>
-              <CardTitle>LATEST NOTES</CardTitle>
-              {vm.notes.map((n, i) => <NoteRow key={i} meta={n.meta} text={n.text} first={i === 0} />)}
+            <Card i={i++} style={{ marginTop: 12 }}>
+              <CardTitle>Latest notes</CardTitle>
+              {vm.notes.map((n, k) => <NoteRow key={k} meta={n.meta} text={n.text} />)}
             </Card>
           )}
 
           {/* AI rundown — auto-runs, degrades to a quiet card when off */}
-          <div style={{ marginTop: 11 }}>
+          <div className="gv-rise" style={{ marginTop: 12, ...({ "--i": i++ } as React.CSSProperties) }}>
             <AiSummary id={id} />
           </div>
 
-          {/* Actions */}
-          <div style={{ display: "flex", gap: 9, marginTop: 13 }}>
-            <ActionBtn primary disabled={!tel} onClick={() => { if (tel) window.location.href = `tel:${tel}`; }}>
-              <Phone size={16} weight="bold" color="#fff" /> Call
-            </ActionBtn>
-            <ActionBtn disabled={!wa} onClick={() => { if (wa) window.open(`https://wa.me/${wa}`, "_blank"); }}>
+          {/* Actions: one forest button, two ghosts */}
+          <div className="fd-actions gv-rise" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8, marginTop: 16, ...({ "--i": i++ } as React.CSSProperties) }}>
+            <Btn disabled={!tel} onClick={() => { if (tel) window.location.href = `tel:${tel}`; }} style={{ padding: "0 6px", minWidth: 0, fontSize: 14 }}>
+              <Phone size={16} weight="bold" /> Call
+            </Btn>
+            <Btn ghost disabled={!wa} onClick={() => { if (wa) window.open(`https://wa.me/${wa}`, "_blank"); }} style={{ padding: "0 6px", minWidth: 0, fontSize: 14 }}>
               <ChatCircleText size={16} weight="bold" /> WhatsApp
-            </ActionBtn>
-            <ActionBtn onClick={() => openCapture("add", { id, name })}>
+            </Btn>
+            <Btn ghost onClick={() => openCapture("add", { id, name })} style={{ padding: "0 6px", minWidth: 0, fontSize: 14 }}>
               <NotePencil size={16} weight="bold" /> Note
-            </ActionBtn>
+            </Btn>
           </div>
+
+          {/* Tap-to-email */}
+          {email && (
+            <a href={`mailto:${email}`} className="gv-link" style={{ marginTop: 16, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, textDecoration: "none", minWidth: 0 }}>
+              <Envelope size={15} weight="bold" style={{ flex: "none" }} />
+              <span style={{ minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{email}</span>
+            </a>
+          )}
+
+          {/* Escape hatch to the desktop CRM profile */}
+          <a
+            href={crmUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="gv-meta"
+            style={{ marginTop: email ? 12 : 16, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, fontWeight: 600, textDecoration: "none" }}
+          >
+            Open full profile in CRM <ArrowSquareOut size={14} weight="regular" />
+          </a>
         </div>
       </IonContent>
     </IonPage>
   );
 }
 
-function Card({ children }: { children: React.ReactNode }) {
-  return <div className="shadow-card" style={{ marginTop: 11, background: "var(--ck-card)", border: "1px solid var(--ck-hairline)", borderRadius: 20, padding: "12px 15px" }}>{children}</div>;
-}
-function CardTitle({ children }: { children: React.ReactNode }) {
-  return <h3 style={{ margin: "0 0 8px", fontSize: 11, fontWeight: 700, letterSpacing: "0.09em", color: "var(--ck-label)" }}>{children}</h3>;
-}
-function Legend({ color, label }: { color: string; label: string }) {
-  return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 10.5, fontWeight: 600, color: "var(--ck-body)" }}>
-      <span style={{ width: 8, height: 8, borderRadius: 3, background: color }} /> {label}
-    </span>
-  );
-}
-
-function NoteRow({ meta, text, first }: { meta: string; text: string; first: boolean }) {
+function NoteRow({ meta, text }: { meta: string; text: string }) {
   const [open, setOpen] = useState(false);
   const long = text.length > 150;
   return (
-    <div style={{ borderTop: first ? "none" : "1px solid var(--ck-hairline)", padding: first ? "2px 0 11px" : "11px 0" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", gap: 10, fontSize: 10.5, color: "var(--ck-label)", marginBottom: 4, fontWeight: 600 }}>
-        <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{meta}</span>
-      </div>
-      <p style={{ margin: 0, fontSize: 12.5, color: "#3A4250", lineHeight: 1.5, whiteSpace: "pre-wrap" }}>
+    <Row style={{ padding: "10px 0", alignItems: "flex-start", flexDirection: "column", gap: 4 }}>
+      <span className="gv-meta" style={{ fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100%" }}>{meta}</span>
+      <p style={{ margin: 0, fontSize: 13.5, color: "var(--gv-ink)", lineHeight: 1.5, whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
         {open || !long ? text : `${text.slice(0, 150).trimEnd()}… `}
         {long && (
-          <button onClick={() => setOpen((v) => !v)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "var(--ck-tint)", fontWeight: 600, fontSize: 11.5 }}>
+          <button className="gv-link" onClick={() => setOpen((v) => !v)}>
             {open ? "Show less" : "Read full"}
           </button>
         )}
       </p>
-    </div>
-  );
-}
-
-function ActionBtn({ children, primary, disabled, onClick }: { children: React.ReactNode; primary?: boolean; disabled?: boolean; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      style={{
-        flex: 1, height: 44, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
-        fontSize: 13, fontWeight: 700, cursor: disabled ? "default" : "pointer", opacity: disabled ? 0.5 : 1,
-        background: primary ? "var(--ck-tint)" : "var(--ck-card)",
-        border: primary ? "1px solid var(--ck-tint)" : "1px solid var(--ck-line-medium)",
-        color: primary ? "#fff" : "var(--ck-title)",
-        boxShadow: primary ? "0 6px 14px rgba(194,83,31,.28)" : "none",
-      }}
-    >
-      {children}
-    </button>
+    </Row>
   );
 }

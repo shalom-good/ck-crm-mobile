@@ -1,10 +1,10 @@
 /**
  * mobileApi.ts — fetch wrapper + typed endpoints for the CK CRM mobile
- * backend at https://ck-crm.vercel.app/api/mobile.
+ * backend (/api/mobile/* — see MOBILE_HOST below).
  *
  * Every call carries the Bearer token (set by lib/auth on sign-in /
  * session restore). A 401 anywhere clears the session and routes back
- * to /login via the onUnauthorized hook.
+ * to the start screen via the onUnauthorized hook.
  *
  * The server payloads mirror the desktop CRM loaders (listChatsForActor,
  * chatThread, loadBriskProfile, the /m roster). Field names have drifted
@@ -16,15 +16,22 @@
 /**
  * On the web (vite dev + the Vercel deploy) the API is reached through a
  * same-origin proxy — the CRM's API routes send no CORS headers, so a
- * direct cross-origin fetch dies in the browser. Vite proxies /api/mobile
- * in dev (vite.config.ts), Vercel rewrites it in prod (vercel.json).
+ * direct cross-origin fetch dies in the browser. Vite proxies /api in
+ * dev (vite.config.ts), Vercel rewrites it in prod (vercel.json).
  * Inside the native Capacitor shell there is no same-origin server, so
- * the app calls the CRM directly (native webviews skip CORS via the
- * Capacitor scheme; if not, the backend needs CORS headers).
+ * the app calls the CRM directly; CapacitorHttp (capacitor.config.ts)
+ * routes those fetches through the native layer, which has no CORS.
  */
-const isNativeShell = typeof window !== "undefined" && window.location.protocol === "capacitor:";
+/** The live CRM — the portal API (/api/portal/*) is public there. */
+export const CRM_HOST = "https://crm.collectivekindness.net";
+/** The staff API host. The live CRM's middleware still gates /api/mobile
+ *  behind a staff session (branch mobile-portal-token exempts it); until
+ *  that lands, the Vercel deployment serves the team routes. Flip this to
+ *  CRM_HOST once the branch is on main. */
+export const MOBILE_HOST = "https://ck-crm.vercel.app";
+export const isNativeShell = typeof window !== "undefined" && window.location.protocol === "capacitor:";
 export const API_BASE = isNativeShell || (import.meta as any).env?.VITE_API_DIRECT === "1"
-  ? "https://ck-crm.vercel.app/api/mobile"
+  ? `${MOBILE_HOST}/api/mobile`
   : "/api/mobile";
 
 let authToken: string | null = null;
@@ -35,6 +42,10 @@ export function setAuthToken(token: string | null) {
 }
 export function setOnUnauthorized(fn: (() => void) | null) {
   onUnauthorized = fn;
+}
+/** Shared with portalApi: any 401 means "this session is over". */
+export function notifyUnauthorized() {
+  onUnauthorized?.();
 }
 
 export class ApiError extends Error {
@@ -49,8 +60,10 @@ async function api<T>(path: string, init?: RequestInit & { skipAuth?: boolean })
   const headers: Record<string, string> = { "content-type": "application/json" };
   if (authToken && !init?.skipAuth) headers.authorization = `Bearer ${authToken}`;
   const res = await fetch(`${API_BASE}${path}`, { ...init, headers: { ...headers, ...(init?.headers as Record<string, string>) } });
+  // Only a TEAM session can be ended by a mobile 401 — a family session
+  // never holds a mobile token, so a stray staff call must not sign it out.
   if (res.status === 401 && !init?.skipAuth) {
-    onUnauthorized?.();
+    if (authToken) onUnauthorized?.();
     throw new ApiError(401, "unauthorized");
   }
   let data: unknown = null;
@@ -244,8 +257,12 @@ export async function saveMessageAsNote(
 // ── families roster (GET /families, /m shape) ───────────────────────
 
 export async function fetchFamiliesRoster(asEmail?: string | null): Promise<Raw[]> {
-  const qs = asEmail ? `?as=${encodeURIComponent(asEmail)}` : "";
-  const raw = await api<Raw>(`/families${qs}`);
+  // all=1 — the server defaults to lifecycleStatus === "Active" only; the
+  // app's Families tab must show the whole roster (scope still enforced
+  // server-side by the bearer token).
+  const params = new URLSearchParams({ all: "1" });
+  if (asEmail) params.set("as", asEmail);
+  const raw = await api<Raw>(`/families?${params.toString()}`);
   if (Array.isArray(raw)) return raw;
   if (Array.isArray(raw?.families)) return raw.families;
   if (Array.isArray(raw?.roster)) return raw.roster;

@@ -4,10 +4,9 @@ import { useAppData } from "@/lib/appData";
 import { useRole, ROLE_BY_KEY } from "@/lib/roles";
 import { useAuth } from "@/lib/auth";
 import { syncedAgo } from "@/lib/time";
-import { Header } from "@/components/Header";
-import { Avatar } from "@/components/Avatar";
+import { Card, Eyebrow, Av, Pill, Row } from "@/components/gv";
 
-const APP_VERSION = "0.2.0";
+const APP_VERSION = "0.3.0";
 
 /**
  * Settings. The signed-in user IS the provider now; the "View as"
@@ -24,34 +23,39 @@ export function SettingsPage() {
 
   const doSignOut = async () => {
     await signOut();
-    router.push("/login", "root", "replace");
+    router.push("/start", "root", "replace");
   };
 
   return (
     <IonPage>
-      <IonContent style={{ "--background": "var(--ck-bg)" } as React.CSSProperties}>
-        <div style={{ paddingTop: "calc(env(safe-area-inset-top) + 8px)" }}><Header title="Settings" /></div>
+      <IonContent>
+        <div style={{ padding: "calc(env(safe-area-inset-top) + 18px) 16px 0" }}>
+          <h1 className="gv-h1">Settings</h1>
+        </div>
 
-        <div style={{ padding: "8px 16px 130px", display: "flex", flexDirection: "column", gap: 16 }}>
-          <Card>
-            <Row
-              icon={<Avatar name={me.name} size={40} />}
-              title={me.name}
-              subtitle={`${me.email}${roleLine ? ` · ${roleLine}` : ""}`}
-              trailing={user?.demo ? <Tag>Demo</Tag> : isAdmin ? <Tag>Admin</Tag> : undefined}
-            />
+        <div style={{ padding: "16px 16px 130px", display: "flex", flexDirection: "column", gap: 12 }}>
+          {/* who you are */}
+          <Card i={0}>
+            <Row>
+              <Av name={me.name} size={44} round />
+              <div className="t">
+                <b>{me.name}</b>
+                <span>{me.email}{roleLine ? ` · ${roleLine}` : ""}</span>
+              </div>
+              {user?.demo ? <Pill>Demo</Pill> : isAdmin ? <Pill tint="mint">Admin</Pill> : null}
+            </Row>
           </Card>
 
           {/* View as — admins only. Re-lenses the whole app + ?as= on /families. */}
           {isAdmin && (
             <div>
-              <Label>View as</Label>
-              <Card>
+              <Eyebrow style={{ marginTop: 10 }}>View as</Eyebrow>
+              <Card i={1}>
                 <ChoiceRow
-                  first
-                  name={`Myself (${me.name})`}
+                  name={me.name}
+                  label={`Myself (${me.name})`}
                   role="Your own caseload"
-                  accent="var(--ck-title)"
+                  accent="#2E5146"
                   on={!viewAs}
                   onPick={() => setProvider(null)}
                 />
@@ -70,60 +74,47 @@ export function SettingsPage() {
                 })}
               </Card>
               {viewAs && (
-                <p style={{ margin: "8px 2px 0", fontSize: 12, color: "var(--ck-body)" }}>
+                <p className="gv-meta" style={{ margin: "8px 2px 0", lineHeight: 1.5 }}>
                   You are viewing the app as {viewAs.name}. Chats stay yours.
                 </p>
               )}
             </div>
           )}
 
-          <Card>
-            <Row icon={<Cloud size={22} weight="regular" color="var(--ck-success)" />} title="Synced" subtitle={syncedAgo(lastSync)} trailing={<CheckCircle size={20} weight="fill" color="var(--ck-success)" />} />
+          {/* sync state */}
+          <Card i={2}>
+            <Row>
+              <span className="gv-tile" style={{ background: "var(--gv-mint)", color: "var(--gv-mintInk)" }}><Cloud size={18} weight="bold" /></span>
+              <div className="t"><b>Synced</b><span>{syncedAgo(lastSync)}</span></div>
+              <CheckCircle size={20} weight="fill" color="var(--gv-go)" style={{ flex: "none" }} />
+            </Row>
           </Card>
 
-          <Card>
-            <button onClick={() => void doSignOut()} style={{ width: "100%", display: "flex", alignItems: "center", gap: 12, padding: 16, background: "none", border: "none", cursor: "pointer", color: "var(--ck-danger)", fontSize: 15, fontWeight: 600 }}>
-              <SignOut size={22} weight="regular" /> Sign out
-            </button>
+          {/* sign out — rose ink, the only red on the screen */}
+          <Card i={3}>
+            <Row onClick={() => void doSignOut()}>
+              <span className="gv-tile" style={{ background: "var(--gv-rose)", color: "var(--gv-roseInk)" }}><SignOut size={18} weight="bold" /></span>
+              <div className="t"><b style={{ color: "var(--gv-roseInk)" }}>Sign out</b></div>
+            </Row>
           </Card>
 
-          <div style={{ textAlign: "center", fontSize: 12, color: "var(--ck-muted)", marginTop: 8 }}>CK Team · v{APP_VERSION}</div>
+          <div className="gv-meta" style={{ textAlign: "center", marginTop: 8 }}>Collective Kindness · v{APP_VERSION}</div>
         </div>
       </IonContent>
     </IonPage>
   );
 }
 
-function Card({ children }: { children: React.ReactNode }) {
-  return <div className="shadow-card" style={{ backgroundColor: "var(--ck-card)", border: "1px solid var(--ck-hairline)", borderRadius: 20, overflow: "hidden" }}>{children}</div>;
-}
-function Row({ icon, title, subtitle, trailing }: { icon: React.ReactNode; title: string; subtitle?: string; trailing?: React.ReactNode }) {
+/** One "view as" choice: round initials on a pastel, the role as a pill tinted by its accent at 14%, forest check when selected. */
+function ChoiceRow({ name, label, role, accent, on, onPick }: { name: string; label?: string; role: string; accent: string; on: boolean; onPick: () => void }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 12, padding: 16 }}>
-      <span style={{ flexShrink: 0, display: "flex" }}>{icon}</span>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 15, fontWeight: 600, color: "var(--ck-title)" }}>{title}</div>
-        {subtitle && <div style={{ fontSize: 12.5, color: "var(--ck-muted)", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{subtitle}</div>}
+    <Row onClick={onPick}>
+      <Av name={name} size={36} round />
+      <div className="t">
+        <b>{label ?? name}</b>
+        <span style={{ marginTop: 4 }}><Pill sm style={{ background: `${accent}24`, color: accent }}>{role}</Pill></span>
       </div>
-      {trailing}
-    </div>
+      {on && <Check size={20} weight="bold" color="var(--gv-go)" style={{ flex: "none" }} />}
+    </Row>
   );
-}
-function ChoiceRow({ first, name, role, accent, on, onPick }: { first?: boolean; name: string; role: string; accent: string; on: boolean; onPick: () => void }) {
-  return (
-    <button onClick={onPick} style={{ width: "100%", display: "flex", alignItems: "center", gap: 12, padding: 14, background: "none", border: "none", borderTop: first ? "none" : "1px solid var(--ck-hairline)", cursor: "pointer", textAlign: "left" }}>
-      <span style={{ width: 10, height: 10, borderRadius: 999, backgroundColor: accent, flexShrink: 0 }} />
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 15, fontWeight: 600, color: "var(--ck-title)" }}>{name}</div>
-        <div style={{ fontSize: 12, color: "var(--ck-muted)", marginTop: 1 }}>{role}</div>
-      </div>
-      {on && <Check size={20} weight="bold" color="var(--ck-tint)" />}
-    </button>
-  );
-}
-function Label({ children }: { children: React.ReactNode }) {
-  return <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.09em", color: "var(--ck-label)", marginBottom: 8, textTransform: "uppercase" }}>{children}</div>;
-}
-function Tag({ children }: { children: React.ReactNode }) {
-  return <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 9px", borderRadius: 999, background: "var(--ck-tint-soft)", color: "var(--ck-tint)" }}>{children}</span>;
 }

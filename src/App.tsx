@@ -5,7 +5,7 @@ import {
   IonApp, IonRouterOutlet, IonTabs, IonTabBar, IonTabButton, IonLabel, setupIonicReact,
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
-import { House, UsersThree, ChatsCircle, ChatCircleText, BookOpenText } from "@phosphor-icons/react";
+import { House, UsersThree, ChatsCircle, Sparkle, BookOpenText } from "@phosphor-icons/react";
 
 import { HomePage } from "@/pages/HomePage";
 import { FamiliesPage } from "@/pages/FamiliesPage";
@@ -17,7 +17,10 @@ import { ResourcesPage } from "@/pages/ResourcesPage";
 import { AskPage } from "@/pages/AskPage";
 import { SettingsPage } from "@/pages/SettingsPage";
 import { DesignPage } from "@/pages/DesignPage";
-import { LoginPage } from "@/pages/LoginPage";
+import { StartPage } from "@/pages/StartPage";
+import { FamilyCodePage } from "@/pages/FamilyCodePage";
+import { TeamLoginPage } from "@/pages/TeamLoginPage";
+import { FamilyHomePage } from "@/pages/FamilyHomePage";
 import { ChatsPage } from "@/pages/ChatsPage";
 import { ChatThreadPage } from "@/pages/ChatThreadPage";
 import { AISheet } from "@/components/AISheet";
@@ -48,15 +51,15 @@ function TabsShell() {
         <Route exact path="/tabs"><Redirect to="/tabs/home" /></Route>
       </IonRouterOutlet>
 
-      {/* Warm-Brisk tab bar: Home · Families · [raised Ask] · Chats ·
-          Resources. Payments + Job Funnel left the bar (still routable —
-          Home links to them). */}
-      <IonTabBar slot="bottom" style={{ "--background": "var(--ck-card)", "--border": "0px", height: "calc(64px + env(safe-area-inset-bottom))", paddingBottom: "env(safe-area-inset-bottom)", borderTopLeftRadius: "26px", borderTopRightRadius: "26px", borderTop: "1px solid var(--ck-hairline)", boxShadow: "0 -10px 28px rgba(35,43,54,0.06)" } as Record<string, string>}>
+      {/* Grove tab bar: white glass, hairline top, the active icon on a
+          soft-lime pill (the CRM's phone bar). Home · Families · [Ask] ·
+          Chats · Resources. Payments + Job Funnel are reached from Home. */}
+      <IonTabBar slot="bottom">
         <IonTabButton tab="home" href="/tabs/home">
-          <House size={24} weight="regular" /><IonLabel style={{ fontSize: 11, fontWeight: 600 }}>Home</IonLabel>
+          <House size={24} weight="regular" /><IonLabel>Home</IonLabel>
         </IonTabButton>
         <IonTabButton tab="families" href="/tabs/families">
-          <UsersThree size={24} weight="regular" /><IonLabel style={{ fontSize: 11, fontWeight: 600 }}>Families</IonLabel>
+          <UsersThree size={24} weight="regular" /><IonLabel>Families</IonLabel>
         </IonTabButton>
 
         {/* Empty center slot — the raised Ask button is portaled to
@@ -64,15 +67,15 @@ function TabsShell() {
         <IonTabButton tab="ask" disabled aria-hidden="true" />
 
         <IonTabButton tab="chats" href="/tabs/chats">
-          <ChatsCircle size={24} weight="regular" /><IonLabel style={{ fontSize: 11, fontWeight: 600 }}>Chats</IonLabel>
+          <ChatsCircle size={24} weight="regular" /><IonLabel>Chats</IonLabel>
         </IonTabButton>
         <IonTabButton tab="resources" href="/tabs/resources">
-          <BookOpenText size={24} weight="regular" /><IonLabel style={{ fontSize: 11, fontWeight: 600 }}>Resources</IonLabel>
+          <BookOpenText size={24} weight="regular" /><IonLabel>Resources</IonLabel>
         </IonTabButton>
       </IonTabBar>
     </IonTabs>
 
-    {/* Raised terracotta "Ask" button — portaled to ion-app so it lives
+    {/* Raised forest "Ask" button — portaled to ion-app so it lives
         outside ion-tabs / ion-page containment and floats above the bar. */}
     {onTabRoute && !captureOpen && createPortal(
       <button
@@ -81,20 +84,20 @@ function TabsShell() {
         onClick={() => openCapture("ask")}
         style={{
           position: "fixed", left: "50%", transform: "translateX(-50%)",
-          bottom: "calc(env(safe-area-inset-bottom) + 26px)", zIndex: 200,
+          bottom: "calc(env(safe-area-inset-bottom) + 24px)", zIndex: 200,
           display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
           background: "none", border: "none", cursor: "pointer", padding: 0,
         }}
       >
         <span style={{
           width: 56, height: 56, borderRadius: 999,
-          background: "var(--ck-tint)",
+          background: "var(--gv-go)",
           display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 0 0 5px var(--ck-card), 0 8px 18px rgba(194,83,31,.38)",
+          boxShadow: "0 0 0 5px var(--gv-card), 0 10px 24px -8px rgba(46,81,70,.6)",
         }}>
-          <ChatCircleText size={26} weight="regular" color="#fff" />
+          <Sparkle size={24} weight="fill" color="var(--gv-lime)" />
         </span>
-        <span style={{ fontSize: 10, fontWeight: 600, color: "var(--ck-tint)" }}>Ask</span>
+        <span style={{ fontSize: 10.5, fontWeight: 800, color: "var(--gv-ink)" }}>Ask</span>
       </button>,
       document.querySelector("ion-app") ?? document.body,
     )}
@@ -104,7 +107,7 @@ function TabsShell() {
 
 export function App() {
   const { openCapture } = useUI();
-  const { status } = useAuth();
+  const { status, kind } = useAuth();
 
   // Deep link: ckcrm://add (or #add) opens the capture sheet from anywhere.
   useEffect(() => {
@@ -117,35 +120,48 @@ export function App() {
     return () => window.removeEventListener("hashchange", check);
   }, [openCapture]);
 
-  // Session restoring — a quiet paper splash, no flash of the login form.
+  // Session restoring — a quiet paper splash, no flash of the start screen.
   if (status === "loading") {
     return (
       <IonApp>
-        <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--ck-bg)" }}>
+        <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--gv-paper)" }}>
           <span className="ck-spin" />
         </div>
       </IonApp>
     );
   }
 
-  const authed = status === "signedIn";
+  const team = status === "signedIn" && kind === "team";
+  const family = status === "signedIn" && kind === "family";
+  // Where a signed-in person belongs; signed-out people start at /start.
+  const home = team ? "/tabs/home" : family ? "/home" : "/start";
 
   return (
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          <Route exact path="/login" render={() => (authed ? <Redirect to="/tabs/home" /> : <LoginPage />)} />
-          <Route exact path="/family/:id" render={() => (authed ? <FamilyDetailPage /> : <Redirect to="/login" />)} />
-          <Route exact path="/chat/:familyRecId" render={() => (authed ? <ChatThreadPage /> : <Redirect to="/login" />)} />
-          <Route exact path="/job-funnel/:id" render={() => (authed ? <JobFunnelDetailPage /> : <Redirect to="/login" />)} />
-          <Route exact path="/ask" render={() => (authed ? <AskPage /> : <Redirect to="/login" />)} />
+          {/* doors */}
+          <Route exact path="/start" render={() => (status === "signedIn" ? <Redirect to={home} /> : <StartPage />)} />
+          <Route exact path="/start/family" render={() => (status === "signedIn" ? <Redirect to={home} /> : <FamilyCodePage />)} />
+          <Route exact path="/start/team" render={() => (status === "signedIn" ? <Redirect to={home} /> : <TeamLoginPage />)} />
+          <Route exact path="/login"><Redirect to={status === "signedIn" ? home : "/start/team"} /></Route>
+
+          {/* family world */}
+          <Route exact path="/home" render={() => (family ? <FamilyHomePage /> : <Redirect to={home} />)} />
+
+          {/* team world */}
+          <Route exact path="/family/:id" render={() => (team ? <FamilyDetailPage /> : <Redirect to={home} />)} />
+          <Route exact path="/chat/:familyRecId" render={() => (team ? <ChatThreadPage /> : <Redirect to={home} />)} />
+          <Route exact path="/job-funnel/:id" render={() => (team ? <JobFunnelDetailPage /> : <Redirect to={home} />)} />
+          <Route exact path="/ask" render={() => (team ? <AskPage /> : <Redirect to={home} />)} />
+          <Route path="/tabs" render={() => (team ? <TabsShell /> : <Redirect to={home} />)} />
+
           <Route exact path="/design" component={DesignPage} />
-          <Route path="/tabs" render={() => (authed ? <TabsShell /> : <Redirect to="/login" />)} />
-          <Route exact path="/"><Redirect to={authed ? "/tabs/home" : "/login"} /></Route>
+          <Route exact path="/"><Redirect to={home} /></Route>
         </IonRouterOutlet>
       </IonReactRouter>
 
-      {/* App-wide overlays */}
+      {/* App-wide overlays (team only in practice; harmless otherwise) */}
       <AISheet />
       <Toast />
     </IonApp>

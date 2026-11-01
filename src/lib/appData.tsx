@@ -44,8 +44,9 @@ function mapRosterRow(r: Raw): Family | null {
     assignments,
     estimatedDebt: typeof r?.estimatedDebt === "number" ? r.estimatedDebt : (typeof r?.debt === "number" ? r.debt : undefined),
     amountPaid: typeof r?.amountPaid === "number" ? r.amountPaid : (typeof r?.paid === "number" ? r.paid : undefined),
-    lastTouchedAt: r?.lastTouchedAt
-      ?? (days != null ? new Date(Date.now() - days * 86400000).toISOString() : new Date().toISOString()),
+    // Only a REAL server timestamp — no Date.now() fallback (it made every
+    // card show the identical render-time clock, e.g. "Today, 3:45 PM").
+    lastTouchedAt: r?.lastTouchedAt ?? null,
     lifecycleStatus: r?.lifecycleStatus ?? undefined,
     active: typeof r?.active === "boolean" ? r.active : (r?.lifecycleStatus ? r.lifecycleStatus === "Active" : true),
     stage: r?.stage ?? undefined,
@@ -98,8 +99,10 @@ const AppDataContext = createContext<AppDataValue | null>(null);
 
 export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const { provider, viewAsEmail } = useRole();
-  const { status } = useAuth();
-  const signedIn = status === "signedIn";
+  const { status, kind } = useAuth();
+  // Staff data only loads for a TEAM session; a family session reads the
+  // portal API instead (see pages/FamilyHomePage + lib/portalApi).
+  const signedIn = status === "signedIn" && kind === "team";
   const [localPayments, setLocalPayments] = useState<Payment[]>([]); // optimistic adds
   const [tracks, setTracks] = useState<Track[]>([]);
   const [meetings] = useState<Meeting[]>([]);

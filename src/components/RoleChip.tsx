@@ -5,21 +5,22 @@ interface Props {
   onPress: () => void;
 }
 
-/** Shows the active role. Tap to switch (drives the whole app's lens). */
+/** Shows the active role as a pill tinted with the role accent (14%) and
+ *  accent text, radius 8, never bordered. Tap to switch (drives the whole
+ *  app's lens). */
 export function RoleChip({ onPress }: Props) {
   const { role } = useRole();
   return (
     <button
       onClick={onPress}
       style={{
-        display: "inline-flex", alignItems: "center", gap: 6, height: 30, padding: "0 10px 0 8px",
-        borderRadius: 999, cursor: "pointer", border: `1.5px solid ${role.accent}`,
-        backgroundColor: `${role.accent}1F`, color: role.accent, fontSize: 13, fontWeight: 600,
+        display: "inline-flex", alignItems: "center", gap: 5, height: 28, padding: "0 8px 0 10px",
+        borderRadius: "var(--gv-r-pill)", cursor: "pointer", border: 0, font: "inherit",
+        background: `${role.accent}24`, color: role.accent, fontSize: 12.5, fontWeight: 700, whiteSpace: "nowrap",
       }}
     >
-      <span style={{ width: 8, height: 8, borderRadius: 999, backgroundColor: role.accent }} />
       {role.label}
-      <CaretDown size={13} weight="bold" />
+      <CaretDown size={12} weight="bold" />
     </button>
   );
 }

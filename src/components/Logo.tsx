@@ -3,9 +3,9 @@ interface Props {
 }
 
 /**
- * The Collective Kindness mark in a clean white badge. We window onto just the
- * flower+heart portion of the full lockup PNG (the black wordmark would vanish
- * in dark mode), so the badge reads the same in both themes.
+ * The Collective Kindness mark in a clean white badge (14px corners, the
+ * Grove card shadow). We window onto just the flower+heart portion of the
+ * full lockup PNG so the badge reads the same on any surface.
  */
 export function Logo({ size = 40 }: Props) {
   // Mark occupies roughly x ∈ [2%, 21.5%] of the 3580px-wide lockup.
@@ -19,9 +19,9 @@ export function Logo({ size = 40 }: Props) {
   return (
     <div
       style={{
-        width: size, height: size, borderRadius: 13, flexShrink: 0,
-        backgroundColor: "#fff",
-        boxShadow: "0 1px 2px rgba(15,23,42,.08), 0 6px 16px rgba(15,23,42,.07)",
+        width: size, height: size, borderRadius: 14, flexShrink: 0,
+        background: "var(--gv-card)",
+        boxShadow: "var(--gv-shadow)",
         display: "flex", alignItems: "center", justifyContent: "center",
       }}
     >

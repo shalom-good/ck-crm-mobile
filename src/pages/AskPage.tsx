@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
 import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton } from "@ionic/react";
-import { Sparkle, Microphone, ArrowUp } from "@phosphor-icons/react";
+import { Sparkle, Microphone, ArrowUp, CaretRight } from "@phosphor-icons/react";
 import { useRole } from "@/lib/roles";
+import { Card } from "@/components/gv";
 
 interface Msg { id: string; role: "me" | "ai"; text: string }
 
@@ -39,56 +40,55 @@ export function AskPage() {
     setText((t) => (t ? t + " " : "") + "Who do I need to call today?");
   };
 
+  const first = me.name.split(" ")[0];
+  const canSend = !!text.trim();
+
   return (
     <IonPage>
       <IonHeader className="ion-no-border">
-        <IonToolbar style={{ "--background": "var(--ck-bg)" } as React.CSSProperties}>
+        <IonToolbar>
           <IonButtons slot="start"><IonBackButton defaultHref="/tabs/home" text="" /></IonButtons>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 700, fontSize: 17, color: "var(--ck-title)" }}>
-            <Sparkle size={18} weight="fill" color="#C2531F" /> CK AI
+          <div style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 800, fontSize: 17, color: "var(--gv-ink)", letterSpacing: "-.01em" }}>
+            <Sparkle size={18} weight="fill" color="var(--gv-go)" /> CK AI
           </div>
         </IonToolbar>
       </IonHeader>
 
-      <IonContent ref={content} style={{ "--background": "var(--ck-bg)" } as React.CSSProperties}>
+      <IonContent ref={content}>
         <div style={{ padding: "8px 16px 120px" }}>
           {msgs.length === 0 ? (
-            <div style={{ paddingTop: 24 }}>
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: 8, marginBottom: 24 }}>
-                <span style={{ width: 56, height: 56, borderRadius: 999, background: "linear-gradient(135deg,#C2531F,#C2531F)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <Sparkle size={28} weight="fill" color="#fff" />
-                </span>
-                <h2 style={{ margin: "8px 0 0", fontSize: 18, fontWeight: 700, color: "var(--ck-title)" }}>Ask about anything</h2>
-                <p style={{ margin: 0, fontSize: 14, color: "var(--ck-muted)", maxWidth: 260 }}>Your families, payments, notes, and resources. {me.name.split(" ")[0]}, what do you need?</p>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {SUGGESTIONS.map((s) => (
-                  <button key={s} onClick={() => send(s)} className="shadow-card" style={{ textAlign: "left", cursor: "pointer", backgroundColor: "var(--ck-card)", border: "1px solid var(--ck-hairline)", borderRadius: 14, padding: "14px 16px", fontSize: 14, color: "var(--ck-body)" }}>
-                    {s}
-                  </button>
+            <div style={{ paddingTop: 12 }}>
+              <h1 className="gv-h1 gv-rise" style={{ fontSize: 24, ["--i" as string]: 0 } as React.CSSProperties}>What do you need, {first}?</h1>
+              <p className="gv-sub gv-rise" style={{ marginTop: 6, ["--i" as string]: 1 } as React.CSSProperties}>Your families, payments, notes and resources. Ask in your own words.</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 20 }}>
+                {SUGGESTIONS.map((s, k) => (
+                  <Card key={s} i={k + 2} onClick={() => send(s)} style={{ padding: "13px 14px", display: "flex", alignItems: "center", gap: 10 }}>
+                    <span style={{ flex: 1, minWidth: 0, fontSize: 13.5, fontWeight: 600, color: "var(--gv-ink)", lineHeight: 1.4 }}>{s}</span>
+                    <CaretRight size={14} weight="bold" color="var(--gv-quiet)" style={{ flex: "none" }} />
+                  </Card>
                 ))}
               </div>
             </div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {msgs.map((m) => <Bubble key={m.id} msg={m} />)}
             </div>
           )}
         </div>
       </IonContent>
 
-      {/* composer */}
-      <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "10px 16px calc(10px + env(safe-area-inset-bottom))", backgroundColor: "var(--ck-bg)", borderTop: "1px solid var(--ck-hairline)" }}>
-        <div style={{ display: "flex", alignItems: "flex-end", gap: 8, backgroundColor: "var(--ck-card)", border: "1.5px solid var(--ck-input-border)", borderRadius: 24, padding: "6px 6px 6px 16px" }}>
+      {/* composer: white pill bar on the paper, ghost mic, forest round send (the one primary) */}
+      <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "10px 16px calc(12px + env(safe-area-inset-bottom))", background: "var(--gv-paper)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 4, background: "var(--gv-card)", boxShadow: "inset 0 0 0 1px var(--gv-line)", borderRadius: 999, padding: "6px 6px 6px 16px" }}>
           <input
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && send()}
             placeholder="Ask CK AI…"
-            style={{ flex: 1, border: "none", outline: "none", background: "transparent", fontSize: 16, color: "var(--ck-title)", height: 40 }}
+            style={{ flex: 1, minWidth: 0, border: 0, outline: "none", background: "transparent", fontSize: 16, color: "var(--gv-ink)", height: 40 }}
           />
-          <button aria-label="Dictate" onClick={dictate} style={iconBtn}><Microphone size={22} weight="regular" color="#C2531F" /></button>
-          <button aria-label="Send" onClick={() => send()} disabled={!text.trim()} style={{ width: 40, height: 40, borderRadius: 999, border: "none", cursor: "pointer", backgroundColor: text.trim() ? "#C2531F" : "var(--ck-hairline)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <button aria-label="Dictate" onClick={dictate} style={ghostIcon}><Microphone size={22} weight="regular" /></button>
+          <button aria-label="Send" onClick={() => send()} disabled={!canSend} style={{ width: 40, height: 40, borderRadius: 999, border: 0, cursor: canSend ? "pointer" : "default", background: "var(--gv-go)", opacity: canSend ? 1 : 0.35, display: "grid", placeItems: "center", flex: "none", transition: "opacity .15s" }}>
             <ArrowUp size={20} weight="bold" color="#fff" />
           </button>
         </div>
@@ -99,20 +99,16 @@ export function AskPage() {
 
 function Bubble({ msg }: { msg: Msg }) {
   const mine = msg.role === "me";
-  return (
-    <div style={{ display: "flex", justifyContent: mine ? "flex-end" : "flex-start" }}>
-      <div
-        className={mine ? "" : "shadow-card"}
-        style={{
-          maxWidth: "82%", padding: "12px 14px", borderRadius: 18, fontSize: 14, lineHeight: "20px",
-          backgroundColor: mine ? "#C2531F" : "var(--ck-card)",
-          color: mine ? "#fff" : "var(--ck-body)",
-          border: mine ? "none" : "1px solid var(--ck-hairline)",
-          borderBottomRightRadius: mine ? 6 : 18, borderBottomLeftRadius: mine ? 18 : 6,
-        }}
-      >
-        {msg.text}
+  if (mine) {
+    return (
+      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <div style={{ maxWidth: "84%", padding: "11px 14px", borderRadius: 18, borderBottomRightRadius: 6, fontSize: 14, lineHeight: 1.45, background: "var(--gv-go)", color: "#fff", overflowWrap: "anywhere" }}>{msg.text}</div>
       </div>
+    );
+  }
+  return (
+    <div style={{ display: "flex", justifyContent: "flex-start" }}>
+      <div className="gv-card" style={{ maxWidth: "88%", padding: "11px 14px", borderRadius: 18, borderBottomLeftRadius: 6, fontSize: 14, lineHeight: 1.5, color: "var(--gv-text)", overflowWrap: "anywhere" }}>{msg.text}</div>
     </div>
   );
 }
@@ -126,4 +122,4 @@ function cannedReply(q: string): string {
   return "Here's what I found across your families, payments, and notes. (This is a scaffold reply. Once Supabase is wired I'll answer from live data.)";
 }
 
-const iconBtn: React.CSSProperties = { width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" };
+const ghostIcon: React.CSSProperties = { width: 40, height: 40, display: "grid", placeItems: "center", background: "none", border: 0, cursor: "pointer", color: "var(--gv-mid)", borderRadius: 999, flex: "none", padding: 0 };

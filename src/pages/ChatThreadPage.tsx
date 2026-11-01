@@ -14,20 +14,23 @@ import {
 import { useAuth } from "@/lib/auth";
 import { useUI } from "@/lib/ui";
 import { dayLabel } from "@/lib/time";
-import { Avatar } from "@/components/Avatar";
 import { success, tapLight } from "@/lib/haptics";
+import { Av, Empty, Pill, type Tint } from "@/components/gv";
 
 /**
- * One family's Experts Chat thread. Bubbles (mine right / terracotta
- * tint, theirs left / white with author + role tag), day separators,
- * ⚠ alert messages with a coral border, a composer with an alert toggle
- * and @mention suggestions, and long-press (or right-click) "Save as
- * note" with a category picker. Polls every 15s while open.
+ * One family's Experts Chat thread in the Grove look. Bubbles: mine on
+ * the right in forest with white text, theirs on the left as a white
+ * card with the author's name and a role pill; day separators as quiet
+ * eyebrows; alert messages carry a rose left accent. The composer is a
+ * white pill with a small alert toggle, @mention suggestions and a round
+ * forest send button. Long-press (or right-click) a message to save it
+ * to the family record as a note. Polls every 15s while open.
  */
 
 const ROLE_TAG: Record<string, string> = {
   cm: "CM", debt: "Debt", budget: "Budget", oversight: "Oversight", other: "Team",
 };
+const ROLE_TINT: Record<string, Tint> = { cm: "plum", debt: "sky", budget: "mint" };
 
 const NOTE_CATEGORIES: NoteCategory[] = ["General", "Case", "Budgeting", "Debt"];
 
@@ -184,37 +187,36 @@ export function ChatThreadPage() {
   };
 
   const title = thread?.family?.name || thread?.chat?.title || "Family chat";
-  const partNames = participants.map((p) => p.name.split(/\s+/)[0]).slice(0, 4).join(", ");
+  const people = participants.length;
+  const canSend = !!text.trim() && !sending;
 
   return (
     <IonPage>
       <IonHeader className="ion-no-border">
-        <IonToolbar style={{ "--background": "var(--ck-bg)" } as React.CSSProperties}>
+        <IonToolbar>
           <IonButtons slot="start"><IonBackButton defaultHref="/tabs/chats" text="" /></IonButtons>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "2px 8px", minWidth: 0 }}>
-            <Avatar name={title} size={34} />
-            <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: 15.5, fontWeight: 700, color: "var(--ck-title)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{title}</div>
-              {partNames && <div style={{ fontSize: 11, color: "var(--ck-muted)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{partNames}{participants.length > 4 ? ` +${participants.length - 4}` : ""}</div>}
-            </div>
-          </div>
+          <span className="gv-eyebrow" style={{ padding: "0 8px" }}>Experts chat</span>
         </IonToolbar>
+        {/* Family strip under the toolbar */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "2px 16px 10px", background: "var(--gv-paper)", minWidth: 0 }}>
+          <Av name={title} size={40} />
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div className="gv-h2" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</div>
+            {people > 0 && <div className="gv-meta" style={{ marginTop: 1 }}>{people} {people === 1 ? "person" : "people"}</div>}
+          </div>
+        </div>
       </IonHeader>
 
-      <IonContent ref={contentRef} style={{ "--background": "var(--ck-bg)" } as React.CSSProperties}>
+      <IonContent ref={contentRef} style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
         <IonRefresher slot="fixed" onIonRefresh={refresh}><IonRefresherContent /></IonRefresher>
 
-        <div style={{ padding: "8px 14px 16px", display: "flex", flexDirection: "column", gap: 4 }}>
+        <div style={{ padding: "6px 14px 16px", display: "flex", flexDirection: "column", gap: 4 }}>
           {q.isLoading ? (
             <div style={{ padding: "40px 0", display: "flex", justifyContent: "center" }}><span className="ck-spin" /></div>
           ) : q.isError ? (
-            <div style={{ margin: "24px 8px", padding: 16, borderRadius: 16, background: "var(--ck-card)", border: "1px solid var(--ck-hairline)", fontSize: 13.5, color: "var(--ck-body)", lineHeight: 1.5 }}>
-              Could not open this chat. This may be on us. Pull down to retry.
-            </div>
+            <div style={{ margin: "20px 2px" }}><Empty>Could not open this chat. This may be on us. Pull down to retry.</Empty></div>
           ) : messages.length === 0 ? (
-            <div style={{ margin: "24px 8px", padding: 16, borderRadius: 16, background: "var(--ck-card)", border: "1px solid var(--ck-hairline)", fontSize: 13.5, color: "var(--ck-body)", lineHeight: 1.5 }}>
-              No messages yet. Say hello. The family's care team is here automatically.
-            </div>
+            <div style={{ margin: "20px 2px" }}><Empty>No messages yet. Say hello. The family's care team is here automatically.</Empty></div>
           ) : (
             messages.map((m, i) => {
               const prev = messages[i - 1];
@@ -222,11 +224,7 @@ export function ChatThreadPage() {
               return (
                 <div key={m.id}>
                   {newDay && (
-                    <div style={{ display: "flex", justifyContent: "center", margin: "14px 0 8px" }}>
-                      <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", color: "var(--ck-muted)", background: "var(--ck-card)", border: "1px solid var(--ck-hairline)", borderRadius: 999, padding: "3px 11px" }}>
-                        {dayLabel(m.at)}
-                      </span>
-                    </div>
+                    <div className="gv-eyebrow" style={{ textAlign: "center", margin: "14px 0 8px" }}>{dayLabel(m.at)}</div>
                   )}
                   <Bubble
                     m={m}
@@ -243,36 +241,33 @@ export function ChatThreadPage() {
       </IonContent>
 
       {/* Composer */}
-      <div style={{ background: "var(--ck-bg)", borderTop: "1px solid var(--ck-hairline)", padding: "8px 12px calc(10px + env(safe-area-inset-bottom))" }}>
+      <div style={{ background: "var(--gv-paper)", padding: "8px 14px calc(10px + env(safe-area-inset-bottom))" }}>
         {suggestions.length > 0 && (
-          <div style={{ display: "flex", gap: 8, paddingBottom: 8, overflowX: "auto" }} className="no-scrollbar">
+          <div className="gv-chips no-scrollbar" style={{ paddingBottom: 8 }}>
             {suggestions.map((p) => (
-              <button key={p.email} onClick={() => pickMention(p)} style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "6px 12px 6px 6px", borderRadius: 999, border: "1px solid var(--ck-hairline)", background: "var(--ck-card)", cursor: "pointer", flexShrink: 0 }}>
-                <Avatar name={p.name} size={24} />
-                <span style={{ fontSize: 13, fontWeight: 600, color: "var(--ck-title)" }}>{p.name}</span>
-                {p.role && <span style={{ fontSize: 10.5, fontWeight: 700, color: "var(--ck-muted)" }}>{ROLE_TAG[p.role] ?? p.role}</span>}
+              <button key={p.email} className="gv-chip" onClick={() => pickMention(p)} style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "0 12px 0 6px" }}>
+                <Av name={p.name} size={24} round />
+                <span style={{ color: "var(--gv-ink)" }}>{p.name}</span>
+                {p.role && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--gv-quiet)" }}>{ROLE_TAG[p.role] ?? p.role}</span>}
               </button>
             ))}
           </div>
         )}
         {isAlert && (
-          <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "6px 10px", marginBottom: 8, borderRadius: 10, background: "var(--ck-warn-bg)", color: "var(--ck-warn-fg)", fontSize: 12.5, fontWeight: 600 }}>
-            <Warning size={14} weight="fill" /> Sending as an alert. It pins the chat for everyone.
+          <div className="gv-gentle" style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 8, padding: "8px 12px", fontSize: 12.5, fontWeight: 600 }}>
+            <Warning size={14} weight="fill" style={{ flex: "none" }} /> Sending as an alert. It pins the chat for everyone.
           </div>
         )}
-        <div style={{ display: "flex", alignItems: "flex-end", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "flex-end", gap: 8, background: "var(--gv-card)", borderRadius: 18, boxShadow: "inset 0 0 0 1px var(--gv-line)", padding: "6px 6px 6px 8px", minWidth: 0 }}>
           <button
+            type="button"
             aria-label="Toggle alert"
             aria-pressed={isAlert}
             onClick={() => { setIsAlert((v) => !v); void tapLight(); }}
-            style={{
-              width: 40, height: 40, borderRadius: 999, flexShrink: 0, cursor: "pointer",
-              border: `1.5px solid ${isAlert ? "var(--ck-danger)" : "var(--ck-hairline)"}`,
-              background: isAlert ? "var(--ck-warn-bg)" : "var(--ck-card)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}
+            className={`gv-pill${isAlert ? " rose" : ""}`}
+            style={{ border: 0, cursor: "pointer", flex: "none", height: 28, padding: "0 9px", marginBottom: 4 }}
           >
-            <Warning size={19} weight={isAlert ? "fill" : "regular"} color={isAlert ? "var(--ck-danger)" : "var(--ck-body)"} />
+            <Warning size={14} weight={isAlert ? "fill" : "bold"} /> Alert
           </button>
           <textarea
             ref={inputRef}
@@ -282,29 +277,28 @@ export function ChatThreadPage() {
             placeholder="Message the team. @ to tag."
             rows={1}
             style={{
-              flex: 1, minHeight: 40, maxHeight: 110, resize: "none", borderRadius: 18,
-              border: "1px solid var(--ck-input-border)", background: "var(--ck-card)",
-              color: "var(--ck-title)", fontSize: 14.5, lineHeight: "20px", padding: "9px 14px",
-              outline: "none", fontFamily: "inherit",
+              flex: 1, minWidth: 0, minHeight: 36, maxHeight: 110, resize: "none",
+              border: 0, background: "transparent", outline: "none",
+              color: "var(--gv-ink)", fontSize: 15, lineHeight: "20px", padding: "8px 4px",
             }}
-            className="ck-input"
           />
           <button
+            type="button"
             aria-label="Send"
             onClick={() => void send()}
-            disabled={!text.trim() || sending}
+            disabled={!canSend}
             style={{
-              width: 40, height: 40, borderRadius: 999, flexShrink: 0, border: "none",
-              background: text.trim() ? "var(--ck-tint)" : "var(--ck-line-medium)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              cursor: text.trim() ? "pointer" : "default",
-              boxShadow: text.trim() ? "0 4px 10px rgba(194,83,31,.3)" : "none",
+              width: 36, height: 36, borderRadius: "50%", flex: "none", border: 0, padding: 0,
+              background: "var(--gv-go)", color: "#fff", opacity: canSend ? 1 : 0.4,
+              display: "grid", placeItems: "center", cursor: canSend ? "pointer" : "default",
+              boxShadow: canSend ? "0 8px 18px -8px rgba(46,81,70,.6)" : "none",
+              transition: "opacity .15s",
             }}
           >
-            <PaperPlaneRight size={19} weight="fill" color="#fff" />
+            <PaperPlaneRight size={17} weight="fill" />
           </button>
         </div>
-        <div style={{ marginTop: 6, fontSize: 10.5, color: "var(--ck-muted)", textAlign: "center" }}>
+        <div className="gv-meta" style={{ marginTop: 6, fontSize: 11, textAlign: "center" }}>
           Hold a message to save it to the family record as a note.
         </div>
       </div>
@@ -321,8 +315,11 @@ function Bubble({ m, showAuthor, onPressStart, onPressEnd, onContext }: {
 }) {
   const mine = m.mine;
   const roleTag = m.role ? ROLE_TAG[m.role] ?? m.role : null;
+  const roleTint: Tint = (m.role && ROLE_TINT[m.role]) || "apricot";
+  const accent = mine ? "var(--gv-rose)" : "var(--gv-roseInk)";
+  const quiet = mine ? "rgba(255,255,255,.72)" : "var(--gv-quiet)";
   return (
-    <div style={{ display: "flex", justifyContent: mine ? "flex-end" : "flex-start", marginTop: 4 }}>
+    <div style={{ display: "flex", justifyContent: mine ? "flex-end" : "flex-start", marginTop: 4, minWidth: 0 }}>
       <div
         onTouchStart={onPressStart}
         onTouchEnd={onPressEnd}
@@ -332,49 +329,51 @@ function Bubble({ m, showAuthor, onPressStart, onPressEnd, onContext }: {
         onMouseLeave={onPressEnd}
         onContextMenu={onContext}
         style={{
-          maxWidth: "82%",
-          background: mine ? "var(--ck-tint-soft)" : "var(--ck-card)",
-          border: m.isAlert ? "1.5px solid var(--ck-danger)" : "1px solid var(--ck-hairline)",
-          borderRadius: 16,
-          borderBottomRightRadius: mine ? 6 : 16,
-          borderBottomLeftRadius: mine ? 16 : 6,
-          padding: "8px 12px",
+          maxWidth: "84%",
+          minWidth: 0,
+          background: mine ? "var(--gv-go)" : "var(--gv-card)",
+          color: mine ? "#fff" : "var(--gv-ink)",
+          boxShadow: [
+            m.isAlert ? `inset 3px 0 0 ${accent}` : null,
+            mine ? null : "var(--gv-shadow)",
+          ].filter(Boolean).join(", ") || undefined,
+          borderRadius: 18,
+          borderBottomRightRadius: mine ? 6 : 18,
+          borderBottomLeftRadius: mine ? 18 : 6,
+          padding: m.isAlert ? "9px 13px 8px 15px" : "9px 13px 8px",
           userSelect: "none",
           WebkitUserSelect: "none",
         }}
       >
         {!mine && showAuthor && (
-          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: "var(--ck-tint)" }}>{m.author}</span>
-            {roleTag && (
-              <span style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.04em", color: "var(--ck-muted)", background: "var(--ck-paper)", border: "1px solid var(--ck-hairline)", borderRadius: 999, padding: "1px 7px" }}>
-                {roleTag}
-              </span>
-            )}
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4, minWidth: 0 }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: "var(--gv-ink)", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.author}</span>
+            {roleTag && <Pill tint={roleTint} sm style={{ flex: "none" }}>{roleTag}</Pill>}
           </div>
         )}
         {m.isAlert && (
-          <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 3, color: "var(--ck-danger)", fontSize: 11.5, fontWeight: 700 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 3, color: accent, fontSize: 11.5, fontWeight: 700 }}>
             <Warning size={13} weight="fill" /> Alert
           </div>
         )}
-        <div style={{ fontSize: 14, lineHeight: 1.45, color: "var(--ck-title)", whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
+        <div style={{ fontSize: 14.5, lineHeight: 1.45, whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
           {m.body}
         </div>
         {m.attachments.length > 0 && m.attachments.map((a, i) => (
           a?.url ? (
-            <a key={i} href={a.url} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 6, fontSize: 12.5, fontWeight: 600, color: "var(--ck-tint)", textDecoration: "none" }}>
-              <FileText size={14} weight="bold" /> {a.name || "Attachment"}
+            <a key={i} href={a.url} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 6, fontSize: 12.5, fontWeight: 700, color: mine ? "#fff" : "var(--gv-go)", textDecoration: mine ? "underline" : "none", maxWidth: "100%" }}>
+              <FileText size={14} weight="bold" style={{ flex: "none" }} />
+              <span style={{ minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.name || "Attachment"}</span>
             </a>
           ) : null
         ))}
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4, justifyContent: "flex-end" }}>
           {m.noteId && (
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 10, fontWeight: 700, color: "var(--ck-success)" }}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 10.5, fontWeight: 700, color: mine ? "rgba(255,255,255,.85)" : "var(--gv-up)" }}>
               <NotePencil size={11} weight="bold" /> In notes{m.noteCategory ? ` · ${m.noteCategory}` : ""}
             </span>
           )}
-          <span className="tnum" style={{ fontSize: 10.5, color: "var(--ck-muted)" }}>{fmtTime(m.at)}</span>
+          <span className="tnum" style={{ fontSize: 10.5, color: quiet }}>{fmtTime(m.at)}</span>
         </div>
       </div>
     </div>

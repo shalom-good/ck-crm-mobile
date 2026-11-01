@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { IonPage, IonContent, IonRefresher, IonRefresherContent, useIonRouter, type RefresherEventDetail } from "@ionic/react";
 import { useRole } from "@/lib/roles";
 import { useAppData } from "@/lib/appData";
@@ -6,7 +6,7 @@ import { useUI } from "@/lib/ui";
 import { syncedAgo } from "@/lib/time";
 import { Header } from "@/components/Header";
 import { familyReasons } from "@/lib/attention";
-import { TabPills } from "@/components/TabPills";
+import { Chips } from "@/components/gv";
 import { FamilyCard } from "@/components/FamilyCard";
 import { SwipeRow } from "@/components/SwipeRow";
 import { EmptyState } from "@/components/EmptyState";
@@ -23,31 +23,34 @@ export function FamiliesPage() {
 
   const all = familiesForRole(role.key, me.name);
   const needsMe = (f: typeof all[number]) => familyReasons(f).reasons.length > 0;
+  const behind = (f: typeof all[number]) => f.paymentStatus === "behind";
   const families = useMemo(() => {
     if (filter === "attention") return all.filter(needsMe);
-    if (filter === "behind") return all.filter((f) => f.paymentStatus === "behind");
+    if (filter === "behind") return all.filter(behind);
     return all;
   }, [all, filter]);
 
-  const tabs = [
-    { key: "all", label: "All" },
-    { key: "attention", label: "Needs attention" },
-    { key: "behind", label: "Behind" },
+  // Soft-chip filter row with counts: selected = soft green, others white hairline.
+  const chips: { key: Filter; label: string; count: number }[] = [
+    { key: "all", label: "All", count: all.length },
+    { key: "attention", label: "Needs attention", count: all.filter(needsMe).length },
+    { key: "behind", label: "Behind", count: all.filter(behind).length },
   ];
 
   const refresh = (e: CustomEvent<RefresherEventDetail>) => setTimeout(() => e.detail.complete(), 700);
 
   return (
     <IonPage>
-      <IonContent style={{ "--background": "var(--ck-bg)" } as React.CSSProperties}>
+      <IonContent style={{ "--background": "var(--gv-paper)" } as CSSProperties}>
         <div style={{ paddingTop: "calc(env(safe-area-inset-top) + 8px)" }}>
-          <Header title="Families" subtitle={`${role.label} · ${syncedAgo(lastSync)}`} />
-          <div style={{ padding: "2px 16px 10px" }}><TabPills tabs={tabs} active={filter} onChange={(k) => setFilter(k as Filter)} /></div>
+          <Header title="Families" subtitle={`${role.label}${all.length ? ` · ${all.length} families` : ""} · ${syncedAgo(lastSync)}`} />
+          <div style={{ padding: "6px 16px 10px" }}><Chips items={chips} active={filter} onChange={setFilter} /></div>
         </div>
 
         <IonRefresher slot="fixed" onIonRefresh={refresh}><IonRefresherContent /></IonRefresher>
 
-        <div style={{ padding: "4px 16px 120px", display: "flex", flexDirection: "column", gap: 12, minHeight: "50vh" }}>
+        {/* 130px at the bottom clears the tab bar + the raised Ask button. */}
+        <div style={{ padding: "4px 16px 130px", display: "flex", flexDirection: "column", gap: 12, minHeight: "50vh" }}>
           {loading ? (
             <><SkeletonCard /><SkeletonCard /><SkeletonCard /></>
           ) : families.length === 0 ? (
@@ -58,9 +61,10 @@ export function FamiliesPage() {
               onAdd={() => openCapture("add")}
             />
           ) : (
-            families.map((f) => (
+            families.map((f, i) => (
               <SwipeRow
                 key={f.id}
+                i={Math.min(i, 8)}
                 onCall={() => (window.location.href = `tel:${f.phone}`)}
                 onMessage={() => (window.location.href = `sms:${f.phone}`)}
                 onArchive={() => openCapture("add")}

@@ -27,12 +27,12 @@ export interface Stage {
 }
 
 export const STAGES: Stage[] = [
-  { key: "new", label: "New", dot: "#C2531F" },
-  { key: "open", label: "Open", dot: "#3B7AF7" },
-  { key: "in_progress", label: "In Progress", dot: "#B7891F" },
-  { key: "open_deal", label: "Open Deal", dot: "#3B7AF7" },
-  { key: "won", label: "Won", dot: "#3F7355" },
-  { key: "dead", label: "Dead", dot: "#9A9AA0" },
+  { key: "new", label: "New", dot: "#E8714F" },
+  { key: "open", label: "Open", dot: "#1F4E79" },
+  { key: "in_progress", label: "In Progress", dot: "#8A4B10" },
+  { key: "open_deal", label: "Open Deal", dot: "#5B2D7A" },
+  { key: "won", label: "Won", dot: "#2E5146" },
+  { key: "dead", label: "Dead", dot: "#86928C" },
 ];
 
 export const STAGE_BY_KEY: Record<StageKey, Stage> = STAGES.reduce(
@@ -64,12 +64,12 @@ export type StatusKey =
   | "dead";
 
 export const STATUS_PILLS: Record<StatusKey, { label: string; bg: string; text: string }> = {
-  recycled: { label: "Recycled", bg: "#EAF1FE", text: "#2B62C9" },
-  in_process: { label: "In Process", bg: "#F3EBD6", text: "#8A6A1E" },
-  hot: { label: "Hot", bg: "#F8E8DF", text: "#A8431A" },
-  nurture: { label: "Nurture", bg: "#E7F1EB", text: "#356048" },
-  proposal: { label: "Proposal", bg: "#E8F0F4", text: "#3A6B7A" },
-  dead: { label: "Dead", bg: "#EEEFF1", text: "#6B6B70" },
+  recycled: { label: "Recycled", bg: "#DCEBFA", text: "#1F4E79" },
+  in_process: { label: "In Process", bg: "#FFF0A3", text: "#6B5A00" },
+  hot: { label: "Hot", bg: "#FBE0E6", text: "#9B2C4A" },
+  nurture: { label: "Nurture", bg: "#DDF3E6", text: "#1F5E3A" },
+  proposal: { label: "Proposal", bg: "#E9D5F5", text: "#5B2D7A" },
+  dead: { label: "Dead", bg: "#F4F6F2", text: "#5F6D68" },
 };
 
 // ---------------------------------------------------------------------------
@@ -80,28 +80,32 @@ export const STATUS_PILLS: Record<StatusKey, { label: string; bg: string; text: 
 
 export const palette = {
   light: {
-    bg: "#FAFAFA",
+    bg: "#F3F5F1",
     card: "#FFFFFF",
-    hairline: "#ECECEC",
-    title: "#1A1A1A",
-    body: "#6B6B70",
-    muted: "#9A9AA0",
-    tint: "#C2531F",
-    danger: "#A8431A",
-    success: "#3F7355",
-    inputBorder: "#ECECEC",
+    hairline: "#EAEDE7",
+    title: "#1C2E29",
+    body: "#5F6D68",
+    muted: "#86928C",
+    tint: "#2E5146",
+    lime: "#D7F36E",
+    coral: "#E8714F",
+    danger: "#B8463A",
+    success: "#3B7A2A",
+    inputBorder: "#E2E6E0",
   },
   dark: {
-    bg: "#121214",
-    card: "#1B1B1E",
-    hairline: "#2A2A2E",
-    title: "#F4F4F5",
-    body: "#A1A1A8",
-    muted: "#6E6E76",
-    tint: "#E07A4A",
-    danger: "#E07A4A",
-    success: "#5BB489",
-    inputBorder: "#2A2A2E",
+    bg: "#F3F5F1",
+    card: "#FFFFFF",
+    hairline: "#EAEDE7",
+    title: "#1C2E29",
+    body: "#5F6D68",
+    muted: "#86928C",
+    tint: "#2E5146",
+    lime: "#D7F36E",
+    coral: "#E8714F",
+    danger: "#B8463A",
+    success: "#3B7A2A",
+    inputBorder: "#E2E6E0",
   },
 } as const;
 
@@ -111,7 +115,7 @@ export type ColorScheme = keyof typeof palette;
 // Radii / spacing / touch.
 // ---------------------------------------------------------------------------
 
-export const radii = { card: 16, input: 12, pill: 999, sheet: 28 } as const;
+export const radii = { card: 20, input: 14, pill: 8, sheet: 28 } as const;
 
 export const space = {
   xs: 4,

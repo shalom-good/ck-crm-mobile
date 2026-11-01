@@ -1,42 +1,36 @@
+import type { CSSProperties } from "react";
 import type { Payment } from "@/lib/types";
 import { money } from "@/lib/format";
 import { lastTouch } from "@/lib/time";
-import { Avatar } from "./Avatar";
-import { StatusBadge, type BadgeTone } from "./StatusBadge";
+import { Av, Card, Pill, type Tint } from "./gv";
 
-const STATUS_TONE: Record<Payment["status"], BadgeTone> = { paid: "mist", due: "butter", overdue: "coral" };
+// paid = plain, due = yellow (to settle), overdue = rose (the blocker)
+const STATUS_TINT: Record<Payment["status"], Tint> = { paid: "none", due: "yellow", overdue: "rose" };
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 interface Props {
   payment: Payment;
   onOpen?: () => void;
+  /** Stagger index for the rise-in (optional). */
+  i?: number;
 }
 
-/** One billing line. Amount is tabular and right-aligned for scanning. */
-export function PaymentRow({ payment, onOpen }: Props) {
+const ellipsis: CSSProperties = { overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" };
+
+/** One billing line: white card, square avatar, amount tabular on the right. */
+export function PaymentRow({ payment, onOpen, i }: Props) {
+  const meta = [payment.method, payment.initiative, lastTouch(payment.date)].filter(Boolean).join(" · ");
   return (
-    <button
-      onClick={onOpen}
-      className="shadow-card"
-      style={{
-        width: "100%", textAlign: "left", cursor: "pointer",
-        backgroundColor: "var(--ck-card)", border: "1px solid var(--ck-hairline)",
-        borderRadius: 20, padding: 14, display: "flex", alignItems: "center", gap: 12,
-      }}
-    >
-      <Avatar name={payment.familyName} size={40} />
+    <Card i={i} onClick={onOpen} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px" }}>
+      <Av name={payment.familyName} size={40} />
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 15, fontWeight: 600, color: "var(--ck-title)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-          {payment.familyName}
-        </div>
-        <div style={{ fontSize: 12, fontWeight: 500, color: "var(--ck-muted)", marginTop: 2 }}>
-          {payment.method} · {payment.initiative} · {lastTouch(payment.date)}
-        </div>
+        <div style={{ fontSize: 14.5, fontWeight: 700, color: "var(--gv-ink)", ...ellipsis }}>{payment.familyName}</div>
+        <div className="gv-meta" style={{ marginTop: 2, ...ellipsis }}>{meta}</div>
       </div>
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 5, flexShrink: 0 }}>
-        <div className="tnum" style={{ fontSize: 16, fontWeight: 700, color: "var(--ck-title)", letterSpacing: "-0.01em" }}>{money(payment.amount)}</div>
-        <StatusBadge label={cap(payment.status)} tone={STATUS_TONE[payment.status]} dot={false} />
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 5, flex: "none" }}>
+        <span className="tnum" style={{ fontSize: 16, fontWeight: 800, color: "var(--gv-ink)", letterSpacing: "-0.01em" }}>{money(payment.amount)}</span>
+        <Pill tint={STATUS_TINT[payment.status]} sm>{cap(payment.status)}</Pill>
       </div>
-    </button>
+    </Card>
   );
 }

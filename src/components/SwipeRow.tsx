@@ -12,6 +12,8 @@ interface Props {
   onCall?: () => void;
   onMessage?: () => void;
   onArchive?: () => void;
+  /** Rise-in stagger index (optional): the whole row rises with the Grove cards. */
+  i?: number;
 }
 
 const ACTION_W = touch.swipeAction; // 56dp per action
@@ -27,11 +29,12 @@ const COMMIT = 96; // right-swipe distance that commits an advance
 export function SwipeRow({
   children,
   advanceLabel,
-  advanceColor = "#3F7355",
+  advanceColor = "var(--gv-go)",
   onAdvance,
   onCall,
   onMessage,
   onArchive,
+  i,
 }: Props) {
   const [x, setX] = useState(0);
   const [dragging, setDragging] = useState(false);
@@ -90,7 +93,10 @@ export function SwipeRow({
   const close = () => setX(0);
 
   return (
-    <div style={{ position: "relative", overflow: "hidden", borderRadius: 20 }}>
+    <div
+      className={i != null ? "gv-rise" : undefined}
+      style={{ position: "relative", overflow: "hidden", borderRadius: 20, boxShadow: "var(--gv-shadow)", ...(i != null ? ({ "--i": i } as React.CSSProperties) : null) }}
+    >
       {/* right-swipe advance affordance */}
       {canAdvance && (
         <div
@@ -107,7 +113,7 @@ export function SwipeRow({
           }}
         >
           <Check size={22} weight="bold" />
-          <span style={{ fontWeight: 600, fontSize: 15 }}>{advanceLabel}</span>
+          <span style={{ fontWeight: 700, fontSize: 15 }}>{advanceLabel}</span>
         </div>
       )}
 
@@ -125,13 +131,13 @@ export function SwipeRow({
           transition: dragging ? "none" : "opacity 120ms",
         }}
       >
-        <SwipeAction color="var(--ck-tint)" label="Call" onClick={() => { onCall?.(); close(); }}>
+        <SwipeAction color="var(--gv-go)" label="Call" onClick={() => { onCall?.(); close(); }}>
           <Phone size={20} weight="regular" color="#fff" />
         </SwipeAction>
-        <SwipeAction color="#6B6B70" label="Message" onClick={() => { onMessage?.(); close(); }}>
+        <SwipeAction color="var(--gv-skyInk)" label="Message" onClick={() => { onMessage?.(); close(); }}>
           <ChatCircle size={20} weight="regular" color="#fff" />
         </SwipeAction>
-        <SwipeAction color="var(--ck-danger)" label="Archive" onClick={() => { onArchive?.(); close(); }}>
+        <SwipeAction color="var(--gv-quiet)" label="Archive" onClick={() => { onArchive?.(); close(); }}>
           <Archive size={20} weight="regular" color="#fff" />
         </SwipeAction>
       </div>
@@ -189,10 +195,11 @@ function SwipeAction({
         gap: 4,
         border: "none",
         cursor: "pointer",
+        font: "inherit",
       }}
     >
       {children}
-      <span style={{ color: "#fff", fontSize: 11, fontWeight: 600 }}>{label}</span>
+      <span style={{ color: "#fff", fontSize: 11, fontWeight: 700 }}>{label}</span>
     </button>
   );
 }

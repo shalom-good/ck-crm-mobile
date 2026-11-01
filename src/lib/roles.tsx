@@ -26,12 +26,12 @@ export interface Role {
 }
 
 export const ROLES: Role[] = [
-  { key: "case_manager", label: "Case Manager", short: "CM", accent: "#C2531F", blurb: "Owns the family relationship end to end." },
-  { key: "debt_expert", label: "Debt Expert", short: "DE", accent: "#3D7FB8", blurb: "Builds and runs the debt strategy." },
-  { key: "budgeter", label: "Budgeter", short: "BG", accent: "#7FA24C", blurb: "Keeps the monthly budget on track." },
-  { key: "jpa", label: "Job Placement", short: "JPA", accent: "#8A6A1E", blurb: "Moves clients toward income." },
-  { key: "coordinator", label: "Coordinator", short: "CO", accent: "#232B36", blurb: "Keeps everything moving between roles." },
-  { key: "director", label: "Director", short: "DIR", accent: "#C2531F", blurb: "Sees everything. Steps in where needed." },
+  { key: "case_manager", label: "Case Manager", short: "CM", accent: "#2E5146", blurb: "Owns the family relationship end to end." },
+  { key: "debt_expert", label: "Debt Expert", short: "DE", accent: "#1F4E79", blurb: "Builds and runs the debt strategy." },
+  { key: "budgeter", label: "Budgeter", short: "BG", accent: "#1F5E3A", blurb: "Keeps the monthly budget on track." },
+  { key: "jpa", label: "Job Placement", short: "JPA", accent: "#8A4B10", blurb: "Moves clients toward income." },
+  { key: "coordinator", label: "Coordinator", short: "CO", accent: "#5B2D7A", blurb: "Keeps everything moving between roles." },
+  { key: "director", label: "Director", short: "DIR", accent: "#E8714F", blurb: "Sees everything. Steps in where needed." },
 ];
 
 export const ROLE_BY_KEY: Record<RoleKey, Role> = ROLES.reduce(

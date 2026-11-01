@@ -24,7 +24,10 @@ export interface Family {
   assignments: Partial<Record<RoleKey, string>>;
   estimatedDebt?: number;
   amountPaid?: number;
-  lastTouchedAt: string;
+  /** Real last-touch timestamp when the API provides one; NEVER synthesized
+   *  client-side (a render-time fallback here once made every card read
+   *  "Today, 3:45 PM"). Cards derive recency from daysSinceLastNote. */
+  lastTouchedAt: string | null;
 
   // —— attention inputs (drive lib/attention.ts) ——
   /** CK lifecycle (column `status`). KDH derives `active` instead. */

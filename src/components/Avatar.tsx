@@ -4,13 +4,17 @@ interface Props {
   name: string;
   photo?: string;
   size?: number;
+  /** 12px corners (families). Default is round (people). */
+  square?: boolean;
 }
 
 /**
- * Circular avatar. With a photo, it's the photo. Without, a 2-letter monogram
- * on a warm hashed tint — never gray.
+ * Avatar: with a photo, it's the photo. Without, a 2-letter monogram on a
+ * Grove pastel from lib/colorHash (deterministic per name) — never grey.
+ * Round for people; pass `square` for a family.
  */
-export function Avatar({ name, photo, size = 48 }: Props) {
+export function Avatar({ name, photo, size = 48, square }: Props) {
+  const radius = square ? 12 : "50%";
   if (photo) {
     return (
       <img
@@ -18,31 +22,19 @@ export function Avatar({ name, photo, size = 48 }: Props) {
         alt={name}
         width={size}
         height={size}
-        style={{ width: size, height: size, borderRadius: 999, objectFit: "cover", flexShrink: 0 }}
+        style={{ width: size, height: size, borderRadius: radius, objectFit: "cover", flexShrink: 0 }}
       />
     );
   }
 
   const tint = tintFor(name);
   return (
-    <div
+    <span
+      className={`gv-av${square ? "" : " round"}`}
       aria-label={name}
-      style={{
-        width: size,
-        height: size,
-        borderRadius: 999,
-        backgroundColor: tint.bg,
-        color: tint.fg,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontWeight: 600,
-        fontSize: Math.round(size * 0.36),
-        flexShrink: 0,
-        userSelect: "none",
-      }}
+      style={{ width: size, height: size, background: tint.bg, color: tint.fg, fontSize: Math.round(size * 0.36) }}
     >
       {monogram(name)}
-    </div>
+    </span>
   );
 }

@@ -1,35 +1,37 @@
-import { Phone, User, CaretRight } from "@phosphor-icons/react";
+import type { CSSProperties } from "react";
+import { Phone, User, CaretRight, BookOpenText, LinkSimple } from "@phosphor-icons/react";
 import type { Resource } from "@/lib/types";
+import { Card } from "./gv";
 
 interface Props {
   resource: Resource;
   onOpen?: () => void;
+  /** Stagger index for the rise-in (optional). */
+  i?: number;
 }
 
-export function ResourceRow({ resource, onOpen }: Props) {
+const ellipsis: CSSProperties = { overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" };
+
+/** Directory row: white card, sky icon tile, name + one-line description + quiet contact. */
+export function ResourceRow({ resource, onOpen, i }: Props) {
   return (
-    <button
-      onClick={onOpen}
-      className="shadow-card"
-      style={{
-        width: "100%", textAlign: "left", cursor: "pointer",
-        backgroundColor: "var(--ck-card)", border: "1px solid var(--ck-hairline)",
-        borderRadius: 18, padding: 16, display: "flex", alignItems: "center", gap: 12,
-      }}
-    >
+    <Card i={i} onClick={onOpen} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px" }}>
+      <span className="gv-tile" style={{ width: 40, height: 40, background: "var(--gv-sky)", color: "var(--gv-skyInk)" }}>
+        {resource.link ? <LinkSimple size={18} weight="bold" /> : <BookOpenText size={18} weight="bold" />}
+      </span>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 15, fontWeight: 600, color: "var(--ck-title)" }}>{resource.name}</div>
+        <div style={{ fontSize: 14.5, fontWeight: 700, color: "var(--gv-ink)", ...ellipsis }}>{resource.name}</div>
         {resource.description && (
-          <p style={{ margin: "3px 0 0", fontSize: 13, color: "var(--ck-body)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            {resource.description}
-          </p>
+          <div style={{ fontSize: 13, color: "var(--gv-mid)", marginTop: 2, ...ellipsis }}>{resource.description}</div>
         )}
-        <div style={{ display: "flex", gap: 12, marginTop: 6, fontSize: 12, color: "var(--ck-muted)" }}>
-          {resource.contact && <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><User size={13} />{resource.contact}</span>}
-          {resource.phone && <span className="tnum" style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><Phone size={13} />{resource.phone}</span>}
-        </div>
+        {(resource.contact || resource.phone) && (
+          <div className="gv-meta" style={{ display: "flex", flexWrap: "wrap", gap: "2px 12px", marginTop: 4 }}>
+            {resource.contact && <span style={{ display: "inline-flex", alignItems: "center", gap: 4, minWidth: 0 }}><User size={12} /><span style={ellipsis}>{resource.contact}</span></span>}
+            {resource.phone && <span className="tnum" style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><Phone size={12} />{resource.phone}</span>}
+          </div>
+        )}
       </div>
-      <CaretRight size={18} weight="bold" color="var(--ck-muted)" />
-    </button>
+      <CaretRight size={16} weight="bold" color="var(--gv-quiet)" style={{ flex: "none" }} />
+    </Card>
   );
 }

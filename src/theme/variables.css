@@ -1,100 +1,131 @@
 /**
- * Ionic CSS variable overrides — warm Brisk reskin (approved mockup,
- * 2026-08-03). Paper #F7F5F0 page, white cards on a 1px #ECE7DE hairline
- * with 20px radii, ink #232B36 text, terracotta #C2531F as THE action
- * color, sage #7FA24C positives, #B4351F warnings. Light-only.
+ * Ionic CSS variables — the "Grove" / Emitly look (2026-10-31), the same
+ * system the CRM, the client portal and the sign-in pages moved to on
+ * 2026-10-27..30. Light sage paper, white cards with 20px corners and a
+ * soft shadow, forest green for THE action, lime for the one live thing
+ * on a screen, a small pastel set for state, Plus Jakarta Sans.
+ *
+ * Two layers of names:
+ *   --gv-*  the Grove tokens (new code reads these)
+ *   --ck-*  the older names, remapped onto --gv-* so every existing
+ *           component follows along without a rewrite.
  */
 
 :root {
-  /* surfaces — warm paper against soft white cards */
-  --ck-bg: #f7f5f0;          /* paper page background */
-  --ck-paper: #faf8f4;       /* inner tile surface */
-  --ck-card: #ffffff;        /* card surface */
-  --ck-hairline: #ece7de;
-  --ck-line-medium: #e5dfd4;
-  --ck-title: #232b36;       /* ink */
-  --ck-body: #7c7466;        /* secondary */
-  --ck-muted: #9a927f;
-  --ck-label: #8a8378;       /* section eyebrow labels */
-  --ck-tint: #c2531f;        /* terracotta — THE action/accent color */
-  --ck-tint-soft: #f7e7de;
-  --ck-blue: #3d7fb8;        /* data accents (plan dots) */
-  --ck-gold: #8a6a1e;
-  --ck-navy: #232b36;
-  --ck-danger: #b4351f;      /* warning red */
-  --ck-success: #7fa24c;     /* sage green positive */
-  --ck-input-border: #e5dfd4;
-  --ck-scrim: rgba(35, 43, 54, 0.32);
+  /* ── Grove tokens ── */
+  --gv-paper: #F3F5F1;      /* page */
+  --gv-card: #FFFFFF;       /* card */
+  --gv-inset: #F4F6F2;      /* inner tile / input */
+  --gv-hair: #EAEDE7;       /* divider inside a card */
+  --gv-line: #E2E6E0;       /* edge of an outlined control */
+  --gv-ink: #1C2E29;        /* headings, numbers */
+  --gv-text: #223632;       /* body */
+  --gv-mid: #5F6D68;        /* meta */
+  --gv-quiet: #86928C;      /* labels */
+  --gv-faint: #AEB7B2;
+  --gv-go: #2E5146;         /* forest — THE action color */
+  --gv-go-deep: #214948;
+  --gv-lime: #D7F36E;       /* the ONE live thing on a screen */
+  --gv-lime-soft: #EEF8C8;
+  --gv-lime-pill: #DFF0A6;  /* active tab icon */
+  --gv-coral: #E8714F;      /* the one emphasized bar / a short number */
+  --gv-bar: #E9ECE7;        /* resting chart bar */
+  --gv-sage: #E4ECE6;       /* selected row */
+  --gv-up: #3B7A2A;   --gv-upBg: #E8F5D8;
+  --gv-down: #B8463A; --gv-downBg: #FBE5E2;
+  --gv-mint: #DDF3E6;     --gv-mintInk: #1F5E3A;
+  --gv-sky: #DCEBFA;      --gv-skyInk: #1F4E79;
+  --gv-apricot: #FDE3C8;  --gv-apricotInk: #8A4B10;
+  --gv-plum: #E9D5F5;     --gv-plumInk: #5B2D7A;
+  --gv-rose: #FBE0E6;     --gv-roseInk: #9B2C4A;
+  --gv-yellow: #FFF0A3;   --gv-yellowInk: #6B5A00;
+  --gv-lavender: #F3D9F7; --gv-lavenderInk: #6D3D7A;
+  --gv-shadow: 0 1px 2px rgba(28,46,41,.04), 0 8px 24px rgba(28,46,41,.06);
+  --gv-shadow-pop: 0 14px 36px rgba(28,46,41,.14);
+  --gv-r-card: 20px; --gv-r-btn: 14px; --gv-r-pill: 8px; --gv-r-tile: 12px; --gv-r-sheet: 28px;
+  --gv-font: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --gv-ease: cubic-bezier(.2, .8, .2, 1);
 
-  /* touch pills — "Nd quiet" (red) vs "Today/1d" (green) */
-  --ck-ok-bg: #eaf3de;   --ck-ok-fg: #27500a;
-  --ck-warn-bg: #fae5de; --ck-warn-fg: #b4351f;
+  /* ── legacy --ck-* names → Grove values ── */
+  --ck-bg: var(--gv-paper);
+  --ck-paper: var(--gv-inset);
+  --ck-card: var(--gv-card);
+  --ck-hairline: var(--gv-hair);
+  --ck-line-medium: var(--gv-line);
+  --ck-title: var(--gv-ink);
+  --ck-body: var(--gv-mid);
+  --ck-muted: var(--gv-quiet);
+  --ck-label: var(--gv-quiet);
+  --ck-tint: var(--gv-go);
+  --ck-tint-soft: var(--gv-sage);
+  --ck-blue: var(--gv-skyInk);
+  --ck-gold: var(--gv-apricotInk);
+  --ck-navy: var(--gv-ink);
+  --ck-danger: var(--gv-down);
+  --ck-success: var(--gv-up);
+  --ck-input-border: var(--gv-line);
+  --ck-scrim: rgba(28, 46, 41, 0.32);
 
-  /* status badge tokens (soft, washed — warm set) */
-  --badge-coral-bg: #fae5de;    --badge-coral-fg: #b4351f;
-  --badge-butter-bg: #faeeda;   --badge-butter-fg: #633806;
-  --badge-lavender-bg: #eeedfe; --badge-lavender-fg: #3c3489;
-  --badge-mist-bg: #efece5;     --badge-mist-fg: #5c554a;
+  --ck-ok-bg: var(--gv-upBg);   --ck-ok-fg: var(--gv-up);
+  --ck-warn-bg: var(--gv-rose); --ck-warn-fg: var(--gv-roseInk);
+  --ck-pill-ok-bg: var(--gv-upBg);   --ck-pill-ok-ink: var(--gv-up);
+  --ck-pill-warn-bg: var(--gv-rose); --ck-pill-warn-ink: var(--gv-roseInk);
 
-  /* pastel tile tints → the approved avatar/tile family */
-  --tint-sky-bg: #e6eef6;    --tint-sky-fg: #213a4e;
-  --tint-lilac-bg: #eeedfe;  --tint-lilac-fg: #3c3489;
-  --tint-mint-bg: #e1f5ee;   --tint-mint-fg: #085041;
-  --tint-cream-bg: #faeeda;  --tint-cream-fg: #633806;
-  --tint-peach-bg: #fbeaf0;  --tint-peach-fg: #72243e;
-  --tint-rose-bg: #fae5de;   --tint-rose-fg: #b4351f;
+  --badge-coral-bg: var(--gv-rose);        --badge-coral-fg: var(--gv-roseInk);
+  --badge-butter-bg: var(--gv-yellow);     --badge-butter-fg: var(--gv-yellowInk);
+  --badge-lavender-bg: var(--gv-lavender); --badge-lavender-fg: var(--gv-lavenderInk);
+  --badge-mist-bg: var(--gv-inset);        --badge-mist-fg: var(--gv-mid);
 
-  /* dark card (hero / next appointment) — ink with a light pill */
-  --ck-ink: #232b36;
+  --tint-sky-bg: var(--gv-sky);       --tint-sky-fg: var(--gv-skyInk);
+  --tint-lilac-bg: var(--gv-plum);    --tint-lilac-fg: var(--gv-plumInk);
+  --tint-mint-bg: var(--gv-mint);     --tint-mint-fg: var(--gv-mintInk);
+  --tint-cream-bg: var(--gv-apricot); --tint-cream-fg: var(--gv-apricotInk);
+  --tint-peach-bg: var(--gv-lavender);--tint-peach-fg: var(--gv-lavenderInk);
+  --tint-rose-bg: var(--gv-rose);     --tint-rose-fg: var(--gv-roseInk);
+
+  /* the "dark" focal card is forest now (Emitly's primary is a deep teal) */
+  --ck-ink: var(--gv-go);
   --ck-ink-text: #ffffff;
-  --ck-ink-sub: #aeb6c2;
-  --ck-ink-pill: #f7f5f0;
-  --ck-ink-pill-text: #232b36;
+  --ck-ink-sub: rgba(255, 255, 255, 0.72);
+  --ck-ink-pill: var(--gv-lime);
+  --ck-ink-pill-text: var(--gv-ink);
 
-  /* cash flow bars */
-  --ck-bar-in: #a9c283;
-  --ck-bar-out: #e0a48c;
+  /* cash flow bars: money in = forest, money out = coral */
+  --ck-bar-in: #8FBF9F;
+  --ck-bar-out: var(--gv-coral);
 
-  /* radii */
-  --ck-radius-card: 20px;
-  --ck-radius-input: 12px;
-  --ck-radius-sheet: 28px;
+  --ck-radius-card: var(--gv-r-card);
+  --ck-radius-input: var(--gv-r-btn);
+  --ck-radius-sheet: var(--gv-r-sheet);
 
-  /* Ionic core mappings */
-  --ion-background-color: var(--ck-bg);
-  --ion-text-color: var(--ck-title);
-  --ion-font-family: "Inter", "Geist", system-ui, sans-serif;
-  --ion-toolbar-background: var(--ck-bg);
-  --ion-item-background: var(--ck-card);
+  /* ── Ionic core ── */
+  --ion-background-color: var(--gv-paper);
+  --ion-text-color: var(--gv-ink);
+  --ion-font-family: var(--gv-font);
+  --ion-toolbar-background: var(--gv-paper);
+  --ion-item-background: var(--gv-card);
   --ion-backdrop-color: var(--ck-scrim);
 
-  --ion-color-primary: #c2531f;
-  --ion-color-primary-rgb: 194, 83, 31;
+  --ion-color-primary: #2E5146;
+  --ion-color-primary-rgb: 46, 81, 70;
   --ion-color-primary-contrast: #ffffff;
-  --ion-color-primary-shade: #a8431a;
-  --ion-color-primary-tint: #d0693a;
+  --ion-color-primary-shade: #214948;
+  --ion-color-primary-tint: #3E6457;
 
   --ion-transition-duration: 340ms;
 }
 
-/* Dark scheme intentionally identical — the app is light-only (lib/theme.ts
-   forces html.light). Kept so a stray .dark class can't invert anything. */
-html.dark {
-  --ck-bg: #f7f5f0;
-}
+/* Light-only (lib/theme.ts forces html.light). Kept so a stray .dark
+   class can't invert anything. */
+html.dark { --ck-bg: var(--gv-paper); }
 
-/* Modal sheets: rounded top, card surface, never the default white slab.
-   Force full container width so Ionic's desktop "card" sizing (keyed off the
-   real viewport, not our phone frame) can't shrink/offset the sheet. */
+/* Sheets: rounded top, white, never the default slab. Full width so
+   Ionic's desktop "card" sizing can't shrink the sheet inside the frame. */
 ion-modal {
-  --background: var(--ck-card);
-  --border-radius: var(--ck-radius-sheet);
+  --background: var(--gv-card);
+  --border-radius: var(--gv-r-sheet);
   --backdrop-opacity: 1;
   --width: 100%;
   --max-width: 100%;
 }
-
-ion-modal::part(handle) {
-  background: var(--ck-hairline);
-  width: 40px;
-}
+ion-modal::part(handle) { background: var(--gv-line); width: 40px; }

@@ -4,13 +4,18 @@ import { Plus } from "@phosphor-icons/react";
 import { useAppData } from "@/lib/appData";
 import { useUI } from "@/lib/ui";
 import { money } from "@/lib/format";
-import { Header } from "@/components/Header";
-import { tintVars, type TintName } from "@/components/Tint";
-import { TabPills } from "@/components/TabPills";
+import type { Payment } from "@/lib/types";
+import { Strip, Chips, Empty } from "@/components/gv";
 import { PaymentRow } from "@/components/PaymentRow";
-import { EmptyState } from "@/components/EmptyState";
 
 type PStatus = "all" | "overdue" | "due" | "paid";
+
+/** `money`, compacted above $10k so three cells fit a 320 strip. */
+const fmt = (n: number) => {
+  if (n < 10000) return money(n);
+  const k = n / 1000;
+  return `$${Number.isInteger(k) ? k : k.toFixed(1)}k`;
+};
 
 export function PaymentsPage() {
   const router = useIonRouter();
@@ -23,57 +28,55 @@ export function PaymentsPage() {
   const billed = payments.reduce((s, p) => s + p.amount, 0);
   const collected = payments.filter((p) => p.status === "paid").reduce((s, p) => s + p.amount, 0);
   const overdue = payments.filter((p) => p.status === "overdue").reduce((s, p) => s + p.amount, 0);
+  const count = (s: Payment["status"]) => payments.filter((p) => p.status === s).length;
 
-  const tabs = [
-    { key: "all", label: "All" },
-    { key: "overdue", label: "Overdue" },
-    { key: "due", label: "Due" },
-    { key: "paid", label: "Paid" },
+  const chips: { key: PStatus; label: string; count: number }[] = [
+    { key: "all", label: "All", count: payments.length },
+    { key: "overdue", label: "Overdue", count: count("overdue") },
+    { key: "due", label: "Due", count: count("due") },
+    { key: "paid", label: "Paid", count: count("paid") },
   ];
 
   return (
     <IonPage>
-      <IonContent style={{ "--background": "var(--ck-bg)" } as React.CSSProperties}>
-        <div style={{ paddingTop: "calc(env(safe-area-inset-top) + 8px)" }}>
-          <Header title="Payments" subtitle="your recent billing" />
+      <IonContent>
+        <div style={{ padding: "calc(env(safe-area-inset-top) + 18px) 16px 0" }}>
+          <h1 className="gv-h1">Payments</h1>
+          <div className="gv-meta" style={{ marginTop: 4 }}>Your recent billing</div>
 
-          {/* month summary */}
-          <div style={{ display: "flex", gap: 12, padding: "4px 16px 12px" }}>
-            <Sum value={money(billed)} label="Billed" tint="sky" />
-            <Sum value={money(collected)} label="Collected" tint="mint" />
-            <Sum value={money(overdue)} label="Overdue" tint="rose" />
+          {/* the one stat strip */}
+          <div style={{ marginTop: 16 }}>
+            <Strip
+              i={0}
+              stats={[
+                { label: "Billed", value: billed, fmt },
+                { label: "Collected", value: collected, fmt },
+                { label: "Overdue", value: overdue, fmt, warn: overdue > 0 },
+              ]}
+            />
           </div>
 
-          <div style={{ padding: "2px 16px 10px" }}><TabPills tabs={tabs} active={tab} onChange={(k) => setTab(k as PStatus)} /></div>
+          <div style={{ marginTop: 14 }}><Chips items={chips} active={tab} onChange={setTab} /></div>
         </div>
 
-        <div style={{ padding: "4px 16px 120px", display: "flex", flexDirection: "column", gap: 10, minHeight: "40vh" }}>
+        <div style={{ padding: "12px 16px 120px", display: "flex", flexDirection: "column", gap: 10, minHeight: "40vh" }}>
           {rows.length === 0 ? (
-            <EmptyState stageColor="#3F7355" message="No billing in this bucket." buttonLabel="Add billing" onAdd={() => openCapture("add")} />
+            <Empty action="Add billing" onAction={() => openCapture("add")}>No billing in this bucket.</Empty>
           ) : (
-            rows.map((p) => <PaymentRow key={p.id} payment={p} onOpen={() => router.push(`/family/${p.familyId}`)} />)
+            rows.map((p, k) => <PaymentRow key={p.id} payment={p} i={k + 1} onOpen={() => router.push(`/family/${p.familyId}`)} />)
           )}
         </div>
 
-        {/* Add billing FAB */}
+        {/* Add billing — the one forest primary on this screen, bottom-right so it clears the raised Ask button */}
         <button
           aria-label="Add billing"
+          className="gv-btn"
           onClick={() => openCapture("add")}
-          style={{ position: "absolute", right: 16, bottom: "calc(24px + env(safe-area-inset-bottom))", height: 52, padding: "0 20px", borderRadius: 999, border: "none", cursor: "pointer", backgroundColor: "var(--ck-tint)", color: "#fff", fontSize: 15, fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 8, boxShadow: "0 6px 16px rgba(15,23,42,.18)" }}
+          style={{ position: "absolute", right: 16, bottom: "calc(36px + env(safe-area-inset-bottom))", borderRadius: 999, zIndex: 5 }}
         >
           <Plus size={20} weight="bold" /> Add billing
         </button>
       </IonContent>
     </IonPage>
-  );
-}
-
-function Sum({ value, label, tint }: { value: string; label: string; tint: TintName }) {
-  const t = tintVars(tint);
-  return (
-    <div style={{ flex: 1, minWidth: 0, backgroundColor: t.bg, borderRadius: 18, padding: "14px 13px" }}>
-      <div className="tnum" style={{ fontSize: 19, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--ck-title)" }}>{value}</div>
-      <div style={{ fontSize: 11, fontWeight: 600, color: t.fg, marginTop: 3 }}>{label}</div>
-    </div>
   );
 }

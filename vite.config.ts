@@ -14,6 +14,7 @@ export default defineConfig({
     // rewrite, dev proxies here, native Capacitor calls it directly).
     proxy: {
       "/api/mobile": { target: "https://ck-crm.vercel.app", changeOrigin: true },
+      "/api/portal": { target: "https://crm.collectivekindness.net", changeOrigin: true },
     },
   },
 });

@@ -4,18 +4,20 @@ import {
   useIonViewDidEnter, useIonViewWillLeave, type RefresherEventDetail,
 } from "@ionic/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Warning, CaretRight, Plus } from "@phosphor-icons/react";
+import { CaretRight, Plus } from "@phosphor-icons/react";
 import { fetchChats, type ChatListItem, type StartableChat } from "@/lib/mobileApi";
 import { useAuth } from "@/lib/auth";
 import { relTime } from "@/lib/time";
-import { Avatar } from "@/components/Avatar";
 import { SkeletonCard } from "@/components/Skeleton";
+import { Av, Card, Empty, Eyebrow, Pill, Row } from "@/components/gv";
 
 /**
  * Chats tab — the per-family Family Experts Chat threads, scoped to the
- * signed-in provider. Alert threads (a ⚠ message) pin on top with a
- * coral tint, mirroring the desktop /chats behavior. Polls every 30s
- * while the tab is visible.
+ * signed-in provider. One white card of rows: square initials, family
+ * name, the last message on one quiet line, and on the right the time,
+ * an unread count (forest pill) and an alert (rose pill). Alert threads
+ * pin on top, mirroring the desktop /chats. Polls every 30s while the
+ * tab is visible.
  */
 export function ChatsPage() {
   const router = useIonRouter();
@@ -44,48 +46,46 @@ export function ChatsPage() {
 
   const open = (recId: string) => router.push(`/chat/${recId}`);
 
+  const meta = [
+    "Family Experts Chats for your families.",
+    unreadTotal > 0 ? `${unreadTotal} unread` : null,
+  ].filter(Boolean).join(" · ");
+
   return (
     <IonPage>
-      <IonContent style={{ "--background": "var(--ck-bg)" } as React.CSSProperties}>
+      <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
         <IonRefresher slot="fixed" onIonRefresh={refresh}><IonRefresherContent /></IonRefresher>
 
-        <div style={{ paddingTop: "calc(env(safe-area-inset-top) + 14px)", padding: "calc(env(safe-area-inset-top) + 14px) 16px 130px" }}>
-          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", padding: "0 2px" }}>
-            <h1 style={{ margin: 0, fontSize: 26, fontWeight: 700, letterSpacing: "-0.025em", color: "var(--ck-title)" }}>Chats</h1>
-            {unreadTotal > 0 && (
-              <span className="tnum" style={{ fontSize: 12.5, fontWeight: 700, color: "var(--ck-tint)" }}>{unreadTotal} unread</span>
-            )}
+        <div style={{ padding: "calc(env(safe-area-inset-top) + 14px) 16px 130px" }}>
+          <div className="gv-rise" style={{ padding: "0 2px", ...({ "--i": 0 } as React.CSSProperties) }}>
+            <h1 className="gv-h1">Chats</h1>
+            <p className="gv-meta" style={{ margin: "5px 0 16px" }}>{meta}</p>
           </div>
-          <p style={{ margin: "3px 2px 16px", fontSize: 12.5, color: "var(--ck-body)" }}>Family Experts Chats for your families.</p>
 
           {q.isLoading ? (
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}><SkeletonCard /><SkeletonCard /><SkeletonCard /></div>
           ) : q.isError ? (
-            <Card>
-              <div style={{ padding: 16, fontSize: 13.5, color: "var(--ck-body)", lineHeight: 1.5 }}>
-                Could not load chats. This may be on us. Pull down to retry.
-              </div>
-            </Card>
+            <Empty>Could not load chats. This may be on us. Pull down to retry.</Empty>
           ) : chats.length === 0 ? (
-            <Card>
-              <div style={{ padding: 16, fontSize: 13.5, color: "var(--ck-body)", lineHeight: 1.5 }}>
-                No chats yet. Start one below and the family's whole care team joins automatically.
-              </div>
-            </Card>
+            <Empty>
+              {startable.length > 0
+                ? "No chats yet. Start one below and the family's whole care team joins automatically."
+                : "No chats yet. A chat opens for each family you work with."}
+            </Empty>
           ) : (
-            <Card>
-              {chats.map((c, i) => (
-                <ChatRow key={c.familyRecId} chat={c} first={i === 0} onOpen={() => open(c.familyRecId)} />
+            <Card i={1} style={{ padding: "2px 16px" }}>
+              {chats.map((c) => (
+                <ChatRow key={c.familyRecId} chat={c} onOpen={() => open(c.familyRecId)} />
               ))}
             </Card>
           )}
 
           {startable.length > 0 && (
             <>
-              <SectionLabel style={{ marginTop: 22 }}>START A CHAT</SectionLabel>
-              <Card>
-                {startable.map((s, i) => (
-                  <StartRow key={s.familyRecId} item={s} first={i === 0} onOpen={() => open(s.familyRecId)} />
+              <Eyebrow style={{ marginTop: 24 }}>Start a chat</Eyebrow>
+              <Card i={2} style={{ padding: "2px 16px" }}>
+                {startable.map((s) => (
+                  <StartRow key={s.familyRecId} item={s} onOpen={() => open(s.familyRecId)} />
                 ))}
               </Card>
             </>
@@ -96,69 +96,39 @@ export function ChatsPage() {
   );
 }
 
-function ChatRow({ chat, first, onOpen }: { chat: ChatListItem; first: boolean; onOpen: () => void }) {
+function ChatRow({ chat, onOpen }: { chat: ChatListItem; onOpen: () => void }) {
   const last = chat.lastMessage;
+  const preview = last
+    ? `${last.author ? `${last.author}: ` : ""}${last.body}`
+    : "No messages yet";
   return (
-    <button
-      onClick={onOpen}
-      style={{
-        width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "13px 14px",
-        background: chat.alert ? "rgba(180,53,31,0.05)" : "none",
-        border: "none", borderTop: first ? "none" : "1px solid var(--ck-hairline)",
-        cursor: "pointer", textAlign: "left",
-      }}
-    >
-      <div style={{ position: "relative", flexShrink: 0 }}>
-        <Avatar name={chat.title} size={44} />
-        {chat.alert && (
-          <span style={{ position: "absolute", top: -4, right: -4, width: 20, height: 20, borderRadius: 999, background: "var(--ck-warn-bg)", border: "2px solid var(--ck-card)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Warning size={11} weight="fill" color="var(--ck-danger)" />
+    <Row onClick={onOpen} style={{ padding: "13px 0" }}>
+      <Av name={chat.title} size={44} />
+      <span className="t">
+        <b>{chat.title}</b>
+        <span style={{ color: chat.unread ? "var(--gv-text)" : "var(--gv-quiet)", fontWeight: chat.unread ? 600 : 400 }}>{preview}</span>
+      </span>
+      <span style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4, flex: "none" }}>
+        <span className="gv-meta tnum" style={{ fontSize: 12 }}>{relTime(last?.at)}</span>
+        {(chat.unread > 0 || chat.alert) && (
+          <span style={{ display: "flex", gap: 4 }}>
+            {chat.alert && <Pill tint="rose" sm>Alert</Pill>}
+            {chat.unread > 0 && <Pill tint="go" sm><span className="tnum">{chat.unread}</span></Pill>}
           </span>
         )}
-      </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-          <span style={{ flex: 1, minWidth: 0, fontSize: 14.5, fontWeight: chat.unread ? 700 : 600, color: "var(--ck-title)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            {chat.title}
-          </span>
-          <span className="tnum" style={{ flexShrink: 0, fontSize: 11.5, fontWeight: 600, color: chat.unread ? "var(--ck-tint)" : "var(--ck-muted)" }}>
-            {relTime(last?.at)}
-          </span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 3 }}>
-          <span style={{ flex: 1, minWidth: 0, fontSize: 12.5, color: chat.unread ? "var(--ck-title)" : "var(--ck-body)", fontWeight: chat.unread ? 550 : 400, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            {last ? <>{last.author ? <b style={{ fontWeight: 600 }}>{last.author}: </b> : null}{last.body}</> : "No messages yet"}
-          </span>
-          {chat.unread > 0 && (
-            <span className="tnum" style={{ flexShrink: 0, minWidth: 20, height: 20, padding: "0 6px", borderRadius: 999, background: "var(--ck-tint)", color: "#fff", fontSize: 11.5, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              {chat.unread}
-            </span>
-          )}
-        </div>
-      </div>
-    </button>
-  );
-}
-
-function StartRow({ item, first, onOpen }: { item: StartableChat; first: boolean; onOpen: () => void }) {
-  return (
-    <button
-      onClick={onOpen}
-      style={{ width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", background: "none", border: "none", borderTop: first ? "none" : "1px solid var(--ck-hairline)", cursor: "pointer", textAlign: "left" }}
-    >
-      <span style={{ width: 36, height: 36, borderRadius: 999, background: "var(--ck-tint-soft)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-        <Plus size={16} weight="bold" color="var(--ck-tint)" />
       </span>
-      <span style={{ flex: 1, minWidth: 0, fontSize: 14, fontWeight: 600, color: "var(--ck-title)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.name}</span>
-      <CaretRight size={16} weight="bold" color="var(--ck-muted)" style={{ opacity: 0.6, flexShrink: 0 }} />
-    </button>
+    </Row>
   );
 }
 
-function Card({ children }: { children: React.ReactNode }) {
-  return <div className="shadow-card" style={{ background: "var(--ck-card)", border: "1px solid var(--ck-hairline)", borderRadius: 20, overflow: "hidden" }}>{children}</div>;
-}
-
-function SectionLabel({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
-  return <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.09em", color: "var(--ck-label)", margin: "0 2px 10px", ...style }}>{children}</div>;
+function StartRow({ item, onOpen }: { item: StartableChat; onOpen: () => void }) {
+  return (
+    <Row onClick={onOpen} style={{ padding: "11px 0" }}>
+      <span className="gv-tile" style={{ background: "var(--gv-inset)", color: "var(--gv-go)" }}>
+        <Plus size={16} weight="bold" />
+      </span>
+      <span className="t"><b style={{ fontWeight: 600 }}>{item.name}</b></span>
+      <CaretRight size={16} weight="bold" color="var(--gv-quiet)" style={{ flex: "none" }} />
+    </Row>
+  );
 }

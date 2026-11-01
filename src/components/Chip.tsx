@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
 
 /**
- * Lightfield "signal" chip: white surface, hairline border, ink text, fully
- * rounded. Used for tags / labels / facts (the outlined pills in the reference
- * UI). Distinct from Pill.tsx, which is a soft-fill status pill. Optional
- * leading icon or colored dot.
+ * Quiet fact chip: inset fill (#F4F6F2), mid ink, radius 8 — never
+ * bordered (bordered chips are forbidden in the Grove look). Used for tags /
+ * labels / facts. Distinct from Pill.tsx, which carries a pastel status tone.
+ * Optional leading icon or coloured dot.
  */
 interface Props {
   label: string;
@@ -19,19 +19,17 @@ export function Chip({ label, icon, dot }: Props) {
         display: "inline-flex",
         alignItems: "center",
         gap: 6,
-        backgroundColor: "var(--ck-card)",
-        border: "1px solid var(--ck-hairline)",
-        color: "var(--ck-body)",
-        padding: icon || dot ? "4px 11px 4px 9px" : "4px 11px",
-        borderRadius: 999,
-        fontSize: 12.5,
-        lineHeight: "16px",
-        fontWeight: 500,
+        height: 24,
+        background: "var(--gv-inset)",
+        color: "var(--gv-mid)",
+        padding: icon || dot ? "0 9px 0 8px" : "0 9px",
+        borderRadius: "var(--gv-r-pill)",
+        fontSize: 12,
+        fontWeight: 600,
         whiteSpace: "nowrap",
-        letterSpacing: "-0.005em",
       }}
     >
-      {dot && <span style={{ width: 6, height: 6, borderRadius: 999, backgroundColor: dot, flexShrink: 0 }} />}
+      {dot && <span style={{ width: 6, height: 6, borderRadius: 999, background: dot, flexShrink: 0 }} />}
       {icon}
       {label}
     </span>

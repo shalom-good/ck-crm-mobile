@@ -5,6 +5,7 @@
   "outputDirectory": "dist",
   "rewrites": [
     { "source": "/api/mobile/:path*", "destination": "https://ck-crm.vercel.app/api/mobile/:path*" },
+    { "source": "/api/portal/:path*", "destination": "https://crm.collectivekindness.net/api/portal/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
