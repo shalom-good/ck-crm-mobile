@@ -20,7 +20,7 @@ import { DesignPage } from "@/pages/DesignPage";
 import { StartPage } from "@/pages/StartPage";
 import { FamilyCodePage } from "@/pages/FamilyCodePage";
 import { TeamLoginPage } from "@/pages/TeamLoginPage";
-import { FamilyHomePage } from "@/pages/FamilyHomePage";
+import { FamilyTabs } from "@/pages/family/FamilyTabs";
 import { ChatsPage } from "@/pages/ChatsPage";
 import { ChatThreadPage } from "@/pages/ChatThreadPage";
 import { AISheet } from "@/components/AISheet";
@@ -134,7 +134,7 @@ export function App() {
   const team = status === "signedIn" && kind === "team";
   const family = status === "signedIn" && kind === "family";
   // Where a signed-in person belongs; signed-out people start at /start.
-  const home = team ? "/tabs/home" : family ? "/home" : "/start";
+  const home = team ? "/tabs/home" : family ? "/fam/home" : "/start";
 
   return (
     <IonApp>
@@ -147,7 +147,8 @@ export function App() {
           <Route exact path="/login"><Redirect to={status === "signedIn" ? home : "/start/team"} /></Route>
 
           {/* family world */}
-          <Route exact path="/home" render={() => (family ? <FamilyHomePage /> : <Redirect to={home} />)} />
+          <Route path="/fam" render={() => (family ? <FamilyTabs /> : <Redirect to={home} />)} />
+          <Route exact path="/home"><Redirect to={home} /></Route>
 
           {/* team world */}
           <Route exact path="/family/:id" render={() => (team ? <FamilyDetailPage /> : <Redirect to={home} />)} />

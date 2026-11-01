@@ -58,3 +58,39 @@ export async function fetchPortalHome(): Promise<PortalHome> {
 export async function setHomeworkDone(id: string, done: boolean): Promise<{ id: string; text: string; done: boolean }> {
   return portal(`/homework/${encodeURIComponent(id)}`, { method: "PATCH", body: JSON.stringify({ done }) });
 }
+
+// ── success plan (GET /success-plan, POST /success-plan/sign) ────────
+
+export async function fetchSuccessPlan(): Promise<PortalHome> {
+  return portal<PortalHome>("/success-plan");
+}
+
+/** One signer signs: typed full name + the consent checkbox (agreed). */
+export async function signSuccessPlan(name: string): Promise<PortalHome> {
+  return portal<PortalHome>("/success-plan/sign", { method: "POST", body: JSON.stringify({ name, agreed: true }) });
+}
+
+// ── budget (GET /budget; 404 when the builder is off or not started) ──
+
+export async function fetchBudget(): Promise<PortalHome | null> {
+  try {
+    return await portal<PortalHome>("/budget");
+  } catch (e) {
+    if ((e as ApiError)?.status === 404) return null;
+    throw e;
+  }
+}
+
+// ── CK Academy progress ──────────────────────────────────────────────
+
+export interface AcademyProgress { watched: number[]; allDone: boolean }
+
+export async function fetchAcademyProgress(): Promise<AcademyProgress> {
+  const d = await portal<Partial<AcademyProgress>>("/academy-progress");
+  return { watched: Array.isArray(d?.watched) ? d.watched.map(Number) : [], allDone: !!d?.allDone };
+}
+
+export async function markLessonWatched(lessonId: number): Promise<AcademyProgress> {
+  const d = await portal<Partial<AcademyProgress>>("/academy-progress", { method: "POST", body: JSON.stringify({ lessonId, pct: 1, ended: true }) });
+  return { watched: Array.isArray(d?.watched) ? d.watched.map(Number) : [], allDone: !!d?.allDone };
+}

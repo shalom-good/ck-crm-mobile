@@ -57,7 +57,7 @@ export function FamilyHomePage() {
     <IonPage>
       <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
         <IonRefresher slot="fixed" onIonRefresh={refresh}><IonRefresherContent /></IonRefresher>
-        <div style={{ padding: "calc(env(safe-area-inset-top) + 14px) 16px calc(40px + env(safe-area-inset-bottom))" }}>
+        <div style={{ padding: "calc(env(safe-area-inset-top) + 14px) 16px 110px" }}>
           {/* top bar */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
             <img src="/ck-logo.png" alt="Collective Kindness" style={{ width: 128, height: "auto" }} />
@@ -104,6 +104,7 @@ function Loading() {
 
 function Body({ d }: { d: PortalHome }) {
   const qc = useQueryClient();
+  const router = useIonRouter();
   const gate: Raw | null = d.interviewGate || null;
   const next: Raw | null = d.nextStep || null;
   const journey: Raw = d.journey || {};
@@ -182,11 +183,9 @@ function Body({ d }: { d: PortalHome }) {
             {next.calendly && <Btn href={next.calendly} ghost={!!next.whatsapp} style={{ flex: 1 }}><CalendarBlank size={18} weight="bold" /> Book a time</Btn>}
             {next.kind === "book" && sessions.bookUrl && <Btn href={sessions.bookUrl} style={{ flex: 1 }}><CalendarBlank size={18} weight="bold" /> Book a session</Btn>}
             {(next.kind === "review_plan" || next.kind === "sign") && (
-              <>
-                {d.plan?.docUrl && <Btn href={d.plan.docUrl} ghost style={{ flex: 1 }}><FileText size={18} weight="bold" /> Read the plan</Btn>}
-                <Btn href={`${PORTAL_WEB_URL}/login`} style={{ flex: 1 }}>{next.kind === "sign" ? "Sign in the portal" : "Open the portal"}</Btn>
-              </>
+              <Btn onClick={() => router.push("/fam/plan")} style={{ flex: 1 }}><FileText size={18} weight="bold" /> {next.kind === "sign" ? "Read and sign the plan" : "Read the plan"}</Btn>
             )}
+            {next.kind === "homework" && <Btn ghost onClick={() => document.getElementById("fam-homework")?.scrollIntoView({ behavior: "smooth", block: "start" })} style={{ flex: 1 }}>See the homework</Btn>}
           </div>
         </Card>
       )}
@@ -315,7 +314,7 @@ function Body({ d }: { d: PortalHome }) {
           {/* ── homework ── */}
           {homework.length > 0 && (
             <>
-              <Eyebrow right={openHw ? `${openHw} open` : "All done"}>Homework</Eyebrow>
+              <div id="fam-homework" /><Eyebrow right={openHw ? `${openHw} open` : "All done"}>Homework</Eyebrow>
               <Card i={i++}>
                 {homework.map((h) => (
                   <Row key={h.id} onClick={() => void toggle(h)}>
