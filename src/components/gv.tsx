@@ -190,11 +190,14 @@ export function Empty({ children, action, onAction }: { children: ReactNode; act
   );
 }
 
-/* ── line drawings (2.4px ink strokes, lime / coral flat fills) ── */
+/* ── line drawings (2.4px ink strokes, lime / coral flat fills) ──
+   `strokeWidth` is in viewBox units: pass a larger one when a drawing is
+   rendered small (a 60px door art) so the ink stays ~1.3px on screen.
+   `still` drops the slow float for drawings that sit inside a row. */
 
-export function HouseArt({ width = 220 }: { width?: number }) {
+export function HouseArt({ width = 220, strokeWidth = 2.4, still }: { width?: number; strokeWidth?: number; still?: boolean }) {
   return (
-    <svg className="gv-draw gv-float" width={width} viewBox="0 0 320 220" fill="none" stroke="#1C2E29" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <svg className={`gv-draw${still ? "" : " gv-float"}`} width={width} viewBox="0 0 320 220" fill="none" stroke="#1C2E29" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
       <line x1="20" y1="200" x2="300" y2="200" stroke="#86928C" />
       <path d="M70 200V112l90-62 90 62v88" />
       <rect x="140" y="140" width="40" height="60" rx="4" />
@@ -234,6 +237,48 @@ export function CalendarArt({ width = 200 }: { width?: number }) {
       <rect className="fill" x="104" y="100" width="52" height="40" rx="10" fill="#D7F36E" stroke="none" />
       <path d="M118 120l9 9 17-19" stroke="#2E5146" />
       <circle cx="70" cy="110" r="4" /><circle cx="190" cy="110" r="4" /><circle cx="70" cy="150" r="4" /><circle cx="190" cy="150" r="4" stroke="#E8714F" />
+    </svg>
+  );
+}
+
+/** An open hand holding a small plant: the donor door. One lime leaf. */
+export function GiftArt({ width = 160, strokeWidth = 2.4 }: { width?: number; strokeWidth?: number }) {
+  return (
+    <svg className="gv-draw" width={width} viewBox="0 0 200 200" fill="none" stroke="#1C2E29" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      {/* wrist edges running off the left */}
+      <path d="M12 136l30-10" />
+      <path d="M12 180l38 2" />
+      {/* palm bottom, curling fingers, the raised index finger */}
+      <path d="M50 182c24 2 52 6 80 4 26-2 40-16 42-32l6-28c2-10-12-14-16-4l-12 26" />
+      <path d="M150 148c-4 12-14 20-26 22" />
+      <path d="M142 162c-4 8-10 12-18 14" />
+      {/* thumb lying across the palm, under the plant */}
+      <path d="M42 126c6-16 24-18 36-6l30 24" />
+      {/* the plant */}
+      <line x1="108" y1="146" x2="108" y2="84" stroke="#2E5146" />
+      <path d="M108 126c-20 0-32-12-32-28 18 0 32 10 32 28z" stroke="#2E5146" />
+      <path className="fill" d="M108 112c0-18 12-30 30-30 0 18-12 30-30 30z" fill="#D7F36E" stroke="none" />
+      <path d="M108 112c0-18 12-30 30-30 0 18-12 30-30 30z" stroke="#B9D44A" />
+    </svg>
+  );
+}
+
+/** An open book with a lime bookmark: the CK Academy door. */
+export function BookArt({ width = 160, strokeWidth = 2.4 }: { width?: number; strokeWidth?: number }) {
+  return (
+    <svg className="gv-draw" width={width} viewBox="0 0 200 200" fill="none" stroke="#1C2E29" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <line x1="20" y1="176" x2="180" y2="176" stroke="#86928C" />
+      {/* two pages meeting at the spine, cover underneath */}
+      <path d="M100 150c-16-12-42-16-70-10V60c28-6 54-2 70 10z" />
+      <path d="M100 150c16-12 42-16 70-10V60c-28-6-54-2-70 10z" />
+      <line x1="100" y1="70" x2="100" y2="150" />
+      <path d="M30 140l-4 10c28-6 56-2 74 12 18-14 46-18 74-12l-4-10" stroke="#2E5146" />
+      {/* lines of text */}
+      <path d="M44 84c14-4 28-4 42 2" /><path d="M44 102c14-4 28-4 42 2" /><path d="M44 120c14-4 28-4 42 2" />
+      <path d="M114 124c14-6 28-6 42-2" />
+      {/* the bookmark */}
+      <path className="fill" d="M128 60v44l12-9 12 9V58z" fill="#D7F36E" stroke="none" />
+      <path d="M128 60v44l12-9 12 9V58" stroke="#B9D44A" />
     </svg>
   );
 }

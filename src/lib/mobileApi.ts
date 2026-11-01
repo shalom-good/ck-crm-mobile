@@ -29,6 +29,14 @@ export const CRM_HOST = "https://crm.collectivekindness.net";
  *  that lands, the Vercel deployment serves the team routes. Flip this to
  *  CRM_HOST once the branch is on main. */
 export const MOBILE_HOST = "https://ck-crm.vercel.app";
+/** The donor impact portal (sign-in at /donor/login with an email code).
+ *  It lives on the web for now: the app's donor door opens it outside
+ *  the app (lib/external) rather than calling it. */
+export const DONOR_HOST = "https://crm.collectivekindness.net";
+export const DONOR_PORTAL_URL = `${DONOR_HOST}/donor`;
+/** Public web addresses the start screen opens outside the app. */
+export const ACADEMY_URL = "https://ck-academy.vercel.app";
+export const GIVE_URL = "https://collectivekindness.net/give";
 export const isNativeShell = typeof window !== "undefined" && window.location.protocol === "capacitor:";
 export const API_BASE = isNativeShell || (import.meta as any).env?.VITE_API_DIRECT === "1"
   ? `${MOBILE_HOST}/api/mobile`

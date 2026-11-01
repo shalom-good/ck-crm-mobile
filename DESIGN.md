@@ -67,11 +67,31 @@ on a pastel, 12px corners for families, round for people.
 
 `Card`, `Eyebrow`, `CardTitle`, `Pill`, `Btn`, `Strip`, `CountUp`, `Bars`,
 `Track`, `Av`, `Row`, `Evt`, `Chips`, `Empty`, and the drawings `HouseArt`,
-`TeamArt`, `CalendarArt`, `PlantArt`. Older components still read the
-`--ck-*` names, which are remapped onto the Grove tokens.
+`TeamArt`, `CalendarArt`, `PlantArt`, `GiftArt`, `BookArt`. Older components
+still read the `--ck-*` names, which are remapped onto the Grove tokens.
 
 ## Shell
 
-Start screen (`/start`) → family code (`/start/family`) or team sign-in
-(`/start/team`). Team: five tabs (Home, Families, Ask, Chats, Resources)
-with a raised forest Ask button. Family: the portal home in the app.
+Start screen (`/start`) → family code (`/start/family`), the donor door
+(`/start/donor`) or team sign-in (`/start/team`). Team: five tabs (Home,
+Families, Ask, Chats, Resources) with a raised forest Ask button. Family:
+the portal home in the app.
+
+## Start screen doors
+
+Logged out, the start screen is three white `.gv-card` rows under the
+lockup, each a line drawing on the left, a 16/800 title, a 13px mid
+subline and a chevron, rising in with the `--i` stagger:
+
+- **I'm a CK family** (`HouseArt`) → `/start/family`, the 7-letter code.
+- **I'm a donor** (`GiftArt`, a hand holding a plant) → `/start/donor`, a
+  short page that says the donor portal lives on the web for now and opens
+  `DONOR_HOST/donor` in the system browser (email + six-digit code there).
+- **CK Academy** (`BookArt`) → `ACADEMY_URL` in the system browser.
+
+Below the doors sits the screen's one forest button, **Donate**
+(`GIVE_URL`, system browser). At the foot a quiet 13px text link, **Team
+sign-in** → `/start/team`, then the quote of the day. No red, no badges,
+nothing urgent. Outside links go through `lib/external` (`Browser.open`
+when native, a new tab on the web). Door drawings render at ~60px, so they
+take a larger `strokeWidth` to keep the ink at about 1.3px on screen.
