@@ -1,15 +1,17 @@
-import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton } from "@ionic/react";
-import { ArrowSquareOut } from "@phosphor-icons/react";
+import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton, useIonRouter } from "@ionic/react";
+import { ArrowSquareOut, CaretRight } from "@phosphor-icons/react";
 import { GiftArt } from "@/components/gv";
-import { DONOR_PORTAL_URL } from "@/lib/mobileApi";
+import { GIVE_URL } from "@/lib/mobileApi";
 import { openExternal } from "@/lib/external";
 
 /**
- * The donor door. The donor impact portal lives in the CRM on the web
- * (DONOR_HOST/donor, sign-in by email code), so this page says so in one
- * breath and hands the person over to the system browser.
+ * The donor door (Shalom 2026-11-01). Adopt a family lives right here in
+ * the app (an embedded view of the CRM page, with its own donor sign-in by
+ * email code or Google); a plain gift still opens the Give page in the
+ * browser.
  */
 export function DonorStartPage() {
+  const router = useIonRouter();
   return (
     <IonPage>
       <IonHeader className="ion-no-border">
@@ -23,17 +25,21 @@ export function DonorStartPage() {
             <GiftArt width={164} />
           </div>
 
-          <h1 className="gv-h1 gv-rise" style={{ "--i": 1, marginTop: 22 } as React.CSSProperties}>Your donor portal lives on the web for now</h1>
+          <h1 className="gv-h1 gv-rise" style={{ "--i": 1, marginTop: 22 } as React.CSSProperties}>Carry one family through their plan</h1>
           <p className="gv-sub gv-rise" style={{ "--i": 2, marginTop: 8 } as React.CSSProperties}>
-            See the families your gifts reached and what changed for them. It opens in your browser.
+            Choose a city, see what it takes, and adopt a family. Monthly or once. You get a short note every month on how they are doing.
           </p>
 
-          <button className="gv-btn block gv-rise" style={{ "--i": 3, marginTop: 22 } as React.CSSProperties} onClick={() => void openExternal(DONOR_PORTAL_URL)}>
-            Open my donor portal <ArrowSquareOut size={18} />
+          <button className="gv-btn block gv-rise" style={{ "--i": 3, marginTop: 22 } as React.CSSProperties} onClick={() => router.push("/start/adopt")}>
+            Adopt a family <CaretRight size={18} />
           </button>
 
-          <p className="gv-rise" style={{ "--i": 4, margin: "14px 0 0", fontSize: 13, lineHeight: 1.5, color: "var(--gv-quiet)", textAlign: "center" } as React.CSSProperties}>
-            Sign in with the email you gave with. We send a six-digit code.
+          <button className="gv-btn ghost block gv-rise" style={{ "--i": 4, marginTop: 10 } as React.CSSProperties} onClick={() => void openExternal(GIVE_URL)}>
+            Make a gift instead <ArrowSquareOut size={16} />
+          </button>
+
+          <p className="gv-rise" style={{ "--i": 5, margin: "14px 0 0", fontSize: 13, lineHeight: 1.5, color: "var(--gv-quiet)", textAlign: "center" } as React.CSSProperties}>
+            Sign in with your email or Google to see the families you adopted. No password.
           </p>
         </div>
       </IonContent>

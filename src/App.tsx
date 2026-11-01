@@ -38,6 +38,7 @@ const AskPage = lazy(() => import("@/pages/AskPage").then((m) => ({ default: m.A
 const DesignPage = lazy(() => import("@/pages/DesignPage").then((m) => ({ default: m.DesignPage })));
 const FamilyTabs = lazy(() => import("@/pages/family/FamilyTabs").then((m) => ({ default: m.FamilyTabs })));
 const DonorStartPage = lazy(() => import("@/pages/DonorStartPage").then((m) => ({ default: m.DonorStartPage })));
+const AdoptPage = lazy(() => import("@/pages/AdoptPage").then((m) => ({ default: m.AdoptPage })));
 
 /** The quiet paper splash: while the session restores and while a route's
  *  chunk loads. Fills whatever positioned box it is rendered in. */
@@ -194,6 +195,9 @@ export function App() {
           <Route exact path="/start/family" render={() => (status === "signedIn" ? <Redirect to={home} /> : <FamilyCodePage />)} />
           <Route exact path="/start/team" render={() => (status === "signedIn" ? <Redirect to={home} /> : <TeamLoginPage />)} />
           <Route exact path="/start/donor" render={() => (status === "signedIn" ? <Redirect to={home} /> : <Lazy page={DonorStartPage} />)} />
+          {/* Adopt a family: open to anyone, signed in or not (the page carries its own donor sign-in). */}
+          <Route exact path="/start/adopt" render={() => <Lazy page={AdoptPage} />} />
+          <Route exact path="/adopt" render={() => <Lazy page={AdoptPage} />} />
           <Route exact path="/login"><Redirect to={status === "signedIn" ? home : "/start/team"} /></Route>
 
           {/* family world */}
