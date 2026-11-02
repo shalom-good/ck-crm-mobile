@@ -38,6 +38,9 @@ export const DONOR_PORTAL_URL = `${DONOR_HOST}/donor`;
 // The Academy course site (NEXT_PUBLIC_SITE_URL of the ck-academy repo). Swap for the public domain once it points at Vercel.
 export const ACADEMY_URL = "https://ck-academy-template.vercel.app";
 export const GIVE_URL = "https://collectivekindness.net/give";
+/** "Check your monthly number": the CRM's public /check page, opened in the
+ *  in-app browser. ?door=app tags its funnel events as coming from the app. */
+export const CHECK_URL = `${CRM_HOST}/check?door=app`;
 export const isNativeShell = typeof window !== "undefined" && window.location.protocol === "capacitor:";
 export const API_BASE = isNativeShell || (import.meta as any).env?.VITE_API_DIRECT === "1"
   ? `${MOBILE_HOST}/api/mobile`

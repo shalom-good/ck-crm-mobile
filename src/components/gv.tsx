@@ -260,6 +260,26 @@ export function GiftArt({ width = 160, strokeWidth = 2.4 }: { width?: number; st
   );
 }
 
+/** A small calculator with a lime "=" key: the "Check your monthly number" door. */
+export function CalcArt({ width = 160, strokeWidth = 2.4 }: { width?: number; strokeWidth?: number }) {
+  return (
+    <svg className="gv-draw" width={width} viewBox="0 0 200 200" fill="none" stroke="#1C2E29" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <line x1="20" y1="184" x2="180" y2="184" stroke="#86928C" />
+      {/* the body and its display */}
+      <rect x="50" y="20" width="100" height="152" rx="18" />
+      <rect x="66" y="38" width="68" height="32" rx="8" />
+      <path d="M100 54h20" stroke="#2E5146" />
+      {/* four keys */}
+      <rect x="66" y="88" width="26" height="22" rx="7" /><rect x="108" y="88" width="26" height="22" rx="7" />
+      <rect x="66" y="126" width="26" height="28" rx="7" />
+      {/* the "=" key, the lime accent */}
+      <rect className="fill" x="108" y="126" width="26" height="28" rx="7" fill="#D7F36E" stroke="none" />
+      <rect x="108" y="126" width="26" height="28" rx="7" stroke="#B9D44A" />
+      <path d="M115 136h12M115 144h12" stroke="#2E5146" />
+    </svg>
+  );
+}
+
 /** The CK Academy mark (the "A" with three rungs), from the Academy site's icons.tsx. */
 export function AcademyMark({ size = 30, color = "currentColor" }: { size?: number; color?: string }) {
   return (
