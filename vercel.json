@@ -6,6 +6,7 @@
   "rewrites": [
     { "source": "/api/mobile/:path*", "destination": "https://ck-crm.vercel.app/api/mobile/:path*" },
     { "source": "/api/portal/:path*", "destination": "https://crm.collectivekindness.net/api/portal/:path*" },
+    { "source": "/api/identity/:path*", "destination": "https://crm.collectivekindness.net/api/identity/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

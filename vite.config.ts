@@ -15,6 +15,7 @@ export default defineConfig({
     proxy: {
       "/api/mobile": { target: "https://ck-crm.vercel.app", changeOrigin: true },
       "/api/portal": { target: "https://crm.collectivekindness.net", changeOrigin: true },
+      "/api/identity": { target: "https://crm.collectivekindness.net", changeOrigin: true },
     },
   },
 });

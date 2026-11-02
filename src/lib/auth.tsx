@@ -3,6 +3,7 @@ import { Preferences } from "@capacitor/preferences";
 import { setAuthToken, setOnUnauthorized, fetchMe, type ApiUser } from "./mobileApi";
 import { setPortalToken } from "./portalApi";
 import { enablePushAfterSignIn } from "./push";
+import { renewSession } from "./identityApi";
 
 /**
  * One session store, two kinds of people:
@@ -125,6 +126,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setFamily({ name: saved.name ?? null });
           setKind("family");
           setStatus("signedIn");
+          // Renew on use (90 days, sliding): a fresh token at most twice a
+          // day; a revoked device (code changed, contact removed, signed out
+          // by staff) ends here instead of on the first 401.
+          const fresh = await renewSession("family", saved.token);
+          if (cancelled) return;
+          if (fresh === false) { await clearSession("unauthorized"); return; }
+          if (fresh) {
+            setPortalToken(fresh);
+            setToken(fresh);
+            await prefSet(SESSION_KEY, JSON.stringify({ kind: "family", token: fresh, name: saved.name ?? null }));
+          }
           return;
         }
 
