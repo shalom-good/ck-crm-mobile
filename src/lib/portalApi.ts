@@ -50,6 +50,23 @@ export async function familyLogin(code: string): Promise<{ token: string; name: 
   return { token: data.token, name: data.name ?? null };
 }
 
+/** "Lost your code?" (A-02): the email sign-in the API already has.
+ *  POST /login { email } always answers ok (no probing); the 6-digit code
+ *  arrives by email. A `phone` key joins here with the login overhaul. */
+export async function requestFamilyEmailCode(email: string): Promise<void> {
+  await portal("/login", { method: "POST", body: JSON.stringify({ email }), skipAuth: true });
+}
+
+/** Email + 6-digit code → token. `token` is null while the backend only
+ *  sets the web cookie (then the app opens the web portal, A-01 interim). */
+export async function verifyFamilyEmailCode(email: string, code: string): Promise<{ token: string | null; name: string | null }> {
+  const data = await portal<{ ok?: boolean; token?: string; name?: string | null }>(
+    "/verify",
+    { method: "POST", body: JSON.stringify({ email, code, client: "mobile" }), skipAuth: true },
+  );
+  return { token: data?.token || null, name: data?.name ?? null };
+}
+
 export async function fetchPortalHome(): Promise<PortalHome> {
   return portal<PortalHome>("/me");
 }
