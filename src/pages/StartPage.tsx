@@ -3,7 +3,7 @@ import { IonPage, IonContent, useIonRouter } from "@ionic/react";
 import { CaretRight } from "@phosphor-icons/react";
 import { HouseArt, GiftArt, AcademyMark } from "@/components/gv";
 import { quoteForToday } from "@/lib/quotes";
-import { SESSION_ENDED_KEY } from "@/lib/auth";
+import { SESSION_ENDED_KEY, LAST_DOOR_KEY } from "@/lib/auth";
 import { GIVE_URL } from "@/lib/mobileApi";
 import { openExternal } from "@/lib/external";
 
@@ -24,10 +24,14 @@ export function StartPage() {
   useEffect(() => {
     try {
       if (sessionStorage.getItem(SESSION_ENDED_KEY) === "1") {
+        // A-13: a family goes straight back to its code screen, which shows
+        // the note on top (it clears the flag there).
+        if (localStorage.getItem(LAST_DOOR_KEY) === "family") { router.push("/start/family", "forward", "replace"); return; }
         sessionStorage.removeItem(SESSION_ENDED_KEY);
         setSessionEnded(true);
       }
     } catch { /* noop */ }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -45,6 +49,12 @@ export function StartPage() {
             <p className="gv-sub gv-rise" style={{ "--i": 2, marginTop: 6 } as React.CSSProperties}>One place to start. Who are you today?</p>
           </div>
 
+          {sessionEnded && (
+            <div role="status" className="gv-note gv-rise" style={{ "--i": 2, marginTop: 14 } as React.CSSProperties}>
+              It has been a while, so you were signed out. Pick your door below to pick up where you left off.
+            </div>
+          )}
+
           {/* the three doors */}
           <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 16 }}>
             <Door i={3} art={<HouseArt width={64} strokeWidth={6.5} still />} title="I'm a CK family" sub="Open your page with the 7-letter code from your case manager." onClick={() => router.push("/start/family")} />
@@ -56,12 +66,6 @@ export function StartPage() {
           <button className="gv-btn block gv-rise" style={{ "--i": 6, marginTop: 14 } as React.CSSProperties} onClick={() => void openExternal(GIVE_URL)}>
             Donate
           </button>
-
-          {sessionEnded && (
-            <div role="status" className="gv-note gv-rise" style={{ "--i": 7, marginTop: 12 } as React.CSSProperties}>
-              Your session ended. Sign in again to continue.
-            </div>
-          )}
 
           {/* quiet team door */}
           <div className="gv-rise" style={{ "--i": 7, display: "flex", justifyContent: "center", marginTop: 6 } as React.CSSProperties}>

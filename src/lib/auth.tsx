@@ -22,6 +22,10 @@ const VIEW_AS_KEY = "ck_view_as";
 /** Set (sessionStorage) when a 401 ended the session, so the start screen
  *  can say so once. An explicit sign-out never sets it. */
 export const SESSION_ENDED_KEY = "ck_session_ended";
+/** Which door the person last signed in through (A-13): a family whose
+ *  session ended goes straight back to the family code screen. */
+export const LAST_DOOR_KEY = "ck_last_door";
+const rememberDoor = (d: SessionKind) => { try { localStorage.setItem(LAST_DOOR_KEY, d); } catch { /* noop */ } };
 
 /** Emails that always get the admin "View as" control, even if the token
  *  arrives without admin:true. */
@@ -157,6 +161,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(newUser);
     setKind("team");
     setStatus("signedIn");
+    rememberDoor("team");
     await prefSet(SESSION_KEY, JSON.stringify({ kind: "team", token: newToken, user: newUser }));
     // Native only; quietly no-ops on web and when permission is denied.
     void enablePushAfterSignIn();
@@ -171,6 +176,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setFamily({ name });
     setKind("family");
     setStatus("signedIn");
+    rememberDoor("family");
     await prefSet(SESSION_KEY, JSON.stringify({ kind: "family", token: newToken, name }));
     await prefRemove(VIEW_AS_KEY);
   }, []);
