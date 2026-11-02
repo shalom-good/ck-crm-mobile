@@ -56,10 +56,13 @@ export function FamilyBudgetPage() {
     try { await setHomeworkDone(String(t.id), !t.done); } catch { setHw(homework); }
   };
 
+  // A-10: lead with what is on track. No "Short $810" in coral at the top;
+  // the gap is a sentence in the card body, in ink, framed as shared work.
+  const confirmedCount = lines.filter((l) => !!l.client_confirmed_at || l.state === "on").length;
   const stats: Stat[] = started ? [
     { label: "Income", value: income, fmt: usd },
     { label: "Going out", value: out, fmt: usd },
-    { label: net < 0 ? "Short" : "Left over", value: Math.abs(net), fmt: usd, warn: net < 0 },
+    { label: "Confirmed", value: confirmedCount, fmt: (n: number) => `${n} of ${lines.length}` },
   ] : [];
 
   let i = 1;
@@ -96,17 +99,21 @@ export function FamilyBudgetPage() {
 
           {started && (
             <>
-              <div style={{ marginTop: 16 }}><Strip i={i++} stats={stats} /></div>
-
-              {mtd && (typeof mtd.income_cents === "number" || typeof mtd.spend_cents === "number") && (
-                <Card i={i++} style={{ marginTop: 12 }}>
-                  <CardTitle right={mtd.pendingCount ? <Pill tint="yellow">{mtd.pendingCount} pending</Pill> : undefined}>This month so far</CardTitle>
+              <Card i={i++} style={{ marginTop: 16 }}>
+                <CardTitle right={mtd?.pendingCount ? <Pill tint="yellow">{mtd.pendingCount} pending</Pill> : undefined}>This month so far</CardTitle>
+                {mtd && (typeof mtd.income_cents === "number" || typeof mtd.spend_cents === "number") && (
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                     <div><small className="gv-meta">Came in</small><div className="tnum" style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-.02em", color: "var(--gv-ink)" }}><CountUp to={Math.round((mtd.income_cents || 0) / 100)} fmt={(n) => `$${n.toLocaleString("en-US")}`} /></div></div>
                     <div><small className="gv-meta">Went out</small><div className="tnum" style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-.02em", color: "var(--gv-ink)" }}><CountUp to={Math.round((mtd.spend_cents || 0) / 100)} fmt={(n) => `$${n.toLocaleString("en-US")}`} /></div></div>
                   </div>
-                </Card>
-              )}
+                )}
+                <p className="gv-sub" style={{ marginTop: 10, color: "var(--gv-ink)" }}>
+                  {confirmedCount > 0 ? `${confirmedCount} of ${lines.length} lines are confirmed with ${budgeterFirst}. ` : ""}
+                  {net < 0 ? `The gap you are closing together with ${budgeterFirst}: ${usd(net)} a month.` : `The plan leaves ${usd(net)} a month.`}
+                </p>
+              </Card>
+
+              <div style={{ marginTop: 12 }}><Strip i={i++} stats={stats} /></div>
 
               {review.length > 0 && (
                 <div className="gv-rise" style={{ "--i": i++, marginTop: 12 } as React.CSSProperties}>
