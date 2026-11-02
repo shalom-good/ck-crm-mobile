@@ -155,7 +155,7 @@ function Body({ d }: { d: PortalHome }) {
     const s: Stat[] = [];
     if (total) s.push({ label: "Journey", value: doneCount, unit: `of ${total}` });
     if (!sessions.locked && sessions.total) s.push({ label: "Budget sessions", value: Number(sessions.done || 0), unit: `of ${sessions.total}` });
-    if (homework.length) s.push({ label: "Homework", value: openHw, unit: "open", warn: openHw > 0 });
+    if (homework.length) s.push({ label: "Homework", value: openHw, unit: openHw > 0 ? "next up" : "open" });
     return s;
   }, [total, doneCount, sessions.locked, sessions.total, sessions.done, homework.length, openHw]);
 
@@ -285,7 +285,7 @@ function Body({ d }: { d: PortalHome }) {
                 <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 12 }}>
                   <div>
                     <small style={{ fontSize: 12, fontWeight: 600, color: "var(--gv-mid)" }}>Left over each month</small>
-                    <div className="tnum" style={{ fontSize: 30, fontWeight: 800, letterSpacing: "-.02em", lineHeight: 1.05, marginTop: 4, color: Number(cur?.net ?? 0) < 0 ? "var(--gv-coral)" : "var(--gv-ink)" }}>
+                    <div className="tnum" style={{ fontSize: 30, fontWeight: 800, letterSpacing: "-.02em", lineHeight: 1.05, marginTop: 4, color: "var(--gv-ink)" }}>
                       {typeof cur?.net === "number" ? <>{cur.net < 0 ? "−" : ""}<CountUp to={Math.abs(cur.net)} fmt={money} /></> : "Building"}
                     </div>
                   </div>

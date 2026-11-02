@@ -90,7 +90,7 @@ export function FamilyMeetingsPage() {
                   <button key={k} onClick={() => setSel(on ? null : k)} style={{ border: 0, background: on ? "var(--gv-lime)" : "transparent", borderRadius: 14, padding: "8px 0 6px", display: "flex", flexDirection: "column", alignItems: "center", gap: 3, cursor: "pointer", font: "inherit", color: "var(--gv-mid)" }}>
                     <small style={{ fontSize: 12, fontWeight: 600 }}>{day.toLocaleDateString("en-US", { weekday: "short" }).slice(0, 3)}</small>
                     <b className="tnum" style={{ fontSize: 16, fontWeight: 800, color: "var(--gv-ink)", width: 30, height: 30, display: "grid", placeItems: "center", borderRadius: "50%", boxShadow: k === 0 && !on ? "inset 0 0 0 2px var(--gv-go)" : "none" }}>{day.getDate()}</b>
-                    <i style={{ width: 6, height: 6, borderRadius: "50%", background: has ? "var(--gv-coral)" : "transparent" }} />
+                    <i style={{ width: 6, height: 6, borderRadius: "50%", background: has ? "var(--gv-go)" : "transparent" }} />
                   </button>
                 );
               })}
@@ -152,7 +152,7 @@ export function FamilyMeetingsPage() {
             </>
           )}
           {d?.team?.coordinator?.whatsapp && (
-            <p className="gv-meta" style={{ textAlign: "center", marginTop: 16 }}>Need to move a meeting? <a href={d.team.coordinator.whatsapp} target="_blank" rel="noreferrer" style={{ color: "var(--gv-go)", fontWeight: 700 }}>Message {String(d.team.coordinator.name || "the coordinator").split(" ")[0]}</a>.</p>
+            <p className="gv-meta" style={{ textAlign: "center", marginTop: 16 }}>Need to move a meeting? <a href={d.team.coordinator.whatsapp} target="_blank" rel="noreferrer" className="gv-hit" style={{ color: "var(--gv-go)", fontWeight: 700 }}>Message {String(d.team.coordinator.name || "the coordinator").split(" ")[0]}</a>.</p>
           )}
           {!d?.team?.coordinator?.whatsapp && d && <Pill style={{ display: "none" }}>.</Pill>}
         </div>

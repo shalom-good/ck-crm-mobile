@@ -86,7 +86,7 @@ export function FamilyAlertsPage() {
                       <span style={{ width: 10, height: 10, borderRadius: "50%", background: `var(--gv-${a.tint === "lime" ? "lime" : a.tint})`, boxShadow: a.tint === "lime" ? "0 0 0 4px var(--gv-lime-soft)" : "none", flex: "none" }} />
                       <span style={{ flex: 1, minWidth: 0 }}>
                         <b style={{ display: "block", fontSize: 14.5, fontWeight: 700, color: "var(--gv-ink)", lineHeight: 1.3 }}>
-                          {fresh?.has(a.key) && <span role="img" aria-label="New" style={{ display: "inline-block", width: 7, height: 7, borderRadius: "50%", background: "var(--gv-coral)", marginRight: 7, verticalAlign: "middle", position: "relative", top: -1 }} />}
+                          {fresh?.has(a.key) && <span role="img" aria-label="New" style={{ display: "inline-block", width: 7, height: 7, borderRadius: "50%", background: "var(--gv-go)", marginRight: 7, verticalAlign: "middle", position: "relative", top: -1 }} />}
                           {a.title}
                         </b>
                         {a.sub && <span style={{ display: "block", fontSize: 12.5, color: "var(--gv-mid)", marginTop: 2, lineHeight: 1.4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.sub}</span>}
