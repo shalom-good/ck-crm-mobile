@@ -68,16 +68,17 @@ gradient washes, no emoji, no red for a family's money.
 
 - `TopBar` (src/components/TopBar.tsx): 30px lime tile with the forest CK
   mark (src/assets/ck-mark-forest.svg) + "Collective Kindness", the space
-  label on the right ("TEAM", "GIVING", "ACADEMY", "FAMILY PROFILE"), an
-  optional back button in front. `CkTile` is the tile alone (Logo, lock
+  label on the right ("TEAM", "GIVING", "ACADEMY"); with a back button in
+  front the label is dropped. `CkTile` is the tile alone (Logo, lock
   screen). `Header` = TopBar + title + meta + icon buttons.
 - Tab bar (App.tsx + ck-look.css): floating white bar 14px off the sides
   and bottom (+ safe area), radius 26. Each item a 52x30 pill behind a 20px
   2px-stroke icon (src/components/ckIcons.tsx), 11px label. Active = lime
   pill, ink 700; inactive mid 600. Home · Families · Ask · Chats · Resources:
-  Ask is a forest pill with the lime sparkle (it opens the AI sheet, so it
-  is a portaled button over the empty center slot). Pages keep ~120px of
-  bottom padding so nothing hides under it.
+  Ask looks like every other item (sparkle icon, lime pill while the AI
+  sheet is open); it opens a sheet, not a tab, so it is a button portaled
+  over the empty center slot. Pages keep ~120px of bottom padding so
+  nothing hides under it.
 - Stat strip (`Strip`): one white card, columns split by 1px lines, number
   over label, the attention count in `--gv-warn`.
 - Tasks (`.ck-task`): 22px checkbox radius 7 with a 2px forest border.
@@ -87,6 +88,11 @@ gradient washes, no emoji, no red for a family's money.
   title, a forest pill.
 - Picture tile (`.ck-art mint|sky|apricot|plum|yellow`): the flat pastel
   behind a door's line drawing (replaces the old gradient panels).
+- Net each month (family profile): rounded vertical bars, height follows
+  each month's net (lowest shortest), the signed value above each bar,
+  past months grey #E4EAE3, this month coral, a dashed average with an
+  "Avg" tag, months under; a month with no budget is a short dashed stub
+  labelled "no budget".
 - Giving: coral band with ink text and a white "Donate" pill in coral ink.
 
 ## Motion

@@ -11,7 +11,7 @@ import { fetchFamilyDetail, type FamilyDetail } from "@/lib/api";
 import { fetchBriskProfile } from "@/lib/mobileApi";
 import { tintFor } from "@/lib/colorHash";
 import { AiSummary } from "@/components/AiSummary";
-import { Av, Bars, Btn, Card, CardTitle, Pill, Row, Strip, Track, type Bar, type Stat } from "@/components/gv";
+import { Av, Btn, Card, CardTitle, Pill, Row, Strip, Track, type Stat } from "@/components/gv";
 
 /**
  * Family profile — the staff view of one family in the Grove look, the
@@ -26,7 +26,7 @@ import { Av, Bars, Btn, Card, CardTitle, Pill, Row, Strip, Track, type Bar, type
  * Every section degrades to hidden when its data is missing.
  */
 
-const JOURNEY = ["Applied", "Intake", "Success Plan", "Active care", "Graduation"];
+const JOURNEY = ["Applied", "Intake", "Plan", "Active care", "Graduation"];
 const CRM_URL = "https://crm.collectivekindness.net";
 
 type Raw = Record<string, any>;
@@ -89,7 +89,7 @@ const compactMoney = (n: number) => {
 
 function vmFromBrisk(p: Raw): VM {
   const monthlyRaw: Raw[] = Array.isArray(p?.money?.monthly) ? p.money.monthly : [];
-  const cashMonths = monthlyRaw.slice(-4).map((m) => ({
+  const cashMonths = monthlyRaw.slice(-6).map((m) => ({
     label: String(m?.month ?? m?.monthLabel ?? ""),
     income: typeof m?.income === "number" ? m.income : null,
     expenses: typeof m?.expenses === "number" ? m.expenses : null,
@@ -152,7 +152,7 @@ function vmFromBrisk(p: Raw): VM {
 
 function vmFromFallback(detail: FamilyDetail | null, fam: { name: string; city?: string; state?: string; phone: string; email: string; assignments: Partial<Record<RoleKey, string>>; stage?: string; lifecycleStatus?: string; currentMonthlyNet?: number | null; estimatedDebt?: number } | undefined): VM {
   const hist = detail?.cashFlowHistory ?? [];
-  const cashMonths = hist.slice(-4).map((r) => ({ label: r.monthLabel, income: r.income, expenses: r.expenses, net: r.net }));
+  const cashMonths = hist.slice(-6).map((r) => ({ label: r.monthLabel, income: r.income, expenses: r.expenses, net: r.net }));
   const latestNet = detail?.cashflow?.net ?? fam?.currentMonthlyNet ?? (cashMonths.length ? cashMonths[cashMonths.length - 1].net : null);
 
   const team = Object.entries(fam?.assignments ?? {}).map(([rk, name]) => ({
@@ -274,14 +274,6 @@ export function FamilyDetailPage() {
   if (vm?.noteCount != null) stats.push({ label: "Notes", value: vm.noteCount });
   if (days != null) stats.push({ label: "Since touch", value: days <= 0 ? "Today" : days, unit: days <= 0 ? undefined : "d" });
 
-  // Cash-flow bars: income per month in grey, the latest month coloured
-  // by the sign of the net.
-  const bars: Bar[] = (vm?.cashMonths ?? []).map((m, k, arr) => {
-    const last = k === arr.length - 1;
-    const neg = (m.net ?? vm?.latestNet ?? 0) < 0;
-    return { label: monthShort(m.label), value: m.income ?? 0, on: last && neg, go: last && !neg };
-  });
-
   const journey = vm?.journeyIndex;
   let i = 0;
 
@@ -289,7 +281,7 @@ export function FamilyDetailPage() {
     <IonPage>
       <IonHeader className="ion-no-border">
         <IonToolbar>
-          <TopBar back="/tabs/families" space="Family profile" style={{ padding: "0 20px 0 14px" }} />
+          <TopBar back="/tabs/families" style={{ padding: "0 20px 0 14px" }} />
         </IonToolbar>
       </IonHeader>
 
@@ -303,15 +295,15 @@ export function FamilyDetailPage() {
               .fd-strip .gv-st .v { font-size: 16px; }
               .fd-strip .gv-st small { font-size: 10.5px; }
               .fd-actions .gv-btn svg { display: none; }
-              .fd-journey span { font-size: 11px !important; letter-spacing: -.02em; word-break: keep-all; overflow-wrap: normal !important; }
+              .fd-journey span { letter-spacing: -.02em; white-space: normal !important; }
             }
           `}</style>
 
           {/* Name header */}
-          <div className="gv-rise" style={{ display: "flex", alignItems: "center", gap: 13, ...({ "--i": i++ } as React.CSSProperties) }}>
-            <Av name={name} size={54} round tint={family?.kind === "kdh" ? "apricot" : "mint"} className="keep" />
+          <div className="gv-rise" style={{ display: "flex", alignItems: "center", gap: 14, marginTop: 10, ...({ "--i": i++ } as React.CSSProperties) }}>
+            <Av name={name} size={56} round tint={family?.kind === "kdh" ? "apricot" : "mint"} className="keep" />
             <div style={{ minWidth: 0, flex: 1 }}>
-              <h1 className="gv-h1" style={{ overflowWrap: "anywhere" }}>{name}</h1>
+              <h1 className="gv-h1" style={{ fontSize: 26, lineHeight: 1.12, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", textWrap: "balance" } as React.CSSProperties} title={name}>{name}</h1>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 5, minWidth: 0 }}>
                 {vm?.metaLine && (
                   <span className="gv-meta" style={{ minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{vm.metaLine}</span>
@@ -337,7 +329,7 @@ export function FamilyDetailPage() {
             <div className="fd-journey" style={{ display: "grid", gridTemplateColumns: "repeat(5, minmax(0, 1fr))", gap: 5, marginTop: 7, hyphens: "manual" }}>
               {JOURNEY.map((label, k) => (
                 <span key={label} style={{
-                  fontSize: 12, lineHeight: 1.25, textAlign: "center", minWidth: 0,
+                  fontSize: 11, lineHeight: 1.25, textAlign: "center", minWidth: 0, whiteSpace: "nowrap", overflowWrap: "normal", wordBreak: "keep-all",
                   fontWeight: k === journey ? 700 : 500,
                   color: k === journey ? "var(--gv-ink)" : "var(--gv-mid)",
                 }}>{label}</span>
@@ -395,20 +387,17 @@ export function FamilyDetailPage() {
             </Card>
           )}
 
-          {/* Cash flow */}
+          {/* Net each month (the store's budget chart): bar height follows the
+              month's net, the value above each bar, past months grey, this
+              month coral, a dashed average with an "Avg" tag. */}
           {showCash && (
             <Card i={i++} style={{ marginTop: 12 }}>
-              <CardTitle right={vm!.latestNetLabel ? <span className="gv-meta">{vm!.latestNetLabel}</span> : undefined}>Cash flow</CardTitle>
-              <div className="tnum" style={{ fontSize: 28, lineHeight: 1.05, fontWeight: 800, letterSpacing: "-.02em", color: vm!.latestNet != null && vm!.latestNet < 0 ? "var(--gv-ink)" : "var(--gv-go)" }}>
+              <CardTitle right={vm!.latestNetLabel ? <span className="gv-meta">{prettyMonth(vm!.latestNetLabel)}</span> : undefined}>Net each month</CardTitle>
+              <div className="tnum" style={{ fontSize: 28, lineHeight: 1.05, fontWeight: 800, letterSpacing: "-.02em", color: "var(--gv-ink)" }}>
                 {vm!.latestNet != null ? `${vm!.latestNet < 0 ? "-" : "+"}${money(Math.abs(vm!.latestNet))}` : "No net yet"}
               </div>
-              <div className="gv-meta" style={{ marginTop: 3 }}>net a month</div>
-              {hasBars && (
-                <div style={{ marginTop: 14 }}>
-                  <Bars bars={bars} height={56} />
-                  <div className="gv-meta" style={{ marginTop: 6 }}>Income by month</div>
-                </div>
-              )}
+              <div className="gv-meta" style={{ marginTop: 3 }}>left over this month</div>
+              {vm!.cashMonths.length > 0 && <NetBars months={vm!.cashMonths} />}
             </Card>
           )}
 
@@ -501,5 +490,65 @@ function NoteRow({ meta, text }: { meta: string; text: string }) {
         )}
       </p>
     </Row>
+  );
+}
+
+/** "2026-10" → "October"; anything else passes through. */
+function prettyMonth(s: string): string {
+  if (/^\d{4}-\d{2}/.test(s)) {
+    const d = new Date(`${s.slice(0, 7)}-15T12:00:00`);
+    if (!Number.isNaN(d.getTime())) return d.toLocaleDateString("en-US", { month: "long" });
+  }
+  return s;
+}
+
+/** Short signed money for a bar label: "+$90", "-$1.2k". */
+const signedShort = (n: number) => {
+  const a = Math.abs(n);
+  const body = a >= 1000 ? `$${(a / 1000).toFixed(1).replace(/\.0$/, "")}k` : `$${Math.round(a)}`;
+  return `${n < 0 ? "-" : "+"}${body}`;
+};
+
+/** Net each month: rounded vertical bars whose height follows the month's
+ *  net (lowest month shortest), the value above, past months grey, the
+ *  latest month coral, a dashed average line with an "Avg" tag. A month
+ *  with no budget gets a short dashed stub and "no budget". */
+function NetBars({ months }: { months: { label: string; net: number | null }[] }) {
+  const H = 120; // bar area in px
+  const nets = months.map((m) => m.net).filter((n): n is number => typeof n === "number");
+  const min = Math.min(...nets), max = Math.max(...nets);
+  const span = max - min || 1;
+  const hOf = (n: number) => Math.round(H * (0.22 + 0.7 * ((n - min) / span)));
+  const avg = nets.length ? nets.reduce((s, n) => s + n, 0) / nets.length : null;
+  const last = months.length - 1;
+  return (
+    <div style={{ marginTop: 16 }}>
+      <div style={{ position: "relative", height: H + 22, display: "flex", alignItems: "flex-end", gap: 8 }}>
+        {avg != null && nets.length > 1 && (
+          <>
+            <div aria-hidden style={{ position: "absolute", left: 0, right: 0, bottom: hOf(avg), borderTop: "2px dashed #B7C2BB", zIndex: 1 }} />
+            <span style={{ position: "absolute", left: 0, bottom: hOf(avg) + 4, zIndex: 2, fontSize: 11, fontWeight: 700, background: "var(--gv-go)", color: "var(--gv-paper)", borderRadius: 6, padding: "2px 6px" }}>Avg</span>
+          </>
+        )}
+        {months.map((m, k) => {
+          const has = typeof m.net === "number";
+          return (
+            <div key={k} style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", gap: 5, height: "100%" }}>
+              <span className="tnum" style={{ fontSize: 12, lineHeight: 1.15, fontWeight: 700, color: "var(--gv-mid)", whiteSpace: has ? "nowrap" : "normal", textAlign: "center", position: "relative", zIndex: 3, background: "var(--gv-card)", borderRadius: 4, padding: "0 2px" }}>{has ? signedShort(m.net!) : "no budget"}</span>
+              {has ? (
+                <div className="ck-col" style={{ width: "100%", height: hOf(m.net!), borderRadius: 10, background: k === last ? "var(--gv-coral)" : "var(--gv-bar)", ["--i" as string]: k } as React.CSSProperties} />
+              ) : (
+                <div aria-hidden style={{ width: "100%", height: 12, borderRadius: 8, border: "1.5px dashed #B7C2BB", boxSizing: "border-box" }} />
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
+        {months.map((m, k) => (
+          <span key={k} style={{ flex: 1, minWidth: 0, textAlign: "center", fontSize: 12, fontWeight: k === last ? 700 : 600, color: k === last ? "var(--gv-ink)" : "var(--gv-mid)" }}>{monthShort(m.label)}</span>
+        ))}
+      </div>
+    </div>
   );
 }

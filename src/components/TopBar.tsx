@@ -6,9 +6,11 @@ import { BackButton } from "./BackButton";
  * The CK top bar (App Store set): a 30px lime tile with the forest CK mark,
  * "Collective Kindness" 13.5/700, and on the right the space label in
  * small caps ("TEAM", "GIVING", "ACADEMY") or a control. `back` puts the
- * round back button in front of the tile.
+ * round back button in front of the tile and drops the space label.
  */
-export function TopBar({ space, back, right, style }: { space?: string; back?: string; right?: ReactNode; style?: CSSProperties }) {
+export function TopBar({ space: spaceIn, back, right, style }: { space?: string; back?: string; right?: ReactNode; style?: CSSProperties }) {
+  // With a back button the bar is back + brand only: the label would crowd it.
+  const space = back ? undefined : spaceIn;
   return (
     <div className={`ck-top${back ? " has-back" : ""}`} style={style}>
       <div className="brand">

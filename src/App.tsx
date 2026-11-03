@@ -106,26 +106,28 @@ function TabsShell() {
       </IonTabBar>
     </IonTabs>
 
-    {/* "Ask" sits in the bar's center slot: a forest pill with the lime
-        sparkle (the screen's one primary), portaled to ion-app so no
-        tab/page containment can clip it. */}
-    {onTabRoute && !captureOpen && createPortal(
+    {/* "Ask" is an ordinary item in the bar's center slot (same pill,
+        icon and label as the others; lime while the AI sheet is open).
+        It opens a sheet, not a tab, so it is a button portaled to ion-app
+        over the empty center IonTabButton. */}
+    {onTabRoute && createPortal(
       <button
         aria-label="Ask CK AI"
-        className="ck-fab"
+        aria-pressed={captureOpen}
+        className="ck-ask-tab"
         onClick={() => openCapture("ask")}
         style={{
           position: "fixed", left: "50%", transform: "translateX(-50%)",
           bottom: "calc(env(safe-area-inset-bottom) + 14px)", zIndex: 200,
           width: 64, minHeight: 64, padding: "10px 0",
           display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
-          background: "none", border: "none", cursor: "pointer",
+          background: "none", border: "none", cursor: "pointer", font: "inherit",
         }}
       >
-        <span style={{ width: 52, height: 30, borderRadius: 999, background: "var(--gv-go)", color: "var(--gv-lime)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <span style={{ width: 52, height: 30, borderRadius: 999, background: captureOpen ? "var(--gv-lime)" : "transparent", color: captureOpen ? "var(--gv-ink)" : "var(--gv-mid)", display: "flex", alignItems: "center", justifyContent: "center", transition: "background .25s" }}>
           <IcSparkle />
         </span>
-        <span style={{ fontSize: 11, fontWeight: 700, color: "var(--gv-ink)" }}>Ask</span>
+        <span style={{ fontSize: 11, fontWeight: captureOpen ? 700 : 600, color: captureOpen ? "var(--gv-ink)" : "var(--gv-mid)" }}>Ask</span>
       </button>,
       document.querySelector("ion-app") ?? document.body,
     )}

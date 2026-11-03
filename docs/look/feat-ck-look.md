@@ -43,10 +43,25 @@ its Grove values. Verified: 90-family-home, 91-family-plan, 92-family-budget,
 
 No horizontal scroll at 390 or 320 on any captured screen.
 
+## Review pass (coordinator, 2026-11-02)
+
+- Family profile: "Cash flow" (flat equal tiles, "Income by month") is now
+  "Net each month" like the store budget frame: bar height follows each
+  month's net, signed value above, grey past / coral current, dashed Avg
+  line, "no budget" stub for a missing month; up to six months.
+- Family profile header: 26/800 name (balanced, two lines at most), 56px
+  avatar, top bar is back + brand only (TopBar drops the space label
+  whenever a back button is shown), stage strip says "Plan" at 11px.
+- Tab bar: Ask is an ordinary item (sparkle, lime pill while the sheet is
+  open), still opening the AI sheet.
+- Viewport shots at 1x (390x844):
+  \`/private/tmp/claude-501/-Users-shalomgoodman/b919b663-56de-40d9-92bb-ef4187d411c9/scratchpad/phase4/feat-ck-look/final-390/\`
+  10-home, 11-families, 12-family-detail, 13-chats, 30-ai-sheet (AI sheet open).
+
 ## Behaviour notes
 
 - Tab bar keeps the same five destinations (Home, Families, Ask, Chats,
-  Resources); Ask still opens the AI sheet, now as a forest pill in the bar.
+  Resources); Ask still opens the AI sheet.
 - Home "Your tasks" = the attention engine's list written as tasks. The
   checkbox only sets a family aside for today on this device (localStorage
   `ck-home-set-aside`); nothing is written to the CRM.
@@ -67,4 +82,3 @@ No horizontal scroll at 390 or 320 on any captured screen.
 - Dark tokens are defined but lib/theme.ts still forces light.
 - Native icon/splash: sources replaced in assets/; run
   `npx @capacitor/assets generate` + `npx cap sync` (no ios/android dirs here).
-- AI sheet open state was not captured; it reads the scoped tokens.

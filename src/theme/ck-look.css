@@ -190,3 +190,7 @@ html[data-look="ck"] .ck-toast { border-radius: 22px !important; padding: 14px 1
 
 /* Narrow phones: with a back button, the brand name wins over the space label. */
 @media (max-width: 359px) { .ck-top.has-back .space { display: none; } }
+
+/* Net-each-month columns grow up once */
+.ck-col { transform-origin: bottom; animation: gv-growy .8s var(--gv-ease) both; animation-delay: calc(.25s + var(--i, 0) * 80ms); }
+@media (prefers-reduced-motion: reduce) { .ck-col { animation: none; } }
