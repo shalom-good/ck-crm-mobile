@@ -1,3 +1,4 @@
+import { TopBar } from "@/components/TopBar";
 import { IonPage, IonContent, useIonRouter } from "@ionic/react";
 import { CheckCircle, SignOut, Cloud, Check } from "@phosphor-icons/react";
 import { useAppData } from "@/lib/appData";
@@ -28,12 +29,13 @@ export function SettingsPage() {
 
   return (
     <IonPage>
-      <IonContent>
-        <div style={{ padding: "calc(env(safe-area-inset-top) + 18px) 16px 0" }}>
-          <h1 className="gv-h1">Settings</h1>
+      <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
+        <div style={{ padding: "calc(env(safe-area-inset-top) + 10px) 20px 0" }}>
+          <TopBar space="Team" back="/tabs/home" />
+          <h1 className="gv-h1" style={{ marginTop: 10 }}>Settings</h1>
         </div>
 
-        <div style={{ padding: "16px 16px 130px", display: "flex", flexDirection: "column", gap: 12 }}>
+        <div style={{ padding: "14px 20px 120px", display: "flex", flexDirection: "column", gap: 12 }}>
           {/* who you are */}
           <Card i={0}>
             <Row>
@@ -84,7 +86,7 @@ export function SettingsPage() {
           {/* sync state */}
           <Card i={2}>
             <Row>
-              <span className="gv-tile" style={{ background: "var(--gv-mint)", color: "var(--gv-mintInk)" }}><Cloud size={18} weight="bold" /></span>
+              <span className="gv-tile" style={{ background: "var(--gv-mint)", color: "var(--gv-mintInk)", borderRadius: 999 }}><Cloud size={18} weight="bold" /></span>
               <div className="t"><b>Synced</b><span>{syncedAgo(lastSync)}</span></div>
               <CheckCircle size={20} weight="fill" color="var(--gv-go)" style={{ flex: "none" }} />
             </Row>
@@ -93,7 +95,7 @@ export function SettingsPage() {
           {/* sign out — rose ink, the only red on the screen */}
           <Card i={3}>
             <Row onClick={() => void doSignOut()}>
-              <span className="gv-tile" style={{ background: "var(--gv-rose)", color: "var(--gv-roseInk)" }}><SignOut size={18} weight="bold" /></span>
+              <span className="gv-tile" style={{ background: "var(--gv-rose)", color: "var(--gv-roseInk)", borderRadius: 999 }}><SignOut size={18} weight="bold" /></span>
               <div className="t"><b style={{ color: "var(--gv-roseInk)" }}>Sign out</b></div>
             </Row>
           </Card>

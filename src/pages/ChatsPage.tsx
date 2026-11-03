@@ -1,3 +1,4 @@
+import { TopBar } from "@/components/TopBar";
 import { useState } from "react";
 import {
   IonPage, IonContent, IonRefresher, IonRefresherContent, useIonRouter,
@@ -56,10 +57,11 @@ export function ChatsPage() {
       <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
         <IonRefresher slot="fixed" onIonRefresh={refresh}><IonRefresherContent /></IonRefresher>
 
-        <div style={{ padding: "calc(env(safe-area-inset-top) + 14px) 16px 130px" }}>
-          <div className="gv-rise" style={{ padding: "0 2px", ...({ "--i": 0 } as React.CSSProperties) }}>
+        <div style={{ padding: "calc(env(safe-area-inset-top) + 10px) 20px 120px" }}>
+          <TopBar space="Team" />
+          <div className="gv-rise" style={{ padding: "0 2px", marginTop: 10, ...({ "--i": 0 } as React.CSSProperties) }}>
             <h1 className="gv-h1">Chats</h1>
-            <p className="gv-meta" style={{ margin: "5px 0 16px" }}>{meta}</p>
+            <p className="gv-meta" style={{ margin: "4px 0 14px" }}>{meta}</p>
           </div>
 
           {q.isLoading ? (
@@ -73,7 +75,7 @@ export function ChatsPage() {
                 : "No chats yet. A chat opens for each family you work with."}
             </Empty>
           ) : (
-            <Card i={1} style={{ padding: "2px 16px" }}>
+            <Card i={1} style={{ padding: "8px 16px" }}>
               {chats.map((c) => (
                 <ChatRow key={c.familyRecId} chat={c} onOpen={() => open(c.familyRecId)} />
               ))}
@@ -83,7 +85,7 @@ export function ChatsPage() {
           {startable.length > 0 && (
             <>
               <Eyebrow style={{ marginTop: 24 }}>Start a chat</Eyebrow>
-              <Card i={2} style={{ padding: "2px 16px" }}>
+              <Card i={2} style={{ padding: "8px 16px" }}>
                 {startable.map((s) => (
                   <StartRow key={s.familyRecId} item={s} onOpen={() => open(s.familyRecId)} />
                 ))}
@@ -102,11 +104,11 @@ function ChatRow({ chat, onOpen }: { chat: ChatListItem; onOpen: () => void }) {
     ? `${last.author ? `${last.author}: ` : ""}${last.body}`
     : "No messages yet";
   return (
-    <Row onClick={onOpen} style={{ padding: "13px 0" }}>
-      <Av name={chat.title} size={44} />
+    <Row onClick={onOpen} style={{ padding: "8px 0" }}>
+      <Av name={chat.title} size={44} round tint="mint" className="keep" />
       <span className="t">
         <b>{chat.title}</b>
-        <span style={{ color: chat.unread ? "var(--gv-text)" : "var(--gv-quiet)", fontWeight: chat.unread ? 600 : 400 }}>{preview}</span>
+        <span style={{ color: chat.unread ? "var(--gv-text)" : "var(--gv-mid)", fontWeight: chat.unread ? 600 : 400 }}>{preview}</span>
       </span>
       <span style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4, flex: "none" }}>
         <span className="gv-meta tnum" style={{ fontSize: 12 }}>{relTime(last?.at)}</span>
@@ -123,8 +125,8 @@ function ChatRow({ chat, onOpen }: { chat: ChatListItem; onOpen: () => void }) {
 
 function StartRow({ item, onOpen }: { item: StartableChat; onOpen: () => void }) {
   return (
-    <Row onClick={onOpen} style={{ padding: "11px 0" }}>
-      <span className="gv-tile" style={{ background: "var(--gv-inset)", color: "var(--gv-go)" }}>
+    <Row onClick={onOpen} style={{ padding: "6px 0" }}>
+      <span className="gv-tile" style={{ background: "var(--gv-lime-soft, var(--gv-inset))", color: "var(--gv-go)", borderRadius: 999 }}>
         <Plus size={16} weight="bold" />
       </span>
       <span className="t"><b style={{ fontWeight: 600 }}>{item.name}</b></span>

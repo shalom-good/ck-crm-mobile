@@ -4,6 +4,7 @@ import { CalendarBlank, ChatCircle, Coins, Phone, Sparkle } from "@phosphor-icon
 import { MOCK_PAYMENTS, MOCK_RESOURCES } from "@/lib/mockData";
 import { Av, Bars, Btn, Card, CardTitle, Chips, Empty, Evt, Eyebrow, HouseArt, Pill, PlantArt, Row, Strip, Track, type Tint } from "@/components/gv";
 import { AskBar } from "@/components/AskBar";
+import { TopBar } from "@/components/TopBar";
 import { PaymentRow } from "@/components/PaymentRow";
 import { ResourceRow } from "@/components/ResourceRow";
 
@@ -14,20 +15,39 @@ const WEEKS = [
 ];
 const AVG = Math.round(WEEKS.reduce((s, w) => s + w.value, 0) / WEEKS.length);
 
-/** The Grove system in isolation. Open at /design. */
+/** The CK look in isolation (every primitive once). Open at /design. */
 export function DesignPage() {
   const [chip, setChip] = useState<"all" | "due" | "paid">("all");
   const [picked, setPicked] = useState("Leah Herman");
 
   return (
     <IonPage>
-      <IonContent>
-        <div style={{ padding: "calc(env(safe-area-inset-top) + 18px) 16px 0" }}>
-          <h1 className="gv-h1">Grove</h1>
-          <div className="gv-meta" style={{ marginTop: 4 }}>The app's design system · every primitive once</div>
+      <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
+        <div style={{ padding: "calc(env(safe-area-inset-top) + 10px) 20px 0" }}>
+          <TopBar space="Design" />
+          <span className="ck-kicker" style={{ marginTop: 12 }}>The app's design system</span>
+          <h1 className="gv-h1">The CK look</h1>
         </div>
 
-        <div style={{ padding: "4px 16px 120px" }}>
+        <div style={{ padding: "4px 20px 120px" }}>
+          <Eyebrow>Next step · the one lime card</Eyebrow>
+          <div className="ck-next gv-rise">
+            <div className="eb">Next step</div>
+            <h3>Book the second budget meeting with Rachel</h3>
+            <p>Bring last month's receipts. It takes about 45 minutes.</p>
+            <Btn sm style={{ marginTop: 12 }}>Pick a time</Btn>
+          </div>
+
+          <Eyebrow>Tasks + this week</Eyebrow>
+          <Card i={0} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <button className="ck-task" style={{ minHeight: 0 }}><span className="box" /><span className="tx"><b>Ask Rachel to meet the Kaplans on the new income</b><span>New job since their last budget · Kaplan family</span></span></button>
+            <div className="ck-days">
+              {["Mon 3", "Tue 4", "Wed 5", "Thu 6", "Fri 7"].map((d, k) => { const [w, n] = d.split(" "); return <button key={d} className={`ck-day${k === 0 ? " on" : ""}`}><small>{w}</small><b>{n}</b></button>; })}
+            </div>
+            <Evt tint="yellow" title="Budget meeting · the Levins" sub="10:00 to 10:45 AM · with Rachel" />
+            <Evt tint="lavender" title="Debt intake · the Gross family" sub="1:30 to 2:30 PM · with Eli" />
+          </Card>
+
           <Eyebrow>Stat strip</Eyebrow>
           <Strip i={0} stats={[{ label: "Billed", value: 1060, fmt: (n) => `$${n.toLocaleString("en-US")}` }, { label: "Collected", value: 640, fmt: (n) => `$${n}` }, { label: "Overdue", value: 240, fmt: (n) => `$${n}`, warn: true }]} />
 

@@ -1,7 +1,7 @@
+import { TopBar } from "@/components/TopBar";
 import { useEffect, useState } from "react";
-import { BackButton } from "@/components/BackButton";
 import { useParams } from "react-router";
-import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons } from "@ionic/react";
+import { IonPage, IonContent, IonHeader, IonToolbar } from "@ionic/react";
 import { Phone, ChatCircleText, NotePencil, Envelope, ArrowSquareOut } from "@phosphor-icons/react";
 import { useAppData } from "@/lib/appData";
 import { useUI } from "@/lib/ui";
@@ -269,7 +269,7 @@ export function FamilyDetailPage() {
   // The stat strip: only the numbers that exist, at most four.
   const stats: Stat[] = [];
   const net = vm?.latestNet ?? family?.currentMonthlyNet ?? null;
-  if (typeof net === "number") stats.push({ label: "Net a month", value: compactMoney(net), warn: net < 0 });
+  if (typeof net === "number") stats.push({ label: "Net a month", value: compactMoney(net) });
   if (vm?.debt != null && vm.debt > 0) stats.push({ label: "Debt on file", value: compactMoney(vm.debt) });
   if (vm?.noteCount != null) stats.push({ label: "Notes", value: vm.noteCount });
   if (days != null) stats.push({ label: "Since touch", value: days <= 0 ? "Today" : days, unit: days <= 0 ? undefined : "d" });
@@ -289,13 +289,12 @@ export function FamilyDetailPage() {
     <IonPage>
       <IonHeader className="ion-no-border">
         <IonToolbar>
-          <IonButtons slot="start"><BackButton href="/tabs/families" /></IonButtons>
-          <span className="gv-eyebrow" style={{ padding: "0 8px" }}>Family profile</span>
+          <TopBar back="/tabs/families" space="Family profile" style={{ padding: "0 20px 0 14px" }} />
         </IonToolbar>
       </IonHeader>
 
       <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
-        <div style={{ padding: "4px 16px calc(40px + env(safe-area-inset-bottom))" }}>
+        <div style={{ padding: "8px 20px calc(40px + env(safe-area-inset-bottom))" }}>
           <style>{`
             .fd-strip .gv-st { padding: 12px 10px 10px; }
             .fd-strip .gv-st .v { font-size: 20px; }
@@ -304,14 +303,15 @@ export function FamilyDetailPage() {
               .fd-strip .gv-st .v { font-size: 16px; }
               .fd-strip .gv-st small { font-size: 10.5px; }
               .fd-actions .gv-btn svg { display: none; }
+              .fd-journey span { font-size: 11px !important; letter-spacing: -.02em; word-break: keep-all; overflow-wrap: normal !important; }
             }
           `}</style>
 
           {/* Name header */}
           <div className="gv-rise" style={{ display: "flex", alignItems: "center", gap: 13, ...({ "--i": i++ } as React.CSSProperties) }}>
-            <Av name={name} size={54} />
+            <Av name={name} size={54} round tint={family?.kind === "kdh" ? "apricot" : "mint"} className="keep" />
             <div style={{ minWidth: 0, flex: 1 }}>
-              <h1 className="gv-h1" style={{ fontSize: 24, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{name}</h1>
+              <h1 className="gv-h1" style={{ overflowWrap: "anywhere" }}>{name}</h1>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 5, minWidth: 0 }}>
                 {vm?.metaLine && (
                   <span className="gv-meta" style={{ minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{vm.metaLine}</span>
@@ -334,12 +334,12 @@ export function FamilyDetailPage() {
           {/* Journey: done forest, current lime */}
           <div className="gv-rise" style={{ marginTop: 16, ...({ "--i": i++ } as React.CSSProperties) }}>
             <Track total={JOURNEY.length} done={journey ?? 0} current={journey} />
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(5, minmax(0, 1fr))", gap: 5, marginTop: 7 }}>
+            <div className="fd-journey" style={{ display: "grid", gridTemplateColumns: "repeat(5, minmax(0, 1fr))", gap: 5, marginTop: 7, hyphens: "manual" }}>
               {JOURNEY.map((label, k) => (
                 <span key={label} style={{
-                  fontSize: 10, lineHeight: 1.2, textAlign: "center", minWidth: 0,
-                  fontWeight: k === journey ? 800 : 600,
-                  color: k === journey ? "var(--gv-ink)" : "var(--gv-quiet)",
+                  fontSize: 12, lineHeight: 1.25, textAlign: "center", minWidth: 0,
+                  fontWeight: k === journey ? 700 : 500,
+                  color: k === journey ? "var(--gv-ink)" : "var(--gv-mid)",
                 }}>{label}</span>
               ))}
             </div>
@@ -368,7 +368,7 @@ export function FamilyDetailPage() {
               <div>
                 {glanceRows.map((r) => (
                   <Row key={r.label} style={{ padding: "9px 0", justifyContent: "space-between" }}>
-                    <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--gv-quiet)" }}>{r.label}</span>
+                    <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--gv-mid)" }}>{r.label}</span>
                     <span className="tnum" style={{ fontSize: 13, fontWeight: 700, color: "var(--gv-ink)", textAlign: "right", minWidth: 0, overflowWrap: "anywhere" }}>{r.value}</span>
                   </Row>
                 ))}
@@ -387,7 +387,7 @@ export function FamilyDetailPage() {
                     <div key={`${t.name}-${t.role}`} style={{ flex: "0 0 auto", width: 84, textAlign: "center", minWidth: 0 }}>
                       <Av name={t.name} size={44} round style={{ margin: "0 auto 6px", background: tt.bg, color: tt.fg }} />
                       <div style={{ fontSize: 12, fontWeight: 700, color: "var(--gv-ink)", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.name}</div>
-                      {t.role && <div style={{ fontSize: 11, color: "var(--gv-quiet)", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.role}</div>}
+                      {t.role && <div style={{ fontSize: 12, color: "var(--gv-mid)", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.role}</div>}
                     </div>
                   );
                 })}
@@ -399,14 +399,14 @@ export function FamilyDetailPage() {
           {showCash && (
             <Card i={i++} style={{ marginTop: 12 }}>
               <CardTitle right={vm!.latestNetLabel ? <span className="gv-meta">{vm!.latestNetLabel}</span> : undefined}>Cash flow</CardTitle>
-              <div className="tnum" style={{ fontSize: 28, lineHeight: 1.05, fontWeight: 800, letterSpacing: "-.02em", color: vm!.latestNet != null && vm!.latestNet < 0 ? "var(--gv-coral)" : "var(--gv-go)" }}>
+              <div className="tnum" style={{ fontSize: 28, lineHeight: 1.05, fontWeight: 800, letterSpacing: "-.02em", color: vm!.latestNet != null && vm!.latestNet < 0 ? "var(--gv-ink)" : "var(--gv-go)" }}>
                 {vm!.latestNet != null ? `${vm!.latestNet < 0 ? "-" : "+"}${money(Math.abs(vm!.latestNet))}` : "No net yet"}
               </div>
               <div className="gv-meta" style={{ marginTop: 3 }}>net a month</div>
               {hasBars && (
                 <div style={{ marginTop: 14 }}>
                   <Bars bars={bars} height={56} />
-                  <div className="gv-meta" style={{ marginTop: 6, fontSize: 11 }}>Income by month</div>
+                  <div className="gv-meta" style={{ marginTop: 6 }}>Income by month</div>
                 </div>
               )}
             </Card>
@@ -427,7 +427,7 @@ export function FamilyDetailPage() {
                     <span style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 3, flex: "none" }}>
                       {pl.status && <Pill tint={PLAN_TINT[pl.tone ?? "green"]} sm>{pl.status}</Pill>}
                       {typeof pl.noteCount === "number" && pl.noteCount > 0 && (
-                        <span className="gv-meta tnum" style={{ fontSize: 11 }}>{pl.noteCount} {pl.noteCount === 1 ? "note" : "notes"}</span>
+                        <span className="gv-meta tnum">{pl.noteCount} {pl.noteCount === 1 ? "note" : "notes"}</span>
                       )}
                     </span>
                   </Row>
@@ -490,7 +490,7 @@ function NoteRow({ meta, text }: { meta: string; text: string }) {
   const [open, setOpen] = useState(false);
   const long = text.length > 150;
   return (
-    <Row style={{ padding: "10px 0", alignItems: "flex-start", flexDirection: "column", gap: 4 }}>
+    <Row style={{ padding: "12px 14px", marginTop: 8, alignItems: "flex-start", flexDirection: "column", gap: 4, background: "var(--gv-inset)", borderRadius: 16 }}>
       <span className="gv-meta" style={{ fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100%" }}>{meta}</span>
       <p style={{ margin: 0, fontSize: 13.5, color: "var(--gv-ink)", lineHeight: 1.5, whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
         {open || !long ? text : `${text.slice(0, 150).trimEnd()}… `}

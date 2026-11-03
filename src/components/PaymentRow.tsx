@@ -5,7 +5,7 @@ import { lastTouch } from "@/lib/time";
 import { Av, Card, Pill, type Tint } from "./gv";
 
 // paid = plain, due = yellow (to settle), overdue = rose (the blocker)
-const STATUS_TINT: Record<Payment["status"], Tint> = { paid: "none", due: "yellow", overdue: "rose" };
+const STATUS_TINT: Record<Payment["status"], Tint> = { paid: "mint", due: "yellow", overdue: "rose" };
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 interface Props {
@@ -17,12 +17,12 @@ interface Props {
 
 const ellipsis: CSSProperties = { overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" };
 
-/** One billing line: white card, square avatar, amount tabular on the right. */
+/** One billing line: white card, round pastel avatar, amount tabular on the right. */
 export function PaymentRow({ payment, onOpen, i }: Props) {
   const meta = [payment.method, payment.initiative, lastTouch(payment.date)].filter(Boolean).join(" · ");
   return (
-    <Card i={i} onClick={onOpen} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px" }}>
-      <Av name={payment.familyName} size={40} />
+    <Card i={i} onClick={onOpen} style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px" }}>
+      <Av name={payment.familyName} size={44} round tint={/kdh/i.test(payment.initiative || "") ? "apricot" : "mint"} className="keep" />
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 14.5, fontWeight: 700, color: "var(--gv-ink)", ...ellipsis }}>{payment.familyName}</div>
         <div className="gv-meta" style={{ marginTop: 2, ...ellipsis }}>{meta}</div>

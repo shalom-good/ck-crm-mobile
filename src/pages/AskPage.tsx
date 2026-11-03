@@ -1,6 +1,6 @@
+import { TopBar } from "@/components/TopBar";
 import { useRef, useState } from "react";
-import { BackButton } from "@/components/BackButton";
-import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons } from "@ionic/react";
+import { IonPage, IonContent, IonHeader, IonToolbar } from "@ionic/react";
 import { Sparkle, Microphone, ArrowUp, CaretRight } from "@phosphor-icons/react";
 import { useRole } from "@/lib/roles";
 import { Card } from "@/components/gv";
@@ -48,24 +48,22 @@ export function AskPage() {
     <IonPage>
       <IonHeader className="ion-no-border">
         <IonToolbar>
-          <IonButtons slot="start"><BackButton href="/tabs/home" /></IonButtons>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 800, fontSize: 17, color: "var(--gv-ink)", letterSpacing: "-.01em" }}>
-            <Sparkle size={18} weight="fill" color="var(--gv-go)" /> CK AI
-          </div>
+          <TopBar back="/tabs/home" space="CK AI" style={{ padding: "0 20px 0 14px" }} />
         </IonToolbar>
       </IonHeader>
 
-      <IonContent ref={content}>
-        <div style={{ padding: "8px 16px 120px" }}>
+      <IonContent ref={content} style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
+        <div style={{ padding: "8px 20px 120px" }}>
           {msgs.length === 0 ? (
             <div style={{ paddingTop: 12 }}>
-              <h1 className="gv-h1 gv-rise" style={{ fontSize: 24, ["--i" as string]: 0 } as React.CSSProperties}>What do you need, {first}?</h1>
+              <span className="ck-kicker gv-rise" style={{ display: "flex", alignItems: "center", gap: 6, ["--i" as string]: 0 } as React.CSSProperties}><Sparkle size={14} weight="fill" color="var(--gv-go)" style={{ flex: "none" }} />Ask CK AI</span>
+              <h1 className="gv-h1 gv-rise" style={{ marginTop: 2, ["--i" as string]: 0 } as React.CSSProperties}>What do you need, {first}?</h1>
               <p className="gv-sub gv-rise" style={{ marginTop: 6, ["--i" as string]: 1 } as React.CSSProperties}>Your families, payments, notes and resources. Ask in your own words.</p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 20 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 20 }}>
                 {SUGGESTIONS.map((s, k) => (
-                  <Card key={s} i={k + 2} onClick={() => send(s)} style={{ padding: "13px 14px", display: "flex", alignItems: "center", gap: 10 }}>
-                    <span style={{ flex: 1, minWidth: 0, fontSize: 13.5, fontWeight: 600, color: "var(--gv-ink)", lineHeight: 1.4 }}>{s}</span>
-                    <CaretRight size={14} weight="bold" color="var(--gv-quiet)" style={{ flex: "none" }} />
+                  <Card key={s} i={k + 2} onClick={() => send(s)} style={{ padding: "14px 16px", display: "flex", alignItems: "center", gap: 10 }}>
+                    <span style={{ flex: 1, minWidth: 0, fontSize: 14.5, fontWeight: 600, color: "var(--gv-ink)", lineHeight: 1.35 }}>{s}</span>
+                    <CaretRight size={14} weight="bold" color="var(--gv-faint, var(--gv-quiet))" style={{ flex: "none" }} />
                   </Card>
                 ))}
               </div>
@@ -79,8 +77,8 @@ export function AskPage() {
       </IonContent>
 
       {/* composer: white pill bar on the paper, ghost mic, forest round send (the one primary) */}
-      <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "10px 16px calc(12px + env(safe-area-inset-bottom))", background: "var(--gv-paper)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 4, background: "var(--gv-card)", boxShadow: "inset 0 0 0 1px var(--gv-line)", borderRadius: 999, padding: "6px 6px 6px 16px" }}>
+      <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "10px 20px calc(14px + env(safe-area-inset-bottom))", background: "var(--gv-paper)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 4, background: "var(--gv-card)", boxShadow: "inset 0 0 0 1px var(--gv-line)", borderRadius: 999, padding: "2px 2px 2px 16px" }}>
           <input
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -89,8 +87,8 @@ export function AskPage() {
             style={{ flex: 1, minWidth: 0, border: 0, outline: "none", background: "transparent", fontSize: 16, color: "var(--gv-ink)", height: 40 }}
           />
           <button aria-label="Dictate" onClick={dictate} style={ghostIcon}><Microphone size={22} weight="regular" /></button>
-          <button aria-label="Send" onClick={() => send()} disabled={!canSend} style={{ width: 40, height: 40, borderRadius: 999, border: 0, cursor: canSend ? "pointer" : "default", background: "var(--gv-go)", opacity: canSend ? 1 : 0.35, display: "grid", placeItems: "center", flex: "none", transition: "opacity .15s" }}>
-            <ArrowUp size={20} weight="bold" color="#fff" />
+          <button aria-label="Send" onClick={() => send()} disabled={!canSend} style={{ width: 44, height: 44, borderRadius: 999, border: 0, cursor: canSend ? "pointer" : "default", background: canSend ? "var(--gv-go)" : "var(--gv-bar)", color: canSend ? "var(--gv-lime)" : "var(--gv-mid)", display: "grid", placeItems: "center", flex: "none", transition: "background .15s" }}>
+            <ArrowUp size={20} weight="bold" />
           </button>
         </div>
       </div>
@@ -109,7 +107,7 @@ function Bubble({ msg }: { msg: Msg }) {
   }
   return (
     <div style={{ display: "flex", justifyContent: "flex-start" }}>
-      <div className="gv-card" style={{ maxWidth: "88%", padding: "11px 14px", borderRadius: 18, borderBottomLeftRadius: 6, fontSize: 14, lineHeight: 1.5, color: "var(--gv-text)", overflowWrap: "anywhere" }}>{msg.text}</div>
+      <div className="gv-card" style={{ maxWidth: "88%", padding: "12px 14px", borderRadius: 18, borderBottomLeftRadius: 6, fontSize: 14, lineHeight: 1.5, color: "var(--gv-text)", overflowWrap: "anywhere" }}>{msg.text}</div>
     </div>
   );
 }
@@ -123,4 +121,4 @@ function cannedReply(q: string): string {
   return "Here's what I found across your families, payments, and notes. (This is a scaffold reply. Once Supabase is wired I'll answer from live data.)";
 }
 
-const ghostIcon: React.CSSProperties = { width: 40, height: 40, display: "grid", placeItems: "center", background: "none", border: 0, cursor: "pointer", color: "var(--gv-mid)", borderRadius: 999, flex: "none", padding: 0 };
+const ghostIcon: React.CSSProperties = { width: 44, height: 44, display: "grid", placeItems: "center", background: "none", border: 0, cursor: "pointer", color: "var(--gv-mid)", borderRadius: 999, flex: "none", padding: 0 };

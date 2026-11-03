@@ -1,3 +1,4 @@
+import { TopBar } from "@/components/TopBar";
 import { useMemo, useState } from "react";
 import { IonPage, IonHeader, IonContent, IonSearchbar } from "@ionic/react";
 import { useAppData } from "@/lib/appData";
@@ -55,9 +56,10 @@ export function ResourcesPage() {
     <IonPage>
       {/* Title, search and the category chips stay put while the list scrolls. */}
       <IonHeader className="ion-no-border">
-        <div style={{ background: "var(--gv-paper)", padding: "calc(env(safe-area-inset-top) + 14px) 0 10px" }}>
-          <div style={{ padding: "0 16px" }}>
-            <h1 className="gv-h1">Resources</h1>
+        <div style={{ background: "var(--gv-paper)", padding: "calc(env(safe-area-inset-top) + 10px) 0 10px" }}>
+          <div style={{ padding: "0 20px" }}>
+            <TopBar space="Team" />
+            <h1 className="gv-h1" style={{ marginTop: 10 }}>Resources</h1>
             <div className="gv-meta" style={{ marginTop: 4 }}>{resourcesLoading ? "Loading…" : `${resources.length} in the directory`}</div>
           </div>
           {/* IonSearchbar handles mobile focus/keyboard reliably; themed globally */}
@@ -68,23 +70,23 @@ export function ResourcesPage() {
             placeholder="Search resources"
             debounce={100}
             inputMode="search"
-            style={{ padding: "8px 12px 0" }}
+            style={{ padding: "10px 16px 0" }}
           />
           {chips.length > 1 && (
-            <div style={{ padding: "8px 16px 0" }}><Chips items={chips} active={cat} onChange={pick} /></div>
+            <div style={{ padding: "10px 20px 0" }}><Chips items={chips} active={cat} onChange={pick} /></div>
           )}
         </div>
       </IonHeader>
 
-      <IonContent>
-        <div style={{ padding: "0 16px 120px" }}>
+      <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
+        <div style={{ padding: "0 20px 120px" }}>
           {resourcesLoading && (
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 16 }}><SkeletonCard /><SkeletonCard /><SkeletonCard /></div>
           )}
           {groups.map(([category, items]) => (
             <div key={category}>
               <Eyebrow>{category}</Eyebrow>
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {items.map((r) => (
                   <ResourceRow
                     key={r.id}

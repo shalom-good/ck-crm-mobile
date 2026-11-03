@@ -1,8 +1,8 @@
+import { TopBar } from "@/components/TopBar";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BackButton } from "@/components/BackButton";
 import { useParams } from "react-router";
 import {
-  IonPage, IonContent, IonHeader, IonToolbar, IonButtons,
+  IonPage, IonContent, IonHeader, IonToolbar,
   IonRefresher, IonRefresherContent, useIonActionSheet,
   useIonViewDidEnter, useIonViewWillLeave, type RefresherEventDetail,
 } from "@ionic/react";
@@ -195,14 +195,13 @@ export function ChatThreadPage() {
     <IonPage>
       <IonHeader className="ion-no-border">
         <IonToolbar>
-          <IonButtons slot="start"><BackButton href="/tabs/chats" /></IonButtons>
-          <span className="gv-eyebrow" style={{ padding: "0 8px" }}>Experts chat</span>
+          <TopBar back="/tabs/chats" space="Experts chat" style={{ padding: "0 20px 0 14px" }} />
         </IonToolbar>
         {/* Family strip under the toolbar */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "2px 16px 10px", background: "var(--gv-paper)", minWidth: 0 }}>
-          <Av name={title} size={40} />
+        <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "6px 20px 12px", background: "var(--gv-paper)", minWidth: 0 }}>
+          <Av name={title} size={44} round tint="mint" className="keep" />
           <div style={{ minWidth: 0, flex: 1 }}>
-            <div className="gv-h2" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</div>
+            <div className="gv-h2" style={{ fontSize: 17, fontWeight: 800, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</div>
             {people > 0 && <div className="gv-meta" style={{ marginTop: 1 }}>{people} {people === 1 ? "person" : "people"}</div>}
           </div>
         </div>
@@ -211,7 +210,7 @@ export function ChatThreadPage() {
       <IonContent ref={contentRef} style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
         <IonRefresher slot="fixed" onIonRefresh={refresh}><IonRefresherContent /></IonRefresher>
 
-        <div style={{ padding: "6px 14px 16px", display: "flex", flexDirection: "column", gap: 4 }}>
+        <div style={{ padding: "6px 20px 16px", display: "flex", flexDirection: "column", gap: 4 }}>
           {q.isLoading ? (
             <div style={{ padding: "40px 0", display: "flex", justifyContent: "center" }}><span className="ck-spin" /></div>
           ) : q.isError ? (
@@ -242,14 +241,14 @@ export function ChatThreadPage() {
       </IonContent>
 
       {/* Composer */}
-      <div style={{ background: "var(--gv-paper)", padding: "8px 14px calc(10px + env(safe-area-inset-bottom))" }}>
+      <div style={{ background: "var(--gv-paper)", padding: "8px 16px calc(10px + env(safe-area-inset-bottom))" }}>
         {suggestions.length > 0 && (
           <div className="gv-chips no-scrollbar" style={{ paddingBottom: 8 }}>
             {suggestions.map((p) => (
               <button key={p.email} className="gv-chip" onClick={() => pickMention(p)} style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "0 12px 0 6px" }}>
                 <Av name={p.name} size={24} round />
                 <span style={{ color: "var(--gv-ink)" }}>{p.name}</span>
-                {p.role && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--gv-quiet)" }}>{ROLE_TAG[p.role] ?? p.role}</span>}
+                {p.role && <span style={{ fontSize: 12, fontWeight: 700, color: "var(--gv-mid)" }}>{ROLE_TAG[p.role] ?? p.role}</span>}
               </button>
             ))}
           </div>
@@ -259,14 +258,14 @@ export function ChatThreadPage() {
             <Warning size={14} weight="fill" style={{ flex: "none" }} /> Sending as an alert. It pins the chat for everyone.
           </div>
         )}
-        <div style={{ display: "flex", alignItems: "flex-end", gap: 8, background: "var(--gv-card)", borderRadius: 18, boxShadow: "inset 0 0 0 1px var(--gv-line)", padding: "6px 6px 6px 8px", minWidth: 0 }}>
+        <div style={{ display: "flex", alignItems: "flex-end", gap: 8, background: "var(--gv-card)", borderRadius: 24, boxShadow: "inset 0 0 0 1px var(--gv-line)", padding: "4px 4px 4px 8px", minWidth: 0 }}>
           <button
             type="button"
             aria-label="Toggle alert"
             aria-pressed={isAlert}
             onClick={() => { setIsAlert((v) => !v); void tapLight(); }}
             className={`gv-pill${isAlert ? " rose" : ""}`}
-            style={{ border: 0, cursor: "pointer", flex: "none", height: 28, padding: "0 9px", marginBottom: 4 }}
+            style={{ border: 0, cursor: "pointer", flex: "none", height: 30, padding: "0 11px", marginBottom: 7 }}
           >
             <Warning size={14} weight={isAlert ? "fill" : "bold"} /> Alert
           </button>
@@ -289,17 +288,16 @@ export function ChatThreadPage() {
             onClick={() => void send()}
             disabled={!canSend}
             style={{
-              width: 36, height: 36, borderRadius: "50%", flex: "none", border: 0, padding: 0,
-              background: "var(--gv-go)", color: "#fff", opacity: canSend ? 1 : 0.4,
+              width: 44, height: 44, borderRadius: "50%", flex: "none", border: 0, padding: 0,
+              background: canSend ? "var(--gv-go)" : "var(--gv-bar)", color: canSend ? "var(--gv-lime)" : "var(--gv-mid)",
               display: "grid", placeItems: "center", cursor: canSend ? "pointer" : "default",
-              boxShadow: canSend ? "0 8px 18px -8px rgba(46,81,70,.6)" : "none",
-              transition: "opacity .15s",
+              transition: "background .15s",
             }}
           >
             <PaperPlaneRight size={17} weight="fill" />
           </button>
         </div>
-        <div className="gv-meta" style={{ marginTop: 6, fontSize: 11, textAlign: "center" }}>
+        <div className="gv-meta" style={{ marginTop: 6, textAlign: "center" }}>
           Hold a message to save it to the family record as a note.
         </div>
       </div>
@@ -318,7 +316,7 @@ function Bubble({ m, showAuthor, onPressStart, onPressEnd, onContext }: {
   const roleTag = m.role ? ROLE_TAG[m.role] ?? m.role : null;
   const roleTint: Tint = (m.role && ROLE_TINT[m.role]) || "apricot";
   const accent = mine ? "var(--gv-rose)" : "var(--gv-roseInk)";
-  const quiet = mine ? "rgba(255,255,255,.72)" : "var(--gv-quiet)";
+  const quiet = mine ? "rgba(255,255,255,.8)" : "var(--gv-mid)";
   return (
     <div style={{ display: "flex", justifyContent: mine ? "flex-end" : "flex-start", marginTop: 4, minWidth: 0 }}>
       <div
@@ -334,14 +332,11 @@ function Bubble({ m, showAuthor, onPressStart, onPressEnd, onContext }: {
           minWidth: 0,
           background: mine ? "var(--gv-go)" : "var(--gv-card)",
           color: mine ? "#fff" : "var(--gv-ink)",
-          boxShadow: [
-            m.isAlert ? `inset 3px 0 0 ${accent}` : null,
-            mine ? null : "var(--gv-shadow)",
-          ].filter(Boolean).join(", ") || undefined,
+          boxShadow: m.isAlert && !mine ? "inset 0 0 0 1.5px var(--gv-rose)" : undefined,
           borderRadius: 18,
           borderBottomRightRadius: mine ? 6 : 18,
           borderBottomLeftRadius: mine ? 18 : 6,
-          padding: m.isAlert ? "9px 13px 8px 15px" : "9px 13px 8px",
+          padding: "10px 14px 8px",
           userSelect: "none",
           WebkitUserSelect: "none",
         }}
@@ -353,7 +348,7 @@ function Bubble({ m, showAuthor, onPressStart, onPressEnd, onContext }: {
           </div>
         )}
         {m.isAlert && (
-          <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 3, color: accent, fontSize: 11.5, fontWeight: 700 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 3, color: accent, fontSize: 12, fontWeight: 700 }}>
             <Warning size={13} weight="fill" /> Alert
           </div>
         )}
@@ -370,11 +365,11 @@ function Bubble({ m, showAuthor, onPressStart, onPressEnd, onContext }: {
         ))}
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4, justifyContent: "flex-end" }}>
           {m.noteId && (
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 10.5, fontWeight: 700, color: mine ? "rgba(255,255,255,.85)" : "var(--gv-up)" }}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 700, color: mine ? "rgba(255,255,255,.85)" : "var(--gv-up)" }}>
               <NotePencil size={11} weight="bold" /> In notes{m.noteCategory ? ` · ${m.noteCategory}` : ""}
             </span>
           )}
-          <span className="tnum" style={{ fontSize: 10.5, color: quiet }}>{fmtTime(m.at)}</span>
+          <span className="tnum" style={{ fontSize: 12, color: quiet }}>{fmtTime(m.at)}</span>
         </div>
       </div>
     </div>

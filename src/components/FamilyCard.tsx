@@ -67,13 +67,13 @@ export function FamilyCard({ family, onOpen, i }: Props) {
 
   return (
     <div role="button" tabIndex={0} aria-label={`Open ${family.name}`} onClick={onOpen} onKeyDown={onKey} style={{ cursor: "pointer", outline: "none" }}>
-      <Card i={i} style={{ display: "block", padding: 15 }}>
+      <Card i={i} style={{ display: "block", padding: 16 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <Av name={family.name} photo={family.photo} size={42} />
+          <Av name={family.name} photo={family.photo} size={44} round tint={family.kind === "kdh" ? "apricot" : "mint"} className="keep" />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 15.5, fontWeight: 700, letterSpacing: "-0.01em", color: "var(--gv-ink)", lineHeight: "20px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{family.name}</div>
+            <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.005em", color: "var(--gv-ink)", lineHeight: "20px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{family.name}</div>
             {place && (
-              <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 3, fontSize: 12.5, color: "var(--gv-quiet)", minWidth: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 3, fontSize: 12, color: "var(--gv-mid)", minWidth: 0 }}>
                 <MapPin size={12} weight="regular" style={{ flexShrink: 0 }} />
                 <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{place}</span>
               </div>

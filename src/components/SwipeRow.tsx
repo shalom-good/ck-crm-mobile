@@ -95,7 +95,7 @@ export function SwipeRow({
   return (
     <div
       className={i != null ? "gv-rise" : undefined}
-      style={{ position: "relative", overflow: "hidden", borderRadius: 20, boxShadow: "var(--gv-shadow)", ...(i != null ? ({ "--i": i } as React.CSSProperties) : null) }}
+      style={{ position: "relative", overflow: "hidden", borderRadius: "var(--gv-r-card)", boxShadow: "var(--gv-shadow)", ...(i != null ? ({ "--i": i } as React.CSSProperties) : null) }}
     >
       {/* right-swipe advance affordance */}
       {canAdvance && (

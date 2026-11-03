@@ -15,8 +15,8 @@ const ellipsis: CSSProperties = { overflow: "hidden", textOverflow: "ellipsis", 
 /** Directory row: white card, sky icon tile, name + one-line description + quiet contact. */
 export function ResourceRow({ resource, onOpen, i }: Props) {
   return (
-    <Card i={i} onClick={onOpen} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px" }}>
-      <span className="gv-tile" style={{ width: 40, height: 40, background: "var(--gv-sky)", color: "var(--gv-skyInk)" }}>
+    <Card i={i} onClick={onOpen} style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px" }}>
+      <span className="gv-tile" style={{ width: 40, height: 40, borderRadius: 12, background: "var(--gv-mint)", color: "var(--gv-mintInk)" }}>
         {resource.link ? <LinkSimple size={18} weight="bold" /> : <BookOpenText size={18} weight="bold" />}
       </span>
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -31,7 +31,7 @@ export function ResourceRow({ resource, onOpen, i }: Props) {
           </div>
         )}
       </div>
-      <CaretRight size={16} weight="bold" color="var(--gv-quiet)" style={{ flex: "none" }} aria-hidden />
+      <CaretRight size={16} weight="bold" color="var(--gv-faint, var(--gv-quiet))" style={{ flex: "none" }} aria-hidden />
     </Card>
   );
 }

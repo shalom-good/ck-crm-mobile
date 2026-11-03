@@ -1,3 +1,4 @@
+import { TopBar } from "@/components/TopBar";
 import { useMemo, useState } from "react";
 import { IonPage, IonContent, useIonRouter } from "@ionic/react";
 import { Plus } from "@phosphor-icons/react";
@@ -39,13 +40,14 @@ export function PaymentsPage() {
 
   return (
     <IonPage>
-      <IonContent>
-        <div style={{ padding: "calc(env(safe-area-inset-top) + 18px) 16px 0" }}>
-          <h1 className="gv-h1">Payments</h1>
+      <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
+        <div style={{ padding: "calc(env(safe-area-inset-top) + 10px) 20px 0" }}>
+          <TopBar space="Team" back="/tabs/home" />
+          <h1 className="gv-h1" style={{ marginTop: 10 }}>Payments</h1>
           <div className="gv-meta" style={{ marginTop: 4 }}>Your recent billing</div>
 
           {/* the one stat strip */}
-          <div style={{ marginTop: 16 }}>
+          <div style={{ marginTop: 14 }}>
             <Strip
               i={0}
               stats={[
@@ -56,10 +58,10 @@ export function PaymentsPage() {
             />
           </div>
 
-          <div style={{ marginTop: 14 }}><Chips items={chips} active={tab} onChange={setTab} /></div>
+          <div style={{ marginTop: 12 }}><Chips items={chips} active={tab} onChange={setTab} /></div>
         </div>
 
-        <div style={{ padding: "12px 16px 120px", display: "flex", flexDirection: "column", gap: 10, minHeight: "40vh" }}>
+        <div style={{ padding: "12px 20px 170px", display: "flex", flexDirection: "column", gap: 12, minHeight: "40vh" }}>
           {rows.length === 0 ? (
             <Empty action="Add billing" onAction={() => openCapture("add")}>No billing in this bucket.</Empty>
           ) : (
@@ -67,12 +69,12 @@ export function PaymentsPage() {
           )}
         </div>
 
-        {/* Add billing — the one forest primary on this screen, bottom-right so it clears the raised Ask button */}
+        {/* Add billing — the one forest primary on this screen, bottom-right above the floating tab bar */}
         <button
           aria-label="Add billing"
           className="gv-btn"
           onClick={() => openCapture("add")}
-          style={{ position: "absolute", right: 16, bottom: "calc(36px + env(safe-area-inset-bottom))", borderRadius: 999, zIndex: 5 }}
+          style={{ position: "absolute", right: 20, bottom: "calc(100px + env(safe-area-inset-bottom))", borderRadius: 999, zIndex: 5, boxShadow: "var(--gv-shadow-pop)" }}
         >
           <Plus size={20} weight="bold" /> Add billing
         </button>

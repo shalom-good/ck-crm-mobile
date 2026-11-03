@@ -65,7 +65,7 @@ export function FamiliesPage() {
   return (
     <IonPage>
       <IonContent style={{ "--background": "var(--gv-paper)" } as CSSProperties}>
-        <div style={{ paddingTop: "calc(env(safe-area-inset-top) + 8px)" }}>
+        <div style={{ paddingTop: "calc(env(safe-area-inset-top) + 10px)" }}>
           <Header
             title="Families"
             subtitle={`${role.label}${all.length ? ` · ${all.length} families` : ""} · ${syncedAgo(lastSync)}`}
@@ -73,7 +73,7 @@ export function FamiliesPage() {
             searchActive={searchOpen}
           />
           {searchOpen && (
-            <div style={{ padding: "6px 16px 2px" }}>
+            <div style={{ padding: "8px 20px 2px" }}>
               <input
                 className="gv-input"
                 value={q}
@@ -87,13 +87,13 @@ export function FamiliesPage() {
               />
             </div>
           )}
-          <div style={{ padding: "6px 16px 10px" }}><Chips items={chips} active={filter} onChange={setFilter} /></div>
+          <div style={{ padding: "12px 20px 12px" }}><Chips items={chips} active={filter} onChange={setFilter} /></div>
         </div>
 
         <IonRefresher slot="fixed" onIonRefresh={refresh}><IonRefresherContent /></IonRefresher>
 
-        {/* 130px at the bottom clears the tab bar + the raised Ask button. */}
-        <div style={{ padding: "4px 16px 130px", display: "flex", flexDirection: "column", gap: 12, minHeight: "50vh" }}>
+        {/* 120px at the bottom clears the floating tab bar. */}
+        <div style={{ padding: "0 20px 120px", display: "flex", flexDirection: "column", gap: 12, minHeight: "50vh" }}>
           {loading ? (
             <><SkeletonCard /><SkeletonCard /><SkeletonCard /></>
           ) : families.length === 0 && term ? (

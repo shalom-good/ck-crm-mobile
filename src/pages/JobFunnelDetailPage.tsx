@@ -1,7 +1,7 @@
+import { TopBar } from "@/components/TopBar";
 import { useState } from "react";
-import { BackButton } from "@/components/BackButton";
 import { useParams } from "react-router";
-import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons } from "@ionic/react";
+import { IonPage, IonContent, IonHeader, IonToolbar } from "@ionic/react";
 import { Phone, ChatText, CaretDown, CaretRight, Check } from "@phosphor-icons/react";
 import { useAppData } from "@/lib/appData";
 import { money } from "@/lib/format";
@@ -51,31 +51,29 @@ export function JobFunnelDetailPage() {
   const place = [c.city, c.state].filter(Boolean).join(", ");
   const meta = [place || null, c.jpa ? `JPA · ${c.jpa}` : "No JPA", c.daysInStage != null ? `${c.daysInStage}d in stage` : null].filter(Boolean).join(" · ");
 
-  // income → target as the one stat strip; the gap is the emphasised (coral) number when short
+  // income → target as the one stat strip (a family's money is never shown in red)
   const stats: Stat[] = [];
   if (c.currentIncome != null) stats.push({ label: "Current", value: c.currentIncome, fmt });
   if (c.targetIncome != null) stats.push({ label: "Target", value: c.targetIncome, fmt });
-  if (gap != null) stats.push({ label: gap >= 0 ? "To target" : "Over target", value: Math.abs(gap), fmt, warn: gap > 0 });
+  if (gap != null) stats.push({ label: gap >= 0 ? "To target" : "Over target", value: Math.abs(gap), fmt });
 
   return (
     <IonPage>
       <IonHeader className="ion-no-border">
         <IonToolbar>
-          <IonButtons slot="start"><BackButton href="/tabs/job-funnel" /></IonButtons>
-          <div className="gv-meta" style={{ textAlign: "center", fontWeight: 700, padding: "0 8px" }}>Job Funnel</div>
-          <IonButtons slot="end"><span style={{ width: 40 }} /></IonButtons>
+          <TopBar back="/tabs/job-funnel" space="Job Funnel" style={{ padding: "0 20px 0 14px" }} />
         </IonToolbar>
       </IonHeader>
 
-      <IonContent>
-        <div style={{ padding: "4px 16px 120px", display: "flex", flexDirection: "column", gap: 12 }}>
+      <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
+        <div style={{ padding: "8px 20px 120px", display: "flex", flexDirection: "column", gap: 12 }}>
 
           {/* header: who, where they are, what to do */}
           <div className="gv-rise" style={{ ["--i" as string]: 0 } as React.CSSProperties}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <Av name={c.name} size={52} />
+              <Av name={c.name} size={52} round tint="yellow" className="keep" />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <h1 className="gv-h1" style={{ fontSize: 24, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name}</h1>
+                <h1 className="gv-h1" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name}</h1>
                 <div className="gv-meta" style={{ marginTop: 3, lineHeight: 1.4 }}>{meta}</div>
               </div>
             </div>
@@ -105,8 +103,8 @@ export function JobFunnelDetailPage() {
           <Card i={2}>
             <button onClick={() => setPipeOpen((o) => !o)} style={{ width: "100%", background: "none", border: 0, padding: 0, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, cursor: "pointer", font: "inherit", color: "inherit", textAlign: "left" }}>
               <span style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
-                {pipeOpen ? <CaretDown size={14} weight="bold" color="var(--gv-quiet)" /> : <CaretRight size={14} weight="bold" color="var(--gv-quiet)" />}
-                <span className="gv-h2" style={{ fontSize: 15.5 }}>Pipeline</span>
+                {pipeOpen ? <CaretDown size={14} weight="bold" color="var(--gv-mid)" /> : <CaretRight size={14} weight="bold" color="var(--gv-mid)" />}
+                <span className="gv-h2">Pipeline</span>
                 <span className="gv-meta tnum" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prog.completed}/{prog.total}{c.stage ? ` · ${stageShort(c.stage)}` : ""}</span>
               </span>
               <span className="gv-link" style={{ flex: "none" }}>{pipeOpen ? "Hide" : "Show"}</span>
@@ -116,7 +114,7 @@ export function JobFunnelDetailPage() {
                 {prog.steps.map((s) => {
                   const p = STEP_PILL[s.status] ?? STEP_PILL.pending;
                   return (
-                    <div key={s.num} style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 0", paddingLeft: s.indent ? 18 : 0, borderTop: "1px solid var(--gv-hair)" }}>
+                    <div key={s.num} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", paddingLeft: s.indent ? 18 : 0 }}>
                       <StepCheck status={s.status} />
                       <span className="tnum gv-meta" style={{ width: 26, flex: "none" }}>{s.num}</span>
                       <span style={{ flex: 1, minWidth: 0, fontSize: s.indent ? 13.5 : 14, color: s.status === "pending" ? "var(--gv-mid)" : "var(--gv-ink)", fontWeight: s.status === "working" ? 700 : 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.title}</span>
@@ -136,7 +134,7 @@ export function JobFunnelDetailPage() {
             ) : (
               <div style={{ display: "flex", flexDirection: "column" }}>
                 {noteBlocks.map((b, i) => (
-                  <div key={i} style={{ fontSize: 13.5, lineHeight: 1.55, color: "var(--gv-text)", padding: "10px 0", borderTop: i === 0 ? 0 : "1px solid var(--gv-hair)", overflowWrap: "anywhere" }}>{b}</div>
+                  <div key={i} style={{ fontSize: 13.5, lineHeight: 1.55, color: "var(--gv-text)", padding: "12px 14px", marginTop: i === 0 ? 0 : 8, background: "var(--gv-inset)", borderRadius: 16, overflowWrap: "anywhere" }}>{b}</div>
                 ))}
               </div>
             )}

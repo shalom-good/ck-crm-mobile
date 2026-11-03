@@ -1,3 +1,4 @@
+import { TopBar } from "@/components/TopBar";
 import { useMemo, useState } from "react";
 import { IonPage, IonContent, IonRefresher, IonRefresherContent, useIonRouter, type RefresherEventDetail } from "@ionic/react";
 import { useRole } from "@/lib/roles";
@@ -22,7 +23,7 @@ function JfCard({ c, i, onOpen }: { c: JobFunnelClient; i: number; onOpen: () =>
   return (
     <Card i={i} onClick={onOpen} style={{ padding: "12px 14px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <Av name={c.name} size={40} />
+        <Av name={c.name} size={44} round tint="yellow" className="keep" />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 14.5, fontWeight: 700, color: "var(--gv-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name}</div>
           <div className="gv-meta" style={{ marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{sub}</div>
@@ -66,16 +67,17 @@ export function JobFunnelPage() {
 
   return (
     <IonPage>
-      <IonContent>
-        <div style={{ padding: "calc(env(safe-area-inset-top) + 18px) 16px 0" }}>
-          <h1 className="gv-h1">Job Funnel</h1>
+      <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
+        <div style={{ padding: "calc(env(safe-area-inset-top) + 10px) 20px 0" }}>
+          <TopBar space="Team" back="/tabs/home" />
+          <h1 className="gv-h1" style={{ marginTop: 10 }}>Job Funnel</h1>
           <div className="gv-meta" style={{ marginTop: 4 }}>{role.label} · {syncedAgo(lastSync)}</div>
-          <div style={{ marginTop: 14 }}><Chips items={chips} active={filter} onChange={setFilter} /></div>
+          <div style={{ marginTop: 12 }}><Chips items={chips} active={filter} onChange={setFilter} /></div>
         </div>
 
         <IonRefresher slot="fixed" onIonRefresh={refresh}><IonRefresherContent /></IonRefresher>
 
-        <div style={{ padding: "12px 16px 120px", display: "flex", flexDirection: "column", gap: 10, minHeight: "50vh" }}>
+        <div style={{ padding: "12px 20px 120px", display: "flex", flexDirection: "column", gap: 12, minHeight: "50vh" }}>
           {jobFunnelLoading ? (
             <><SkeletonCard /><SkeletonCard /><SkeletonCard /></>
           ) : list.length === 0 ? (
