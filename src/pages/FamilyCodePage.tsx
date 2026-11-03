@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useSwipeBack } from "@/lib/swipeBack";
-import { BackButton } from "@/components/BackButton";
-import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, useIonRouter } from "@ionic/react";
+import { TopBar } from "@/components/TopBar";
+import { IonPage, IonContent, IonHeader, IonToolbar, useIonRouter } from "@ionic/react";
 import { familyLogin, PORTAL_WEB_URL } from "@/lib/portalApi";
 import { addHouseholdPhone, identifierKind } from "@/lib/identityApi";
 import { ApiError } from "@/lib/mobileApi";
@@ -81,13 +81,13 @@ export function FamilyCodePage() {
     <IonPage ref={swipe as React.RefObject<HTMLElement>}>
       <IonHeader className="ion-no-border">
         <IonToolbar>
-          <IonButtons slot="start"><BackButton href="/start" /></IonButtons>
+          <TopBar back="/start" space="Family" style={{ padding: "0 20px 0 14px" }} />
         </IonToolbar>
       </IonHeader>
       <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
         <div style={{ padding: "0 20px calc(28px + env(safe-area-inset-bottom))" }} onClick={() => { if (mode === "letters") inputRef.current?.focus(); }}>
-          <div className="gv-rise" style={{ borderRadius: 22, background: "linear-gradient(160deg,#EEF8C8,#DDF3E6)", padding: "8px 16px 0", display: "flex", justifyContent: "center" }}>
-            <HouseArt width={150} />
+          <div className="ck-art mint gv-rise" style={{ padding: "8px 16px 0", marginTop: 6 }}>
+            <HouseArt width={140} />
           </div>
 
           {ended && mode === "signin" && (
@@ -137,10 +137,10 @@ export function FamilyCodePage() {
             <div onClick={(e) => e.stopPropagation()}>
               <h1 className="gv-h1 gv-rise" style={{ "--i": 1, marginTop: 22 } as React.CSSProperties}>You are in</h1>
               <p className="gv-sub gv-rise" style={{ "--i": 2, marginTop: 6 } as React.CSSProperties}>Next time, sign in with your phone. No code to keep. Either of you can add your own number.</p>
-              <label htmlFor="ck-phone" style={{ display: "block", fontSize: 13, fontWeight: 700, color: "var(--gv-mid)", margin: "18px 2px 6px" }}>Your phone</label>
+              <label htmlFor="ck-phone" className="ck-label" style={{ marginTop: 18 }}>Your phone</label>
               <input id="ck-phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="(555) 123-4567" value={phone}
                 onChange={(e) => { setPhone(e.target.value); setErr(null); }}
-                style={{ width: "100%", boxSizing: "border-box", minHeight: 52, borderRadius: 14, border: 0, boxShadow: "inset 0 0 0 1.5px var(--gv-hair, #EAEDE7)", background: "#fff", padding: "0 14px", font: "inherit", fontSize: 16, color: "var(--gv-ink)" }} />
+                className="gv-input" />
               <button className="gv-btn block" style={{ marginTop: 14 }} disabled={identifierKind(phone) !== "phone" || busy} onClick={() => void finishOffer(true)}>{busy ? "Saving…" : "Save my phone"}</button>
               <button className="gv-btn ghost block" style={{ marginTop: 10 }} disabled={busy} onClick={() => void finishOffer(false)}>Not now, open my page</button>
             </div>

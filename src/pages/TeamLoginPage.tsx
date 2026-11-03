@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useSwipeBack } from "@/lib/swipeBack";
-import { BackButton } from "@/components/BackButton";
-import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, useIonRouter } from "@ionic/react";
+import { TopBar } from "@/components/TopBar";
+import { IonPage, IonContent, IonHeader, IonToolbar, useIonRouter } from "@ionic/react";
 import { requestCode, verifyCode } from "@/lib/mobileApi";
 import { useAuth } from "@/lib/auth";
 import { TeamArt } from "@/components/gv";
@@ -71,13 +71,13 @@ export function TeamLoginPage() {
     <IonPage ref={swipe as React.RefObject<HTMLElement>}>
       <IonHeader className="ion-no-border">
         <IonToolbar>
-          <IonButtons slot="start"><BackButton href="/start" /></IonButtons>
+          <TopBar back="/start" space="Team" style={{ padding: "0 20px 0 14px" }} />
         </IonToolbar>
       </IonHeader>
       <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
         <div style={{ padding: "0 20px calc(28px + env(safe-area-inset-bottom))" }}>
-          <div className="gv-rise" style={{ borderRadius: 22, background: "linear-gradient(150deg,#DCEFC9,#C8E3D2 60%,#BFDCCB)", padding: "8px 16px 0", display: "flex", justifyContent: "center" }}>
-            <TeamArt width={170} />
+          <div className="ck-art plum gv-rise" style={{ padding: "8px 16px 0", marginTop: 6 }}>
+            <TeamArt width={150} />
           </div>
 
           <h1 className="gv-h1 gv-rise" style={{ "--i": 1, marginTop: 22 } as React.CSSProperties}>{greetingWord()}.</h1>
@@ -137,7 +137,7 @@ export function TeamLoginPage() {
             <i>!</i>
             <div><b>Never paste your CK login into an AI tool, bot or another site.</b> CK staff will never ask for your code. Sign in only here or on crm.collectivekindness.net.</div>
           </div>
-          <p className="gv-rise" style={{ "--i": 6, margin: "14px 2px 0", fontSize: 13.5, color: "var(--gv-quiet)", lineHeight: 1.5 } as React.CSSProperties}>New to CK? Ask Shalom or Leivi to add your email.</p>
+          <p className="gv-rise" style={{ "--i": 6, margin: "14px 2px 0", fontSize: 13.5, color: "var(--gv-mid)", lineHeight: 1.5 } as React.CSSProperties}>New to CK? Ask Shalom or Leivi to add your email.</p>
         </div>
       </IonContent>
     </IonPage>

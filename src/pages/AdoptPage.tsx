@@ -1,6 +1,6 @@
-import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons } from "@ionic/react";
+import { IonPage, IonContent, IonHeader, IonToolbar } from "@ionic/react";
 import { useSwipeBack } from "@/lib/swipeBack";
-import { BackButton } from "@/components/BackButton";
+import { TopBar } from "@/components/TopBar";
 import { useEffect, useState } from "react";
 import { CRM_HOST } from "@/lib/mobileApi";
 import { loadDonorSession } from "@/lib/donorSession";
@@ -25,7 +25,7 @@ export function AdoptPage() {
     <IonPage ref={swipe as React.RefObject<HTMLElement>}>
       <IonHeader className="ion-no-border">
         <IonToolbar>
-          <IonButtons slot="start"><BackButton href="/start/donor" /></IonButtons>
+          <TopBar back="/start/donor" space="Giving" style={{ padding: "0 20px 0 14px" }} />
         </IonToolbar>
       </IonHeader>
       <IonContent scrollY={false} style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>

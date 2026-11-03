@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, useIonRouter } from "@ionic/react";
+import { IonPage, IonContent, IonHeader, IonToolbar, useIonRouter } from "@ionic/react";
 import { useSwipeBack } from "@/lib/swipeBack";
-import { BackButton } from "@/components/BackButton";
+import { TopBar } from "@/components/TopBar";
 import { ArrowSquareOut, CaretRight } from "@phosphor-icons/react";
 import { GiftArt } from "@/components/gv";
 import { GIVE_URL, DONOR_PORTAL_URL } from "@/lib/mobileApi";
@@ -41,13 +41,13 @@ export function DonorStartPage() {
     <IonPage ref={swipe as React.RefObject<HTMLElement>}>
       <IonHeader className="ion-no-border">
         <IonToolbar>
-          <IonButtons slot="start"><BackButton href="/start" /></IonButtons>
+          <TopBar back="/start" space="Giving" style={{ padding: "0 20px 0 14px" }} />
         </IonToolbar>
       </IonHeader>
       <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
         <div style={{ padding: "0 20px calc(28px + env(safe-area-inset-bottom))" }}>
-          <div className="gv-rise" style={{ borderRadius: 22, background: "linear-gradient(160deg,#EEF8C8,#DDF3E6)", padding: "10px 16px 4px", display: "flex", justifyContent: "center" }}>
-            <GiftArt width={140} />
+          <div className="ck-art apricot gv-rise" style={{ padding: "10px 16px 4px", marginTop: 6 }}>
+            <GiftArt width={120} />
           </div>
 
           {ready && session && (<>
@@ -77,7 +77,7 @@ export function DonorStartPage() {
               }}
             />
             {step === "id" && (<>
-              <div className="gv-rise" style={{ "--i": 5, margin: "22px 2px 10px", fontSize: 13, fontWeight: 700, color: "var(--gv-mid)" } as React.CSSProperties}>New here?</div>
+              <div className="gv-eyebrow gv-rise" style={{ "--i": 5, margin: "24px 2px 10px" } as React.CSSProperties}>New here?</div>
               <button className="gv-btn ghost block gv-rise" style={{ "--i": 5 } as React.CSSProperties} onClick={() => router.push("/start/adopt")}>
                 Adopt a family <CaretRight size={18} />
               </button>

@@ -81,7 +81,7 @@ export function CodeSignIn({ area, title, sub, onSignedIn, onStep }: {
 
       {step === "id" && (
         <div style={{ marginTop: 18 }}>
-          <label htmlFor="ck-id" style={{ display: "block", fontSize: 13, fontWeight: 700, color: "var(--gv-mid)", margin: "0 2px 6px" }}>{wantEmail ? "Email" : "Phone or email"}</label>
+          <label htmlFor="ck-id" className="ck-label">{wantEmail ? "Email" : "Phone or email"}</label>
           <input
             id="ck-id"
             ref={idRef}
@@ -95,7 +95,7 @@ export function CodeSignIn({ area, title, sub, onSignedIn, onStep }: {
             value={id}
             onChange={(e) => { setId(e.target.value); setErr(null); }}
             onKeyDown={(e) => { if (e.key === "Enter") void send(); }}
-            style={{ width: "100%", boxSizing: "border-box", minHeight: 52, borderRadius: 14, border: 0, boxShadow: "inset 0 0 0 1.5px var(--gv-hair, #EAEDE7)", background: "#fff", padding: "0 14px", font: "inherit", fontSize: 16, color: "var(--gv-ink)" }}
+            className="gv-input"
           />
           <button className="gv-btn block" style={{ marginTop: 14 }} disabled={!kind || busy} onClick={() => void send()}>
             {busy ? "Sending…" : "Send me a code"}
