@@ -79,33 +79,38 @@ export const STATUS_PILLS: Record<StatusKey, { label: string; bg: string; text: 
 // ---------------------------------------------------------------------------
 
 export const palette = {
+  /** The CK look (html[data-look="ck"], every screen but the client portal). */
   light: {
     bg: "#F3F5F1",
     card: "#FFFFFF",
-    hairline: "#EAEDE7",
-    title: "#1C2E29",
-    body: "#5F6D68",
-    muted: "#86928C",
+    inset: "#EDF1EB",
+    hairline: "#E1E7DF",
+    inputBorder: "#D6DDD4",
+    title: "#17241F",
+    body: "#52625B",
+    muted: "#6B7A73",
     tint: "#2E5146",
     lime: "#D7F36E",
-    coral: "#E8714F",
-    danger: "#B8463A",
-    success: "#3B7A2A",
-    inputBorder: "#E2E6E0",
+    coral: "#EE7A5B",
+    warn: "#B8492C",
+    danger: "#9A3B22",
+    success: "#2E5146",
   },
   dark: {
-    bg: "#F3F5F1",
-    card: "#FFFFFF",
-    hairline: "#EAEDE7",
-    title: "#1C2E29",
-    body: "#5F6D68",
-    muted: "#86928C",
-    tint: "#2E5146",
+    bg: "#121A16",
+    card: "#1B2520",
+    inset: "#212C27",
+    hairline: "#2C3833",
+    inputBorder: "#2C3833",
+    title: "#EEF3EF",
+    body: "#A9B6B0",
+    muted: "#8C9A93",
+    tint: "#9BD3B6",
     lime: "#D7F36E",
-    coral: "#E8714F",
-    danger: "#B8463A",
-    success: "#3B7A2A",
-    inputBorder: "#E2E6E0",
+    coral: "#EE7A5B",
+    warn: "#F6C9B9",
+    danger: "#F6C9B9",
+    success: "#9BD3B6",
   },
 } as const;
 
@@ -115,7 +120,7 @@ export type ColorScheme = keyof typeof palette;
 // Radii / spacing / touch.
 // ---------------------------------------------------------------------------
 
-export const radii = { card: 20, input: 14, pill: 8, sheet: 28 } as const;
+export const radii = { card: 22, tile: 16, input: 14, pill: 999, dayChip: 14, sheet: 26 } as const;
 
 export const space = {
   xs: 4,
@@ -124,7 +129,7 @@ export const space = {
   lg: 16,
   xl: 20,
   xxl: 24,
-  gutter: 16,
+  gutter: 20,
 } as const;
 
 export const touch = { min: 48, kebab: 44, swipeAction: 56 } as const;

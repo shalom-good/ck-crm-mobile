@@ -129,3 +129,81 @@ ion-modal {
   --max-width: 100%;
 }
 ion-modal::part(handle) { background: var(--gv-line); width: 40px; }
+
+/* ─────────────────────────────────────────────────────────────────────
+ * The CK look (2026-11-02): the App Store set, the same values the staff
+ * CRM ("bright"), the donor portal and the Academy use. Scoped to
+ * html[data-look="ck"], which App.tsx sets for everything EXCEPT a signed-in
+ * family session: the client portal keeps the Grove values above, untouched.
+ * Component rules for the look live in src/theme/ck-look.css.
+ * ───────────────────────────────────────────────────────────────────── */
+html[data-look="ck"] {
+  --gv-paper: #F3F5F1;      /* page ground */
+  --gv-card: #FFFFFF;       /* flat white card, no border, no shadow */
+  --gv-inset: #EDF1EB;      /* inner tile, day chip, input well */
+  --gv-hair: #E1E7DF;       /* line: dividers inside a card */
+  --gv-line: #D6DDD4;       /* line2: edge of a control */
+  --gv-ink: #17241F;        /* titles, numbers */
+  --gv-text: #1F2E28;       /* body */
+  --gv-mid: #52625B;        /* secondary + small labels (AA on paper and white) */
+  --gv-quiet: #52625B;      /* small words always use mid */
+  --gv-faint: #6B7A73;      /* quiet: icons and 14px+ only */
+  --gv-go: #2E5146;         /* forest: primary action, selected chip, progress */
+  --gv-go-deep: #1F3A32;    /* forest hover */
+  --gv-lime: #D7F36E;       /* the one highlight */
+  --gv-lime-soft: #EAF7B8;  --gv-lime-ink: #3E5C1E;
+  --gv-lime-pill: #D7F36E;  /* active tab pill */
+  --gv-coral: #EE7A5B;      /* fills only (giving band, one emphasised bar) */
+  --gv-coral-ink: #9A3B22;  /* text on white inside a coral band */
+  --gv-warn: #B8492C;       /* an attention count */
+  --gv-warm: #C4502F;       /* text-safe warm */
+  --gv-bar: #E4EAE3;        /* bar / progress track */
+  --gv-sage: #EDF1EB;       /* selected row */
+  --gv-up: #2E5146;   --gv-upBg: #DCEBDF;
+  --gv-down: #9A3B22; --gv-downBg: #FADDD3;
+  /* one pastel per space (fill / ink on it) */
+  --gv-mint: #DCEBDF;     --gv-mintInk: #2E5146;     /* plan + CK families */
+  --gv-sky: #DCE3F3;      --gv-skyInk: #33415F;      /* Academy */
+  --gv-apricot: #F8D9CC;  --gv-apricotInk: #8A3A22;  /* KDH / debt */
+  --gv-yellow: #F5EDB4;   --gv-yellowInk: #5E5418;   /* budget / fundraising */
+  --gv-plum: #EADCF5;     --gv-plumInk: #5B2D7A;     /* team / Shluchim */
+  --gv-rose: #FADDD3;     --gv-roseInk: #9A3B22;     /* attention */
+  --gv-lavender: #F8D9CC; --gv-lavenderInk: #8A3A22; /* old "debt" name → apricot */
+  --gv-shadow: none;
+  --gv-shadow-pop: 0 14px 30px -18px rgba(23, 36, 31, .35);
+  --gv-r-card: 22px; --gv-r-btn: 14px; --gv-r-pill: 999px; --gv-r-tile: 12px; --gv-r-sheet: 26px;
+  --ck-scrim: rgba(23, 36, 31, 0.32);
+  --ion-text-color: var(--gv-ink);
+}
+
+/* Dark values, ready for a surface that turns dark on (lib/theme.ts keeps
+   the app light today). Pastels drop to 18% over the card with light ink. */
+html[data-look="ck"].dark {
+  --gv-paper: #121A16;
+  --gv-card: #1B2520;
+  --gv-inset: #212C27;
+  --gv-hair: #2C3833;
+  --gv-line: #2C3833;
+  --gv-ink: #EEF3EF;
+  --gv-text: #DDE5E0;
+  --gv-mid: #A9B6B0;
+  --gv-quiet: #A9B6B0;
+  --gv-faint: #8C9A93;
+  --gv-go: #2E5146;          /* forest-fill */
+  --gv-go-text: #9BD3B6;     /* forest as text / accent */
+  --gv-bar: #2C3833;
+  --gv-sage: #212C27;
+  --gv-upBg: rgba(220, 235, 223, .18);  --gv-up: #CFE6D6;
+  --gv-downBg: rgba(250, 221, 211, .18); --gv-down: #F6C9B9;
+  --gv-mint: rgba(220, 235, 223, .18);   --gv-mintInk: #CFE6D6;
+  --gv-sky: rgba(220, 227, 243, .18);    --gv-skyInk: #D3DBF0;
+  --gv-apricot: rgba(248, 217, 204, .18); --gv-apricotInk: #F6CDBB;
+  --gv-yellow: rgba(245, 237, 180, .18); --gv-yellowInk: #EFE5A6;
+  --gv-plum: rgba(234, 220, 245, .18);   --gv-plumInk: #E3D2F2;
+  --gv-rose: rgba(250, 221, 211, .18);   --gv-roseInk: #F6C9B9;
+  --gv-lavender: var(--gv-apricot);      --gv-lavenderInk: var(--gv-apricotInk);
+  --gv-shadow-pop: 0 14px 30px -18px rgba(0, 0, 0, .6);
+  --ion-background-color: var(--gv-paper);
+  --ion-toolbar-background: var(--gv-paper);
+  --ion-item-background: var(--gv-card);
+}

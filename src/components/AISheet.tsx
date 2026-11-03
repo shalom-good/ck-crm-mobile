@@ -223,11 +223,11 @@ export function AISheet() {
                   {SUGGESTIONS.map((s) => <button key={s} className="gv-chip" onClick={() => sendAsk(s)}>{s}</button>)}
                 </div>
               )}
-              <div style={{ display: "flex", alignItems: "center", gap: 4, background: "var(--gv-card)", boxShadow: "inset 0 0 0 1px var(--gv-line)", borderRadius: 999, padding: "6px 6px 6px 16px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 4, background: "var(--gv-card)", boxShadow: "inset 0 0 0 1px var(--gv-line)", borderRadius: 999, padding: "2px 2px 2px 16px" }}>
                 <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && sendAsk()} placeholder="Ask CK AI…" style={{ flex: 1, minWidth: 0, border: 0, outline: "none", background: "transparent", fontSize: 16, color: "var(--gv-ink)", height: 40 }} />
                 <button aria-label="Dictate" onClick={dictate} style={ghostIcon}><Microphone size={22} weight="regular" /></button>
-                <button aria-label="Send" onClick={() => sendAsk()} disabled={!canSend} style={{ width: 40, height: 40, borderRadius: 999, border: 0, cursor: canSend ? "pointer" : "default", background: "var(--gv-go)", opacity: canSend ? 1 : 0.35, display: "grid", placeItems: "center", flex: "none", transition: "opacity .15s" }}>
-                  <ArrowUp size={20} weight="bold" color="#fff" />
+                <button aria-label="Send" onClick={() => sendAsk()} disabled={!canSend} style={{ width: 44, height: 44, borderRadius: 999, border: 0, cursor: canSend ? "pointer" : "default", background: canSend ? "var(--gv-go)" : "var(--gv-bar)", color: canSend ? "var(--gv-lime)" : "var(--gv-mid)", display: "grid", placeItems: "center", flex: "none", transition: "background .15s" }}>
+                  <ArrowUp size={20} weight="bold" />
                 </button>
               </div>
             </>
@@ -257,4 +257,4 @@ function Lbl({ children }: { children: React.ReactNode }) {
 }
 
 const field: React.CSSProperties = { width: "100%", height: 48, borderRadius: 14, border: 0, background: "var(--gv-inset)", color: "var(--gv-ink)", fontSize: 15, padding: "0 14px", outline: "none", boxSizing: "border-box" };
-const ghostIcon: React.CSSProperties = { width: 40, height: 40, display: "grid", placeItems: "center", background: "none", border: 0, cursor: "pointer", color: "var(--gv-mid)", borderRadius: 999, flex: "none", padding: 0 };
+const ghostIcon: React.CSSProperties = { width: 44, height: 44, display: "grid", placeItems: "center", background: "none", border: 0, cursor: "pointer", color: "var(--gv-mid)", borderRadius: 999, flex: "none", padding: 0 };

@@ -138,13 +138,13 @@ export function Track({ total, done, current, bad }: { total: number; done: numb
 }
 
 /** Initials on a pastel. Square 12px for families, `round` for people. */
-export function Av({ name, size = 40, round, tint, photo, style }: { name: string; size?: number; round?: boolean; tint?: Tint; photo?: string; style?: CSSProperties }) {
+export function Av({ name, size = 40, round, tint, photo, style, className }: { name: string; size?: number; round?: boolean; tint?: Tint; photo?: string; style?: CSSProperties; className?: string }) {
   if (photo) return <img src={photo} alt={name} width={size} height={size} style={{ width: size, height: size, borderRadius: round ? "50%" : 12, objectFit: "cover", flex: "none", ...style }} />;
   const t = tintFor(name);
   const bg = tint && tint !== "none" ? `var(--gv-${tint})` : t.bg;
   const fg = tint && tint !== "none" ? `var(--gv-${tint}Ink)` : t.fg;
   return (
-    <span className={`gv-av${round ? " round" : ""}`} aria-label={name} style={{ width: size, height: size, fontSize: Math.round(size * 0.36), background: bg, color: fg, ...style }}>
+    <span className={`gv-av${round ? " round" : ""}${className ? ` ${className}` : ""}`} aria-label={name} style={{ width: size, height: size, fontSize: Math.round(size * 0.36), background: bg, color: fg, ...style }}>
       {monogram(name)}
     </span>
   );

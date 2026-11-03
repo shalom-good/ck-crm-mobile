@@ -1,0 +1,192 @@
+/*
+ * ck-look.css — the CK look (App Store set, 2026-11-02) for every screen
+ * except the client portal. Every rule is scoped to html[data-look="ck"];
+ * App.tsx drops that attribute for a signed-in family, so the portal keeps
+ * the Grove rules in index.css exactly as they were.
+ *
+ * Shape: flat white cards (radius 22, no border, no shadow) on paper,
+ * inner tiles radius 16, pill buttons (forest fill, lime text), pill chips
+ * (selected = forest), a floating white tab bar with the lime pill, one
+ * typeface (Plus Jakarta Sans). Tokens are in variables.css.
+ */
+
+html[data-look="ck"] body { background: var(--gv-paper); color: var(--gv-text); }
+
+/* ── motion: rise 22px + fade, .7s, staggered .1s ── */
+@keyframes ck-rise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+html[data-look="ck"] .gv-rise { animation: ck-rise .7s var(--gv-ease) both; animation-delay: calc(.05s + var(--i, 0) * 100ms); }
+
+/* ── type ── */
+html[data-look="ck"] .gv-h1 { font-size: 26px; line-height: 1.15; font-weight: 800; letter-spacing: -.02em; color: var(--gv-ink); }
+html[data-look="ck"] .gv-h2 { font-size: 15px; line-height: 1.3; font-weight: 700; letter-spacing: 0; color: var(--gv-ink); }
+html[data-look="ck"] .gv-sub { font-size: 14.5px; line-height: 1.5; color: var(--gv-mid); }
+html[data-look="ck"] .gv-meta { font-size: 12px; color: var(--gv-mid); }
+html[data-look="ck"] .gv-eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: .08em; color: var(--gv-mid); }
+html[data-look="ck"] .gv-link { color: var(--gv-go); }
+/* The greeting line above a title: "Monday, Nov 3" / "Good morning," */
+.ck-kicker { display: block; font-size: 14px; font-weight: 500; line-height: 1.35; color: var(--gv-mid); }
+
+/* ── cards: flat white, radius 22, padding 16 ── */
+html[data-look="ck"] .gv-card { border-radius: var(--gv-r-card); box-shadow: none; padding: 16px; }
+html[data-look="ck"] .gv-card.flat { border: 0; box-shadow: none; }
+html[data-look="ck"] .gv-card.inset { background: var(--gv-inset); }
+
+/* ── pills (status): radius 999, 12/700 ── */
+html[data-look="ck"] .gv-pill { border-radius: 999px; height: 24px; padding: 0 10px; font-size: 12px; font-weight: 700; }
+html[data-look="ck"] .gv-pill.sm { height: 22px; padding: 0 9px; }
+html[data-look="ck"] .gv-pill.go { background: var(--gv-go); color: var(--gv-lime); }
+
+/* ── buttons: pill, 48 tall; primary = forest with lime text ── */
+html[data-look="ck"] .gv-btn { height: 48px; min-height: 44px; border-radius: 999px; background: var(--gv-go); color: var(--gv-lime);
+  font-size: 15px; font-weight: 700; box-shadow: none; padding: 0 22px; }
+html[data-look="ck"] .gv-btn:hover:not(:disabled) { background: var(--gv-go-deep); }
+html[data-look="ck"] .gv-btn:disabled { opacity: 1; background: var(--gv-bar); color: var(--gv-mid); }
+html[data-look="ck"] .gv-btn.ghost { background: var(--gv-card); color: var(--gv-ink); box-shadow: inset 0 0 0 1px var(--gv-line); }
+html[data-look="ck"] .gv-btn.ghost:hover:not(:disabled) { background: var(--gv-inset); }
+html[data-look="ck"] .gv-btn.soft { background: var(--gv-lime-soft); color: var(--gv-lime-ink); }
+html[data-look="ck"] .gv-btn.sm { height: 40px; padding: 0 16px; font-size: 13.5px; border-radius: 999px; }
+html[data-look="ck"] .gv-btn:focus-visible,
+html[data-look="ck"] .gv-chip:focus-visible,
+html[data-look="ck"] .gv-ib:focus-visible { outline: 3px solid rgba(215, 243, 110, .9); outline-offset: 2px; }
+/* icon button: 44px white circle with the control edge */
+html[data-look="ck"] .gv-ib { width: 44px; height: 44px; border-radius: 999px; background: var(--gv-card); box-shadow: inset 0 0 0 1px var(--gv-line); color: var(--gv-ink); }
+
+/* ── inputs: 48 tall, radius 14, 1px line2, lime focus ring ── */
+html[data-look="ck"] .gv-input { height: 48px; border-radius: 14px; box-shadow: inset 0 0 0 1px var(--gv-line); font-size: 16px; }
+html[data-look="ck"] .gv-input:focus { box-shadow: inset 0 0 0 1.5px var(--gv-go), 0 0 0 3px rgba(215, 243, 110, .7); }
+html[data-look="ck"] .ck-input:focus { border-color: var(--gv-go); box-shadow: 0 0 0 3px rgba(215, 243, 110, .7); }
+.ck-label { display: block; font-size: 13px; font-weight: 600; color: var(--gv-ink); margin: 0 2px 6px; }
+html[data-look="ck"] .gv-boxes b { border-radius: 14px; box-shadow: inset 0 0 0 1px var(--gv-line); }
+html[data-look="ck"] .gv-boxes b.filled { box-shadow: inset 0 0 0 1.5px var(--gv-go); }
+html[data-look="ck"] .gv-boxes b.focus { box-shadow: inset 0 0 0 1.5px var(--gv-go), 0 0 0 3px rgba(215, 243, 110, .7); }
+
+/* ── stat strip: one white card, 3 columns, number 24/800 over an 11.5 label ── */
+html[data-look="ck"] .gv-strip { border-radius: var(--gv-r-card); box-shadow: none; padding: 14px 6px; }
+html[data-look="ck"] .gv-st { display: flex; flex-direction: column-reverse; align-items: center; justify-content: flex-end; gap: 2px; padding: 0 6px; text-align: center; }
+html[data-look="ck"] .gv-st + .gv-st { border-left: 1px solid var(--gv-hair); }
+html[data-look="ck"] .gv-st small { font-size: 11.5px; font-weight: 500; line-height: 1.3; color: var(--gv-mid); }
+html[data-look="ck"] .gv-st .v { margin-top: 0; font-size: clamp(18px, 6vw, 24px); font-weight: 800; letter-spacing: -.01em; color: var(--gv-ink); }
+html[data-look="ck"] .gv-st .v.warn { color: var(--gv-warn); }
+html[data-look="ck"] .gv-st .v em { color: var(--gv-mid); }
+
+/* ── charts + progress ── */
+html[data-look="ck"] .gv-bars i { background: var(--gv-bar); border-radius: 8px 8px 6px 6px; }
+html[data-look="ck"] .gv-bars i.on { background: var(--gv-coral); }
+html[data-look="ck"] .gv-bars i.go { background: var(--gv-go); }
+html[data-look="ck"] .gv-bars i.mint { background: #A9CDB3; }
+html[data-look="ck"] .gv-bars .avg { border-top-color: #A3AEA8; }
+html[data-look="ck"] .gv-xlab span { color: var(--gv-mid); }
+html[data-look="ck"] .gv-track { height: 8px; border-radius: 999px; background: var(--gv-bar); }
+
+/* ── rows inside a card: 12px rhythm, no hairlines ── */
+html[data-look="ck"] .gv-row { border-top: 0; padding: 8px 0; }
+html[data-look="ck"] .gv-row .t b { font-size: 14.5px; font-weight: 600; line-height: 1.35; }
+html[data-look="ck"] .gv-row .t span { font-size: 12px; color: var(--gv-mid); }
+
+/* ── pastel event rows: radius 16, ink title, sub in the pastel's ink ── */
+html[data-look="ck"] .gv-evt { border-radius: 16px; padding: 12px 14px; }
+html[data-look="ck"] .gv-evt b { font-size: 14px; font-weight: 700; color: var(--gv-ink); }
+html[data-look="ck"] .gv-evt span { font-size: 12px; }
+html[data-look="ck"] .gv-evt.yellow span { color: var(--gv-yellowInk); }
+html[data-look="ck"] .gv-evt.lavender span { color: var(--gv-lavenderInk); }
+html[data-look="ck"] .gv-evt.mint span { color: var(--gv-mintInk); }
+html[data-look="ck"] .gv-evt.sky span { color: var(--gv-skyInk); }
+html[data-look="ck"] .gv-evt.lime span { color: var(--gv-lime-ink); }
+html[data-look="ck"] .gv-evt .ic { background: rgba(255, 255, 255, .7); border-radius: 12px; }
+html[data-look="ck"] .gv-evt .ic span, html[data-look="ck"] .gv-evt span b { color: inherit; }
+
+/* ── chips / filters: pill 38 tall; selected = forest + white ── */
+html[data-look="ck"] .gv-chips { gap: 8px; }
+html[data-look="ck"] .gv-chip { height: 38px; padding: 0 15px; border-radius: 999px; background: var(--gv-card); color: var(--gv-ink);
+  box-shadow: inset 0 0 0 1px var(--gv-hair); font-size: 13.5px; font-weight: 600; }
+html[data-look="ck"] .gv-chip.on { background: var(--gv-go); color: #FFFFFF; box-shadow: none; font-weight: 700; }
+
+/* ── avatars: a person is a lime circle with ink initials ── */
+html[data-look="ck"] .gv-av.round:not(.keep) { background: var(--gv-lime) !important; color: var(--gv-ink) !important; }
+
+/* ── notices ── */
+html[data-look="ck"] .gv-gentle { background: var(--gv-rose); color: var(--gv-roseInk); border-radius: 16px; }
+html[data-look="ck"] .gv-note { background: var(--gv-inset); box-shadow: none; border-radius: 16px; color: var(--gv-text); }
+html[data-look="ck"] .gv-note i { background: var(--gv-lime); color: var(--gv-ink); }
+
+/* ── the back button: a flat white circle with the control edge ── */
+html[data-look="ck"] .gv-back::before { box-shadow: inset 0 0 0 1px var(--gv-line); }
+
+/* ── top bar: lime tile + "Collective Kindness" + the space label ── */
+.ck-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 44px; }
+.ck-top .brand { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.ck-top .tile { width: 30px; height: 30px; border-radius: 9px; background: var(--gv-lime); display: grid; place-items: center; flex: none; }
+.ck-top .tile img { width: 17px; height: 19px; display: block; }
+.ck-top .name { font-size: 13.5px; font-weight: 700; color: var(--gv-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ck-top .space { font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--gv-mid); white-space: nowrap; flex: none; }
+.ck-top .right { display: flex; align-items: center; gap: 8px; flex: none; }
+.ck-top .gv-back { margin-left: -6px; }
+/* the 44px person avatar on the greeting row */
+.ck-me { width: 44px; height: 44px; border-radius: 50%; background: var(--gv-lime); color: var(--gv-ink); display: grid; place-items: center;
+  font-size: 15px; font-weight: 700; flex: none; border: 0; padding: 0; font-family: inherit; cursor: pointer; }
+
+/* ── next-step card: lime, radius 22, a forest pill ── */
+.ck-next { background: var(--gv-lime); border-radius: var(--gv-r-card); padding: 18px; color: var(--gv-ink); }
+.ck-next .eb { font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(23, 36, 31, .7); }
+.ck-next h3 { margin: 6px 0 0; font-size: 20px; line-height: 1.2; font-weight: 800; letter-spacing: -.015em; }
+.ck-next p { margin: 6px 0 0; font-size: 13.5px; line-height: 1.45; color: rgba(23, 36, 31, .78); }
+
+/* ── a soft pastel picture tile (replaces the old gradient panels) ── */
+.ck-art { border-radius: var(--gv-r-card); display: flex; justify-content: center; align-items: flex-end; overflow: hidden; }
+.ck-art.mint { background: var(--gv-mint); } .ck-art.sky { background: var(--gv-sky); } .ck-art.apricot { background: var(--gv-apricot); }
+.ck-art.plum { background: var(--gv-plum); } .ck-art.yellow { background: var(--gv-yellow); } .ck-art.lime { background: var(--gv-lime-soft); }
+
+/* ── this week: day chips radius 14 ── */
+.ck-days { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.ck-day { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 0; border-radius: 14px; background: var(--gv-paper);
+  border: 0; font: inherit; color: var(--gv-ink); cursor: pointer; min-height: 44px; }
+.ck-day small { font-size: 11px; color: var(--gv-mid); }
+.ck-day b { font-size: 16px; font-weight: 700; line-height: 1; }
+.ck-day.on { background: var(--gv-lime); }
+.ck-day.on small { color: var(--gv-ink); }
+
+/* ── task rows: 22px checkbox, radius 7, 2px forest border ── */
+.ck-task { display: flex; gap: 12px; align-items: flex-start; width: 100%; text-align: left; background: none; border: 0; padding: 0; font: inherit; color: inherit; cursor: pointer; min-height: 44px; }
+.ck-task .box { flex: 0 0 22px; height: 22px; border-radius: 7px; border: 2px solid var(--gv-go); box-sizing: border-box; margin-top: 1px; }
+.ck-task .tx { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.ck-task .tx b { font-size: 14.5px; font-weight: 600; line-height: 1.35; color: var(--gv-ink); }
+.ck-task .tx span { font-size: 12px; line-height: 1.4; color: var(--gv-mid); }
+.ck-task .end { flex: none; align-self: center; }
+
+/* ── the floating white tab bar with the lime pill ── */
+html[data-look="ck"] ion-tab-bar {
+  position: absolute; left: 14px; right: 14px; bottom: calc(14px + env(safe-area-inset-bottom));
+  height: auto; padding: 10px 6px; border: 0; border-radius: 26px;
+  --background: var(--gv-card); background: var(--gv-card);
+  --color: var(--gv-mid); --color-selected: var(--gv-ink);
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  box-shadow: var(--gv-shadow-pop), 0 0 0 1px rgba(23, 36, 31, .04);
+  z-index: 20;
+}
+html[data-look="ck"] ion-tab-button { --padding-top: 0; --padding-bottom: 0; --padding-start: 0; --padding-end: 0; --color: var(--gv-mid); --color-selected: var(--gv-ink); --ripple-color: transparent; font-size: 11px; font-weight: 600; height: auto; }
+html[data-look="ck"] ion-tab-button > svg { width: 20px; height: 20px; padding: 5px 16px; border-radius: 999px; box-sizing: content-box; background: transparent; transition: background .25s var(--gv-ease); }
+html[data-look="ck"] ion-tab-button.tab-selected > svg { background: var(--gv-lime); }
+html[data-look="ck"] ion-tab-button ion-label { margin-top: 4px; font-size: 11px; font-weight: 600; color: var(--gv-mid); }
+html[data-look="ck"] ion-tab-button.tab-selected ion-label { font-weight: 700; color: var(--gv-ink); }
+html[data-look="ck"] ion-tab-button[disabled] { opacity: 1; }
+
+/* ── sheets + toolbars ── */
+html[data-look="ck"] ion-modal { --border-radius: 26px; }
+html[data-look="ck"] ion-toolbar { --background: var(--gv-paper); --min-height: 56px; }
+html[data-look="ck"] ion-searchbar { --background: var(--gv-card); --border-radius: 14px; --box-shadow: inset 0 0 0 1px var(--gv-line); --placeholder-color: var(--gv-mid); --icon-color: var(--gv-faint); }
+
+/* Desktop: plain paper behind the device, no washes. */
+@media (min-width: 600px) {
+  html[data-look="ck"] body { background: var(--gv-paper); }
+  html[data-look="ck"] ion-app { box-shadow: 0 30px 80px -30px rgba(23, 36, 31, .35), 0 0 0 1px rgba(23, 36, 31, .06); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-look="ck"] .gv-rise { animation: none; }
+}
+
+/* Toast: a floating white card above the floating tab bar */
+html[data-look="ck"] .ck-toast { border-radius: 22px !important; padding: 14px 16px !important; bottom: calc(100px + env(safe-area-inset-bottom)) !important; }
+
+/* Narrow phones: with a back button, the brand name wins over the space label. */
+@media (max-width: 359px) { .ck-top.has-back .space { display: none; } }

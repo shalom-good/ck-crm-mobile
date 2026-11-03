@@ -1,11 +1,11 @@
-import { lazy, Suspense, useEffect, type ComponentType } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect, type ComponentType } from "react";
 import { createPortal } from "react-dom";
 import { Redirect, Route, useLocation } from "react-router-dom";
 import {
   IonApp, IonRouterOutlet, IonTabs, IonTabBar, IonTabButton, IonLabel, setupIonicReact,
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
-import { House, UsersThree, ChatsCircle, Sparkle, BookOpenText } from "@phosphor-icons/react";
+import { IcHome, IcFamilies, IcChats, IcBook, IcSparkle } from "@/components/ckIcons";
 
 import { StartPage } from "@/pages/StartPage";
 import { FamilyCodePage } from "@/pages/FamilyCodePage";
@@ -82,32 +82,33 @@ function TabsShell() {
         <Route exact path="/tabs"><Redirect to="/tabs/home" /></Route>
       </IonRouterOutlet>
 
-      {/* Grove tab bar: white glass, hairline top, the active icon on a
-          soft-lime pill (the CRM's phone bar). Home · Families · [Ask] ·
+      {/* The floating white tab bar (CK look): 14px off the sides and the
+          bottom, the active item on a lime pill. Home · Families · [Ask] ·
           Chats · Resources. Payments + Job Funnel are reached from Home. */}
       <IonTabBar slot="bottom">
         <IonTabButton tab="home" href="/tabs/home">
-          <House size={24} weight="regular" /><IonLabel>Home</IonLabel>
+          <IcHome /><IonLabel>Home</IonLabel>
         </IonTabButton>
         <IonTabButton tab="families" href="/tabs/families">
-          <UsersThree size={24} weight="regular" /><IonLabel>Families</IonLabel>
+          <IcFamilies /><IonLabel>Families</IonLabel>
         </IonTabButton>
 
-        {/* Empty center slot — the raised Ask button is portaled to
-            ion-app so no tab/page containment can clip it (see below). */}
+        {/* Empty center slot: the Ask item is portaled to ion-app on top
+            of it (it opens a sheet, not a tab; see below). */}
         <IonTabButton tab="ask" disabled aria-hidden="true" />
 
         <IonTabButton tab="chats" href="/tabs/chats">
-          <ChatsCircle size={24} weight="regular" /><IonLabel>Chats</IonLabel>
+          <IcChats /><IonLabel>Chats</IonLabel>
         </IonTabButton>
         <IonTabButton tab="resources" href="/tabs/resources">
-          <BookOpenText size={24} weight="regular" /><IonLabel>Resources</IonLabel>
+          <IcBook /><IonLabel>Resources</IonLabel>
         </IonTabButton>
       </IonTabBar>
     </IonTabs>
 
-    {/* Raised forest "Ask" button — portaled to ion-app so it lives
-        outside ion-tabs / ion-page containment and floats above the bar. */}
+    {/* "Ask" sits in the bar's center slot: a forest pill with the lime
+        sparkle (the screen's one primary), portaled to ion-app so no
+        tab/page containment can clip it. */}
     {onTabRoute && !captureOpen && createPortal(
       <button
         aria-label="Ask CK AI"
@@ -115,20 +116,16 @@ function TabsShell() {
         onClick={() => openCapture("ask")}
         style={{
           position: "fixed", left: "50%", transform: "translateX(-50%)",
-          bottom: "calc(env(safe-area-inset-bottom) + 24px)", zIndex: 200,
-          display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
-          background: "none", border: "none", cursor: "pointer", padding: 0,
+          bottom: "calc(env(safe-area-inset-bottom) + 14px)", zIndex: 200,
+          width: 64, minHeight: 64, padding: "10px 0",
+          display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+          background: "none", border: "none", cursor: "pointer",
         }}
       >
-        <span style={{
-          width: 56, height: 56, borderRadius: 999,
-          background: "var(--gv-go)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 0 0 5px var(--gv-card), 0 10px 24px -8px rgba(46,81,70,.6)",
-        }}>
-          <Sparkle size={24} weight="fill" color="var(--gv-lime)" />
+        <span style={{ width: 52, height: 30, borderRadius: 999, background: "var(--gv-go)", color: "var(--gv-lime)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <IcSparkle />
         </span>
-        <span style={{ fontSize: 10.5, fontWeight: 800, color: "var(--gv-ink)" }}>Ask</span>
+        <span style={{ fontSize: 11, fontWeight: 700, color: "var(--gv-ink)" }}>Ask</span>
       </button>,
       document.querySelector("ion-app") ?? document.body,
     )}
@@ -142,6 +139,13 @@ export function App() {
 
   const team = status === "signedIn" && kind === "team";
   const family = status === "signedIn" && kind === "family";
+
+  // The CK look (theme/ck-look.css) covers every screen except the client
+  // portal: a signed-in family keeps the portal's own Grove values.
+  useLayoutEffect(() => {
+    if (family) document.documentElement.removeAttribute("data-look");
+    else document.documentElement.setAttribute("data-look", "ck");
+  }, [family]);
 
   // Face ID / passcode gate over team sessions (native only; see lib/lock).
   useLockGuard({ enabled: team, signedOut: status === "signedOut" });

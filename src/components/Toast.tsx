@@ -1,13 +1,15 @@
 import { CheckCircle } from "@phosphor-icons/react";
 import { useUI } from "@/lib/ui";
 
-/** Single global toast: a white card with the pop shadow, anchored above the tab bar. */
+/** Single global toast: a white card with the pop shadow, above the tab bar
+ *  (CK look: radius 22, above the floating bar, see ck-look.css). */
 export function Toast() {
   const { toast } = useUI();
   if (!toast) return null;
   return (
     <div
       role="status"
+      className="ck-toast"
       style={{
         position: "fixed", left: 16, right: 16, bottom: "calc(78px + env(safe-area-inset-bottom))",
         zIndex: 50, display: "flex", alignItems: "center", gap: 10,

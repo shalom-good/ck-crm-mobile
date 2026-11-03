@@ -19,6 +19,7 @@ import "@ionic/react/css/flex-utils.css";
 /* CK design system */
 import "@/theme/variables.css";
 import "@/theme/index.css";
+import "@/theme/ck-look.css";
 
 initTheme();
 
