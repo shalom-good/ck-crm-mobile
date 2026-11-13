@@ -32,11 +32,11 @@ jobs:
       - name: Set up Ruby + Fastlane
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.2"
-          bundler-cache: true
+          ruby-version: "3.3"
+          bundler-cache: false
 
       - name: CocoaPods
-        run: cd ios/App && pod install
+        run: bundle install --jobs 3 && cd ios/App && pod install
 
       - name: Fastlane beta (TestFlight)
         env:
