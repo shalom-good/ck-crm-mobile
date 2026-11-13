@@ -52,7 +52,7 @@ export function DarkHero({ value, unit, pill, label, onClick }: {
       style={{
         width: "100%", textAlign: "left", cursor: onClick ? "pointer" : "default", font: "inherit",
         background: "var(--gv-go)", border: 0, borderRadius: "var(--gv-r-card)", padding: "20px 20px 18px",
-        boxShadow: "0 10px 24px -10px rgba(46,81,70,.55)",
+        boxShadow: "0 10px 24px -10px rgba(47,117,86,.55)",
         display: "flex", flexDirection: "column", gap: 26,
       }}
     >

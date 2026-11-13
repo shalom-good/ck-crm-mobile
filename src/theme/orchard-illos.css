@@ -1,0 +1,134 @@
+/* ────────────────────────────────────────────────────────────────────
+   orchard-illos.css — the shared drawings on cards (2026-11-11).
+   Shalom: "lets add more animation like this with imagery like this for
+   the rest." The drawings live in components/orchard/Illos.tsx and build
+   themselves in with the KDH Plus motion (.okp-illo in orchard-kdhplus.css).
+   This file sizes and places them, adds three slow idle movements, and
+   gives the cards that lacked it the same calm motion: a staggered rise, a
+   soft press, a nudge on the chevron. Nothing loops faster than 3 seconds
+   and nothing bounces. Everything stops under prefers-reduced-motion.
+   ──────────────────────────────────────────────────────────────────── */
+.oil { display: block; flex: none; width: var(--oil-w, 96px); line-height: 0; pointer-events: none; }
+.oil .okp-illo { display: block; }
+.oil .okp-illo svg { width: 100%; max-width: none; height: auto; display: block; overflow: visible; }
+
+/* pinned to a card's top right corner */
+.oil-host { position: relative; }
+.oil.is-corner { position: absolute; top: 12px; right: 12px; z-index: 0; }
+.oil-host > *:not(.oil) { position: relative; z-index: 1; }
+.oil-clear { padding-right: calc(var(--oil-clear, 96px) + 6px); }
+
+/* a row: drawing on one side, words on the other */
+.oil-row { display: flex; align-items: center; gap: 12px; }
+.oil-row > .oil-row-t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+
+/* idle movements (slow) */
+.oil .sway { animation: oil-sway 4.6s ease-in-out infinite; }
+.oil .glow { animation: oil-glow 3.8s ease-in-out infinite; }
+.oil .oil-dots circle { animation: oil-dot 3.2s ease-in-out infinite; }
+.oil .oil-dots circle:nth-child(2) { animation-delay: .3s; }
+.oil .oil-dots circle:nth-child(3) { animation-delay: .6s; }
+/* the KDH Plus loops, slowed to the same calm pace inside these cards */
+.oil .okp-illo .wave { animation-duration: 3.4s; }
+.oil .okp-illo .beat { animation-duration: 3.2s; }
+.oil .okp-illo .nudge { animation-duration: 3.2s; }
+.oil .okp-illo .drop { animation-duration: 3.6s; }
+.oil .okp-illo .steam { animation-duration: 3.4s; }
+.oil .drift { animation: oil-drift 9s ease-in-out infinite alternate; }
+/* a calendar page lifting away from its binding (shown once, on load) */
+.oil .flipaway { animation: oil-flip .8s cubic-bezier(.5,0,.8,.4) both; }
+@keyframes oil-drift { from { transform: translateX(-5px); } to { transform: translateX(7px); } }
+@keyframes oil-flip { 0% { transform: scaleY(1); opacity: 1; } 80% { opacity: 1; } 100% { transform: scaleY(0); opacity: 0; } }
+@keyframes oil-sway { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-3deg); } }
+@keyframes oil-glow { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+@keyframes oil-dot { 0%, 60%, 100% { opacity: .3; } 30% { opacity: 1; } }
+
+/* ── where they sit ── */
+/* page heads (Plan, Budget, Docs): beside the title, before the bell */
+.ocf2-head-aside > .oil { margin-right: 2px; }
+/* KDH homework: next call, and what next */
+.okh-book.oil-host .okh-book-h, .okh-book.oil-host .okh-book-eb, .okh-book.oil-host > .ocf2-p { padding-right: 92px; }
+.okn-go > .oil { margin: -4px 0 -4px -4px; }
+/* What next page head */
+.okn-headrow { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
+.okn-headrow > div { min-width: 0; flex: 1; }
+/* family home */
+.ps-now.oil-host .ps-now-h { padding-right: 96px; max-width: none; }
+.ps-now.oil-host > .oil.is-corner { top: 44px; right: 14px; }
+.ps-head.oil-row { align-items: center; }
+.ocf2-debt-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+/* learn */
+.olc-join.oil-host > .oil.is-corner, .ocf2-next.oil-host > .oil.is-corner { top: 10px; right: 10px; }
+/* donor moments */
+.ocf2-dn-momenthead { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
+.ocf2-dn-momenthead > .ocf2-dn-k { padding-bottom: 4px; }
+
+/* ── the wide scene on the family's Home hero (HeroScene in Illos.tsx) ──
+   It fills the foot of the hero edge to edge and tucks up behind the last
+   line of the greeting. The hero's sky follows the clock: warm at sunrise,
+   clear in the afternoon, dusk in the evening, all settling into the mint
+   the rest of the card uses. The words always sit on top. */
+.oil.oil-scene { width: auto; margin: -16px -20px -22px; }
+.ocf2-hero:has(> .oil-scene) { gap: 6px; padding-top: 18px; }
+.ocf2-hero:has(> .oil-scene) > .ocf2-h1 { z-index: 1; }
+.ocf2-hero:has(> .oil-scene) .ocf2-h1-2 { font-size: 19px; line-height: 1.28; letter-spacing: -.02em; margin-top: 3px; color: #4B6558; max-width: 15.5em; }
+.ocf2-hero:has(> .oil-scene.is-morning) { background: linear-gradient(180deg, #FBF1CB 0%, #F3EFCF 34%, var(--oc-summary, #E0EDE4) 78%); }
+.ocf2-hero:has(> .oil-scene.is-afternoon) { background: linear-gradient(180deg, #DCEAF6 0%, #DDEBEC 40%, var(--oc-summary, #E0EDE4) 80%); }
+.ocf2-hero:has(> .oil-scene.is-evening) { background: linear-gradient(180deg, #E2E0F6 0%, #E3E4F0 38%, var(--oc-summary, #E0EDE4) 82%); }
+.ocf2-hero:has(> .oil-scene)::before { border-color: rgba(255,255,255,.3); }
+
+/* ── Meetings: the week strip wakes up (Shalom: "add animation of calendar") ──
+   Days rise in one after another, today's ring settles, the count under a
+   day with a meeting pops, and the day of the next meeting breathes. */
+.ocf2-week > .ocf2-day { animation: gv-rise .5s var(--gv-ease, cubic-bezier(.2,.8,.2,1)) both; animation-delay: calc(var(--k, 0) * 45ms); }
+.ocf2-week > .ocf2-day.is-today b { animation: oil-ring .7s ease-out .35s backwards; }
+.ocf2-week > .ocf2-day.has em { animation: okp-pop .5s cubic-bezier(.2,.7,.2,1) backwards; animation-delay: calc(.5s + var(--k, 0) * 45ms); }
+.ocf2-week > .ocf2-day.is-next b { position: relative; }
+.ocf2-week > .ocf2-day.is-next b::after { content: ""; position: absolute; inset: 0; border-radius: 50%; animation: oil-pulse 3.6s ease-out 1.2s infinite; pointer-events: none; }
+@keyframes oil-ring { from { box-shadow: inset 0 0 0 0 rgba(47,117,86,0), 0 0 0 10px rgba(47,117,86,.14); } }
+@keyframes oil-pulse { 0% { box-shadow: 0 0 0 0 rgba(155,138,230,.5); } 60%, 100% { box-shadow: 0 0 0 9px rgba(155,138,230,0); } }
+
+/* a drawing beside a few words (empty states, the quote at the foot of Home) */
+.oil-row.is-quote { align-items: flex-end; gap: 6px; }
+.oil-row.is-quote > .ocf2-quote { flex: 1; min-width: 0; }
+.oil-stack { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; }
+
+/* ── shared calm motion for cards that lacked it ── */
+/* staggered rise for a page's own blocks (those without gv-rise already) */
+.ocf2-page > .ocf2-panel:not(.gv-rise), .ocf2-page > .ocf2-meet:not(.gv-rise), .ocf2-page > .ocf2-money:not(.gv-rise), .ocf2-page > .ocf2-next:not(.gv-rise), .ocf2-page > .ocf2-tiles:not(.gv-rise) {
+  animation: gv-rise .6s var(--gv-ease, cubic-bezier(.2,.8,.2,1)) both;
+}
+.ocf2-page > *:not(.gv-rise):nth-child(2) { animation-delay: .05s; }
+.ocf2-page > *:not(.gv-rise):nth-child(3) { animation-delay: .1s; }
+.ocf2-page > *:not(.gv-rise):nth-child(4) { animation-delay: .15s; }
+.ocf2-page > *:not(.gv-rise):nth-child(5) { animation-delay: .2s; }
+.ocf2-page > *:not(.gv-rise):nth-child(6) { animation-delay: .25s; }
+.ocf2-page > *:not(.gv-rise):nth-child(n+7) { animation-delay: .3s; }
+/* a soft press on anything tappable that is a whole card or row */
+button.ocf2-panel, a.ocf2-panel, button.ocf2-row, .ocf2-door, .okn-row, .ocf2-teambtn, .ocf2-meet .ocf2-btn { transition: transform .18s cubic-bezier(.2,.8,.2,1), box-shadow .18s ease; }
+button.ocf2-panel:active, a.ocf2-panel:active, .ocf2-door:active, .okn-row:active { transform: scale(.985); }
+button.ocf2-row:active { transform: scale(.99); }
+/* the chevron leans forward now and then */
+.ocf2-door-go > svg, button.ocf2-row > svg:last-child, .okn-go > svg:last-child { animation: oil-nudge 3.6s ease-in-out infinite; }
+@keyframes oil-nudge { 0%, 70%, 100% { transform: translateX(0); } 85% { transform: translateX(3px); } }
+
+/* ── narrow phones: the words come first ── */
+@media (max-width: 350px) {
+  .oil { width: calc(var(--oil-w, 96px) * .78); }
+  .oil.oil-scene { width: auto; margin-top: -10px; }
+  .ocf2-hero:has(> .oil-scene) .ocf2-h1-2 { font-size: 17px; }
+  .okh-book.oil-host .okh-book-h, .okh-book.oil-host .okh-book-eb, .okh-book.oil-host > .ocf2-p { padding-right: 72px; }
+  .ps-now.oil-host .ps-now-h { padding-right: 76px; }
+  .oil-clear { padding-right: calc(var(--oil-clear, 96px) * .78 + 6px); }
+  .oil.oil-drop { display: none; }
+  .oil-drop-clear { padding-right: 0 !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oil *, .ocf2-page > *, .ocf2-door-go > svg, button.ocf2-row > svg:last-child, .okn-go > svg:last-child { animation: none !important; transition: none !important; }
+  .oil .flipaway { display: none; }
+  .ocf2-week > .ocf2-day, .ocf2-week > .ocf2-day b, .ocf2-week > .ocf2-day em, .ocf2-week > .ocf2-day b::after { animation: none !important; }
+}
+.ps-head > .oil { align-self: center; }
+.olc-join.oil-host .olc-h2 { padding-right: 98px; }
+.okn-go > span.oil { flex: none; display: block; }

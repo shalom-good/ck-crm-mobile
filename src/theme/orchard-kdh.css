@@ -1,0 +1,91 @@
+/* src/theme/orchard-kdh.css: Orchard look for a KDH client's homework
+   (2026-11-05). Sits on the family kit (.ocf2-*, orchard-family.css);
+   everything here is .okh-*. Mockup: claude.ai/artifact/Qr96wteCPAmWXkxZCq5D16 */
+
+.okh-progress { gap: 10px; color: var(--oc-ink); }
+.okh-progress-top { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; font-weight: 700; color: var(--oc-soft); }
+.okh-count { display: flex; align-items: baseline; gap: 6px; }
+.okh-count b { font-size: 44px; font-weight: 800; letter-spacing: -.04em; line-height: 1; }
+.okh-count span { font-size: 17px; font-weight: 700; color: var(--oc-mid); }
+.okh-track { display: flex; gap: 6px; }
+.okh-track i { flex: 1; height: 10px; border-radius: 999px; background: #FFFFFF; }
+.okh-sess .okh-track i { height: 8px; background: var(--oc-inset); }
+.okh-track i.done { background: var(--oc-forest) !important; }
+
+.okh-note { flex-direction: row; align-items: flex-start; gap: 12px; }
+.okh-note-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.okh-note-body b { font-size: 14px; font-weight: 800; }
+
+.okh-step { flex-direction: row; align-items: flex-start; gap: 12px; }
+.okh-tick { width: 44px; height: 44px; margin: -6px -6px 0 -6px; flex: none; border-radius: 50%; border: 0; padding: 0; background: transparent; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; position: relative; color: var(--oc-lime); }
+.okh-tick::before { content: ""; position: absolute; inset: 6px; border-radius: 50%; border: 2px solid #C9D2CB; background: #FFFFFF; }
+.okh-tick.is-on::before { border: 0; background: var(--oc-forest); }
+.okh-tick svg { position: relative; }
+.okh-step-body { display: flex; flex-direction: column; gap: 8px; min-width: 0; flex: 1; }
+.okh-step-body > b { font-size: 16px; font-weight: 800; letter-spacing: -.01em; overflow-wrap: anywhere; }
+.okh-step.is-done .okh-step-body > b { color: var(--oc-mid); text-decoration: line-through; }
+.okh-step.is-done .ocf2-p { color: var(--oc-mid); }
+.okh-donepill { align-self: flex-start; font-size: 12px; font-weight: 800; color: var(--oc-ok); background: var(--oc-ok-bg); padding: 5px 10px; border-radius: 999px; }
+.okh-links { display: flex; flex-wrap: wrap; gap: 8px; }
+.okh-links .ocf2-btn { gap: 6px; }
+
+.okh-book { gap: 10px; }
+.okh-book-eb { font-size: 12.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--oc-lime); }
+.okh-book-h { font-size: 20px; font-weight: 800; letter-spacing: -.02em; }
+.okh-book .ocf2-p { color: #D9E6DE; }
+
+.okh-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.okh-tiles > div { border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.okh-tiles b { font-size: 26px; font-weight: 800; letter-spacing: -.03em; }
+.okh-tiles span { font-size: 12px; font-weight: 700; color: var(--oc-mid); }
+.okh-tiles .ocf2-t-butter span { color: var(--oc-warn); }
+
+.okh-sess { width: 100%; text-align: left; font: inherit; color: var(--oc-ink); border: 0; cursor: pointer; gap: 10px; }
+.okh-sess.is-latest { box-shadow: inset 0 0 0 2px var(--oc-lime); }
+.okh-sess-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.okh-sess-top b { font-size: 15.5px; font-weight: 800; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.okh-sess-foot { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 700; color: var(--oc-mid); }
+.okh-pill { flex: none; font-size: 12px; font-weight: 800; padding: 5px 10px; border-radius: 999px; white-space: nowrap; }
+.okh-pill.is-lime { background: var(--oc-lime); color: var(--oc-ink); }
+.okh-pill.is-ok { background: var(--oc-ok-bg); color: var(--oc-ok); }
+.okh-pill.is-warn { background: var(--oc-warn-bg); color: var(--oc-warn); }
+.okh-after { margin: 2px 4px; color: var(--oc-mid); }
+
+/* ── "What would you like to do next?" (.okn-*, 2026-11-10) ── */
+@keyframes okn-pop { 0% { transform: scale(.4); opacity: 0; } 65% { transform: scale(1.14); opacity: 1; } 100% { transform: scale(1); } }
+@keyframes okn-sweep { from { background-size: 0% 100%; } to { background-size: 100% 100%; } }
+@keyframes okn-nudge { 0%, 60%, 100% { transform: translateX(0); } 30% { transform: translateX(5px); } }
+@keyframes okn-float { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-3px) rotate(-4deg); } }
+@keyframes okn-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.okn-pop { display: inline-block; animation: okn-pop .5s cubic-bezier(.3,1.3,.5,1) backwards; }
+.okh-track i.done { transform-origin: left center; animation: okn-fill .6s cubic-bezier(.2,.8,.2,1) backwards; animation-delay: calc(.3s + var(--k, 0) * 120ms); }
+.okn-hl { color: inherit; background: linear-gradient(var(--oc-lime), var(--oc-lime)) no-repeat; background-size: 100% 100%; border-radius: 8px; padding: 0 5px; animation: okn-sweep .8s cubic-bezier(.2,.8,.2,1) .35s backwards; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.okn-title { display: flex; flex-direction: column; }
+.okn-chev { flex: none; animation: okn-nudge 2.6s ease-in-out infinite; }
+.okn-go { width: 100%; border: 0; font: inherit; color: var(--oc-ink); text-align: left; display: flex; flex-direction: row; align-items: center; gap: 12px; cursor: pointer; }
+.okn-go > span { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.okn-go b { font-size: 15.5px; font-weight: 800; }
+.okn-go small { font-size: 13px; font-weight: 600; color: #574A0E; }
+.okn-row { width: 100%; border: 0; font: inherit; color: var(--oc-ink); text-align: left; display: flex; flex-direction: row; align-items: center; gap: 13px; min-height: 92px; padding: 14px; cursor: pointer; transition: transform .2s cubic-bezier(.2,.8,.2,1); }
+.okn-row:active, .okn-go:active { transform: scale(.98); }
+.okn-row.is-picked { box-shadow: 0 0 0 2px var(--oc-forest); }
+.okn-ico { width: 56px; height: 56px; border-radius: 18px; display: grid; place-items: center; flex: none; }
+.okn-ico svg { animation: okn-float 3.8s ease-in-out infinite; }
+.okn-row:nth-of-type(2) .okn-ico svg { animation-delay: .5s; } .okn-row:nth-of-type(3) .okn-ico svg { animation-delay: 1s; } .okn-row:nth-of-type(4) .okn-ico svg { animation-delay: 1.5s; }
+.okn-row-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.okn-row-body b { font-size: 16px; font-weight: 800; letter-spacing: -.015em; }
+.okn-row-body small { font-size: 13px; line-height: 1.4; color: var(--oc-soft); }
+.okn-row-body em { font-style: normal; font-size: 12px; font-weight: 800; color: var(--oc-forest); }
+.okn-foot { text-align: center; font-size: 13px; color: var(--oc-soft); padding: 0 8px; }
+.okn-stepcard { flex-direction: row; gap: 12px; align-items: flex-start; }
+.okn-stepcard h2 { margin: 0 0 3px; font-size: 16px; font-weight: 800; letter-spacing: -.015em; }
+.okn-num { width: 34px; height: 34px; border-radius: 50%; background: var(--oc-forest); color: var(--oc-lime); font-size: 15px; display: grid; place-items: center; flex: none; }
+.okn-cta { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.okn-told { margin: 0; display: flex; gap: 10px; align-items: flex-start; font-size: 14px; font-weight: 700; line-height: 1.45; color: #276449; background: #EAF6C9; border-radius: 18px; padding: 14px; animation: gv-rise .5s var(--gv-ease) both; }
+.okn-told svg { flex: none; margin-top: 2px; }
+.okn-fit { gap: 0; }
+.okn-fit h2 { margin: 0 0 6px; font-size: 16px; font-weight: 800; }
+.okn-fitrow { display: flex; gap: 12px; align-items: center; min-height: 50px; border-top: 1px solid var(--oc-hair, #EEF1EC); font-size: 14.5px; font-weight: 700; animation: gv-rise .5s var(--gv-ease) both; animation-delay: calc(.25s + var(--k, 0) * 80ms); }
+.okn-fitrow i { width: 26px; height: 26px; border-radius: 50%; background: #DDEFE3; color: #276449; display: grid; place-items: center; flex: none; animation: okn-pop .5s cubic-bezier(.3,1.3,.5,1) backwards; animation-delay: calc(.4s + var(--k, 0) * 80ms); }
+.okn-notnow { align-self: center; min-height: 44px; padding: 0 16px; }
+@media (prefers-reduced-motion: reduce) { .okn *, .okn-pop, .okn-hl, .okn-chev, .okh-track i.done { animation: none !important; transition: none !important; } }

@@ -1,0 +1,56 @@
+name: iOS TestFlight
+
+# Manual trigger from the Actions tab, or push a tag like ios-v1.0.0
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "ios-v*"
+
+jobs:
+  build:
+    name: Build & upload to TestFlight
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Build web bundle
+        run: npm run build
+
+      - name: Capacitor sync (iOS)
+        run: npx cap sync ios
+
+      - name: Set up Ruby + Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+          bundler-cache: true
+
+      - name: CocoaPods
+        run: cd ios/App && pod install
+
+      - name: Fastlane beta (TestFlight)
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          BUILD_NUMBER: ${{ github.run_number }}
+        run: bundle exec fastlane ios beta
+
+      - name: Upload IPA artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: CKTeam-ipa
+          path: build/CKTeam.ipa
+          if-no-files-found: ignore

@@ -4,11 +4,35 @@
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="viewport-fit=cover, width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"
+      content="viewport-fit=cover, width=device-width, initial-scale=1.0"
     />
     <meta name="color-scheme" content="light" />
     <meta name="theme-color" content="#F3F5F1" />
     <title>Collective Kindness</title>
+    <meta name="description" content="The Collective Kindness app." />
+    <meta property="og:title" content="Collective Kindness app" />
+    <meta property="og:description" content="The whole app, live in the browser. Switch between iPhone and Android." />
+    <meta property="og:image" content="https://ck-crm-mobile.vercel.app/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/png" href="/icon-192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <script>
+      /* The web test build: on a computer the app opens inside a drawn
+         phone (public/device.html) with an iPhone / Android switch. Phones,
+         the native shells and ?bare=1 get the app itself. */
+      (function () {
+        try {
+          if (window.top !== window.self) return;
+          var web = /\.vercel\.app$/.test(location.hostname) || !!location.port;
+          if (!web) return;
+          var q = new URLSearchParams(location.search);
+          if (q.has("bare")) sessionStorage.setItem("ck.bare", "1");
+          if (sessionStorage.getItem("ck.bare") === "1") return;
+          if (!window.matchMedia("(min-width: 700px)").matches) return;
+          location.replace("/device.html?p=" + encodeURIComponent(location.pathname + location.search + location.hash));
+        } catch (e) {}
+      })();
+    </script>
     <link rel="preload" href="/fonts/PlusJakartaSans-latin.woff2" as="font" type="font/woff2" crossorigin />
   </head>
   <body>

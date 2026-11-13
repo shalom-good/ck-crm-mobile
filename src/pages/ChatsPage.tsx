@@ -9,15 +9,15 @@ import { fetchChats, type ChatListItem, type StartableChat } from "@/lib/mobileA
 import { useAuth } from "@/lib/auth";
 import { relTime } from "@/lib/time";
 import { SkeletonCard } from "@/components/Skeleton";
-import { Av, Card, Empty, Eyebrow, Pill, Row } from "@/components/gv";
+import { Chip, SquareAv } from "@/components/orchard/team/TeamKit";
 
 /**
- * Chats tab — the per-family Family Experts Chat threads, scoped to the
- * signed-in provider. One white card of rows: square initials, family
- * name, the last message on one quiet line, and on the right the time,
- * an unread count (forest pill) and an alert (rose pill). Alert threads
- * pin on top, mirroring the desktop /chats. Polls every 30s while the
- * tab is visible.
+ * Chats tab, in ORCHARD (2026-11-05): the per-family Family Experts Chat
+ * threads, scoped to the signed-in provider. One white card of rows:
+ * square pastel initials, family name, the last message on one quiet
+ * line, and on the right the time, an unread count (forest chip with a
+ * lime number) and an alert (rose chip). Alert threads pin on top,
+ * mirroring the desktop /chats. Polls every 30s while the tab is visible.
  */
 export function ChatsPage() {
   const router = useIonRouter();
@@ -46,48 +46,58 @@ export function ChatsPage() {
 
   const open = (recId: string) => router.push(`/chat/${recId}`);
 
-  const meta = [
-    "Family Experts Chats for your families.",
-    unreadTotal > 0 ? `${unreadTotal} unread` : null,
-  ].filter(Boolean).join(" · ");
+  const alerts = chats.filter((c) => c.alert).length;
+  const meta = q.isLoading
+    ? "Loading your chats"
+    : chats.length === 0
+      ? "One chat per family you work with."
+      : `${chats.length} ${chats.length === 1 ? "family chat" : "family chats"}`;
 
   return (
     <IonPage>
-      <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
+      <IonContent style={{ "--background": "var(--oc-ground)" } as React.CSSProperties}>
         <IonRefresher slot="fixed" onIonRefresh={refresh}><IonRefresherContent /></IonRefresher>
 
-        <div style={{ padding: "calc(env(safe-area-inset-top) + 14px) 16px 130px" }}>
-          <div className="gv-rise" style={{ padding: "0 2px", ...({ "--i": 0 } as React.CSSProperties) }}>
-            <h1 className="gv-h1">Chats</h1>
-            <p className="gv-meta" style={{ margin: "5px 0 16px" }}>{meta}</p>
+        <div className="oc-root oct" style={{ padding: "calc(var(--ion-safe-area-top, 0px) + 14px) 16px 130px" }}>
+          <div className="oct-title-row gv-rise" style={{ ...({ "--i": 0 } as React.CSSProperties) }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0 }}>
+              <h1 className="oc-title">Chats</h1>
+              <span className="oc-sub">{meta}</span>
+            </div>
+            {(unreadTotal > 0 || alerts > 0) && (
+              <span className="oct-chips" style={{ paddingBottom: 3 }}>
+                {alerts > 0 && <Chip tone="rose">{alerts} {alerts === 1 ? "alert" : "alerts"}</Chip>}
+                {unreadTotal > 0 && <Chip tone="go">{unreadTotal} unread</Chip>}
+              </span>
+            )}
           </div>
 
           {q.isLoading ? (
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}><SkeletonCard /><SkeletonCard /><SkeletonCard /></div>
           ) : q.isError ? (
-            <Empty>Could not load chats. This may be on us. Pull down to retry.</Empty>
+            <div className="oct-empty">Could not load chats. This may be on us. Pull down to retry.</div>
           ) : chats.length === 0 ? (
-            <Empty>
+            <div className="oct-empty">
               {startable.length > 0
                 ? "No chats yet. Start one below and the family's whole care team joins automatically."
                 : "No chats yet. A chat opens for each family you work with."}
-            </Empty>
+            </div>
           ) : (
-            <Card i={1} style={{ padding: "2px 16px" }}>
+            <div className="oct-card gv-rise" style={{ "--i": 1 } as React.CSSProperties}>
               {chats.map((c) => (
                 <ChatRow key={c.familyRecId} chat={c} onOpen={() => open(c.familyRecId)} />
               ))}
-            </Card>
+            </div>
           )}
 
           {startable.length > 0 && (
             <>
-              <Eyebrow style={{ marginTop: 24 }}>Start a chat</Eyebrow>
-              <Card i={2} style={{ padding: "2px 16px" }}>
+              <div className="oct-head"><h2>Start a chat</h2><small>{startable.length}</small></div>
+              <div className="oct-card gv-rise" style={{ "--i": 2 } as React.CSSProperties}>
                 {startable.map((s) => (
                   <StartRow key={s.familyRecId} item={s} onOpen={() => open(s.familyRecId)} />
                 ))}
-              </Card>
+              </div>
             </>
           )}
         </div>
@@ -102,33 +112,31 @@ function ChatRow({ chat, onOpen }: { chat: ChatListItem; onOpen: () => void }) {
     ? `${last.author ? `${last.author}: ` : ""}${last.body}`
     : "No messages yet";
   return (
-    <Row onClick={onOpen} style={{ padding: "13px 0" }}>
-      <Av name={chat.title} size={44} />
-      <span className="t">
+    <button type="button" className="oct-row" onClick={onOpen} style={{ padding: "13px 0" }}>
+      <SquareAv name={chat.title} />
+      <span className="oct-row-t">
         <b>{chat.title}</b>
-        <span style={{ color: chat.unread ? "var(--gv-text)" : "var(--gv-quiet)", fontWeight: chat.unread ? 600 : 400 }}>{preview}</span>
+        <span className={chat.unread ? "is-unread" : undefined}>{preview}</span>
       </span>
-      <span style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4, flex: "none" }}>
-        <span className="gv-meta tnum" style={{ fontSize: 12 }}>{relTime(last?.at)}</span>
+      <span className="oct-row-end">
+        <time>{relTime(last?.at)}</time>
         {(chat.unread > 0 || chat.alert) && (
-          <span style={{ display: "flex", gap: 4 }}>
-            {chat.alert && <Pill tint="rose" sm>Alert</Pill>}
-            {chat.unread > 0 && <Pill tint="go" sm><span className="tnum">{chat.unread}</span></Pill>}
+          <span className="oct-chips">
+            {chat.alert && <Chip tone="rose">Alert</Chip>}
+            {chat.unread > 0 && <Chip tone="go">{chat.unread}</Chip>}
           </span>
         )}
       </span>
-    </Row>
+    </button>
   );
 }
 
 function StartRow({ item, onOpen }: { item: StartableChat; onOpen: () => void }) {
   return (
-    <Row onClick={onOpen} style={{ padding: "11px 0" }}>
-      <span className="gv-tile" style={{ background: "var(--gv-inset)", color: "var(--gv-go)" }}>
-        <Plus size={16} weight="bold" />
-      </span>
-      <span className="t"><b style={{ fontWeight: 600 }}>{item.name}</b></span>
-      <CaretRight size={16} weight="bold" color="var(--gv-quiet)" style={{ flex: "none" }} aria-hidden />
-    </Row>
+    <button type="button" className="oct-row" onClick={onOpen} style={{ padding: "11px 0" }}>
+      <span className="oct-av oct-av--plus" aria-hidden="true"><Plus size={16} weight="bold" /></span>
+      <span className="oct-row-t"><b style={{ fontWeight: 700 }}>{item.name}</b></span>
+      <CaretRight size={16} weight="bold" color="var(--oc-mid)" style={{ flex: "none" }} aria-hidden />
+    </button>
   );
 }

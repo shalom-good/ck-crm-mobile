@@ -5,9 +5,10 @@ import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, useIonRouter } 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Check, CaretRight } from "@phosphor-icons/react";
 import { LESSONS, lessonEmbed } from "@/lib/lessons";
-import { fetchAcademyProgress, markLessonWatched } from "@/lib/portalApi";
+import { fetchAcademyJoin, fetchAcademyProgress, markLessonWatched } from "@/lib/portalApi";
+import { JOIN_KEY, LessonOneSteps, LockedNote } from "@/components/orchard/family/AcademyJoin";
 import { useUI } from "@/lib/ui";
-import { Btn, Card, CardTitle, Pill } from "@/components/gv";
+import { OBtn, Panel } from "@/components/orchard/family/FamKit";
 
 /** One episode: the video, the idea, a three-question check, "I watched this". */
 export function FamilyLessonPage() {
@@ -19,6 +20,10 @@ export function FamilyLessonPage() {
   const next = LESSONS.find((l) => l.id === lesson.id + 1) ?? null;
   const q = useQuery({ queryKey: ["academy"], queryFn: fetchAcademyProgress, staleTime: 30_000, retry: 1 });
   const done = (q.data?.watched ?? []).includes(lesson.id);
+  const jq = useQuery({ queryKey: JOIN_KEY, queryFn: fetchAcademyJoin, staleTime: 30_000, retry: 1 });
+  const join = jq.data;
+  const locked = !!join && join.live && !join.joined;
+  const member = !!join && join.live && join.joined;
   const [picked, setPicked] = useState<Record<number, number>>({});
   const [busy, setBusy] = useState(false);
 
@@ -39,47 +44,57 @@ export function FamilyLessonPage() {
   return (
     <IonPage>
       <IonHeader className="ion-no-border">
-        <IonToolbar>
+        <IonToolbar style={{ "--background": "var(--oc-ground)" } as React.CSSProperties}>
           <IonButtons slot="start"><BackButton href="/fam/learn" /></IonButtons>
-          <span className="gv-eyebrow" style={{ paddingLeft: 4 }}>Episode {lesson.roman}</span>
+          <span className="ocf2-kicker" style={{ paddingLeft: 4, color: "var(--oc-mid)", opacity: 1 }}>Episode {lesson.roman} of {LESSONS.length}</span>
         </IonToolbar>
       </IonHeader>
-      <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
-        <div style={{ padding: "0 16px 120px" }}>
-          <div className="gv-rise" style={{ borderRadius: 18, overflow: "hidden", background: "#0E1715", aspectRatio: "16 / 9", maxWidth: "100%" }}>
-            <iframe src={lessonEmbed(lesson)} title={lesson.title} style={{ width: "100%", height: "100%", border: 0, display: "block" }} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen />
+      <IonContent style={{ "--background": "var(--oc-ground)" } as React.CSSProperties}>
+        {locked ? (
+        <div className="ocf2 ocf2-page--door" style={{ paddingBottom: 120 }}>
+          <h1 className="ocf2-title" style={{ fontSize: 26 }}>{lesson.title}</h1>
+          <LockedNote onBack={() => router.push("/fam/learn", "back", "pop")} />
+        </div>
+        ) : (
+        <div className="ocf2 ocf2-page--door" style={{ paddingBottom: 120 }}>
+          <div className="ocf2-video gv-rise">
+            <iframe src={lessonEmbed(lesson)} title={lesson.title} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen />
           </div>
 
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, marginTop: 16 }}>
-            <h1 className="gv-h1 gv-rise" style={{ "--i": 1, fontSize: 24 } as React.CSSProperties}>{lesson.title}</h1>
-            {done && <Pill tint="mint" i={0} style={{ marginTop: 6 }}><Check size={12} weight="bold" /> Watched</Pill>}
+          <div>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
+              <h1 className="ocf2-title" style={{ fontSize: 26 }}>{lesson.title}</h1>
+              {done && <span className="ocf2-chip ocf2-t-mint" style={{ marginTop: 4 }}><Check size={12} weight="bold" /> Watched</span>}
+            </div>
+            <p className="ocf2-meta" style={{ marginTop: 6 }}>{lesson.duration}</p>
           </div>
-          <p className="gv-meta gv-rise" style={{ "--i": 2, marginTop: 4 } as React.CSSProperties}>{lesson.duration}</p>
-          <p className="gv-sub gv-rise" style={{ "--i": 3, marginTop: 10, color: "var(--gv-text)", fontWeight: 600 } as React.CSSProperties}>{lesson.blurb}</p>
-          {lesson.body && <p className="gv-sub gv-rise" style={{ "--i": 4, marginTop: 8 } as React.CSSProperties}>{lesson.body}</p>}
+          <p className="ocf2-p" style={{ color: "var(--oc-ink)", fontWeight: 700, fontSize: 15 }}>{lesson.blurb}</p>
+          {lesson.body && <p className="ocf2-p" style={{ marginTop: -4 }}>{lesson.body}</p>}
 
           {lesson.inspiration && (
-            <Card i={5} inset style={{ marginTop: 14 }}>
-              <span className="gv-eyebrow">You leave with</span>
-              <p className="gv-sub" style={{ marginTop: 6, color: "var(--gv-text)" }}>{lesson.inspiration}</p>
-            </Card>
+            <Panel tone="butter" style={{ gap: 6 }}>
+              <span className="ocf2-kicker">You leave with</span>
+              <p className="ocf2-p" style={{ color: "#3F360A", fontWeight: 600 }}>{lesson.inspiration}</p>
+            </Panel>
           )}
 
           {lesson.quiz.length > 0 && (
-            <Card i={6} style={{ marginTop: 14 }}>
-              <CardTitle right={answered === lesson.quiz.length ? <Pill tint={correct === lesson.quiz.length ? "mint" : "yellow"}>{correct} of {lesson.quiz.length}</Pill> : undefined}>Quick check</CardTitle>
+            <Panel>
+              <div className="ocf2-panel-h">
+                <h3>Quick check</h3>
+                {answered === lesson.quiz.length && <span className={`ocf2-chip ocf2-t-${correct === lesson.quiz.length ? "mint" : "butter"}`}>{correct} of {lesson.quiz.length}</span>}
+              </div>
               {lesson.quiz.map((qz, k) => (
-                <div key={k} style={{ paddingTop: k === 0 ? 0 : 14, marginTop: k === 0 ? 0 : 14, borderTop: k === 0 ? 0 : "1px solid var(--gv-hair)" }}>
-                  <p style={{ margin: "0 0 8px", fontSize: 14, fontWeight: 700, color: "var(--gv-ink)", lineHeight: 1.4 }}>{qz.prompt}</p>
+                <div key={k} style={{ paddingTop: k === 0 ? 0 : 14, borderTop: k === 0 ? 0 : "1px solid var(--oc-hair)" }}>
+                  <p style={{ margin: "0 0 8px", fontSize: 14, fontWeight: 800, color: "var(--oc-ink)", lineHeight: 1.4 }}>{qz.prompt}</p>
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     {qz.choices.map((c, ci) => {
                       const chosen = picked[k] === ci;
                       const reveal = picked[k] != null;
                       const right = ci === qz.answer;
-                      const bg = reveal && right ? "var(--gv-mint)" : reveal && chosen && !right ? "var(--gv-rose)" : "var(--gv-inset)";
-                      const fg = reveal && right ? "var(--gv-mintInk)" : reveal && chosen && !right ? "var(--gv-roseInk)" : "var(--gv-text)";
+                      const cls = reveal && right ? " is-right" : reveal && chosen && !right ? " is-wrong" : "";
                       return (
-                        <button key={ci} onClick={() => setPicked((p) => (p[k] != null ? p : { ...p, [k]: ci }))} style={{ textAlign: "left", border: 0, borderRadius: 12, padding: "10px 12px", background: bg, color: fg, font: "inherit", fontSize: 13.5, lineHeight: 1.4, fontWeight: reveal && right ? 700 : 500, cursor: reveal ? "default" : "pointer", display: "flex", gap: 8, alignItems: "flex-start" }}>
+                        <button type="button" key={ci} className={`ocf2-choice${cls}`} aria-pressed={chosen} onClick={() => setPicked((p) => (p[k] != null ? p : { ...p, [k]: ci }))} style={{ cursor: reveal ? "default" : "pointer" }}>
                           {reveal && right && <Check size={16} weight="bold" style={{ flex: "none", marginTop: 1 }} />}
                           <span>{c}</span>
                         </button>
@@ -88,14 +103,17 @@ export function FamilyLessonPage() {
                   </div>
                 </div>
               ))}
-            </Card>
+            </Panel>
           )}
 
-          <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
-            {!done && <Btn block disabled={busy} onClick={() => void mark()}>{busy ? "Saving…" : "I watched this"}</Btn>}
-            {next && <Btn block ghost onClick={() => router.push(`/fam/learn/${next.id}`, "forward", "replace")}>Next: {next.title} <CaretRight size={16} weight="bold" /></Btn>}
+          {lesson.id === 1 && member && join && <LessonOneSteps join={join} />}
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {!done && <OBtn block disabled={busy} onClick={() => void mark()} style={{ minHeight: 54 }}>{busy ? "Saving…" : "I watched this"}</OBtn>}
+            {next && <OBtn block kind={done ? "lime" : "light"} onClick={() => router.push(`/fam/learn/${next.id}`, "forward", "replace")}>Next: {next.title} <CaretRight size={16} weight="bold" /></OBtn>}
           </div>
         </div>
+        )}
       </IonContent>
     </IonPage>
   );

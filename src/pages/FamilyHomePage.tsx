@@ -1,16 +1,22 @@
-import { useMemo, useState } from "react";
+import { HeroScene, Oil } from "@/components/orchard/Illos";
+import { useMemo, useState, type ReactNode } from "react";
 import { IonPage, IonContent, IonRefresher, IonRefresherContent, useIonActionSheet, useIonRouter, type RefresherEventDetail } from "@ionic/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { CalendarBlank, ChatCircleText, Check, FileText, ArrowSquareOut, VideoCamera, Phone } from "@phosphor-icons/react";
+import { CalendarBlank, ChatCircleText, Check, FileText, ArrowSquareOut, VideoCamera, Phone, WhatsappLogo, CalendarPlus } from "@phosphor-icons/react";
 import { fetchPortalHome, setHomeworkDone, PORTAL_WEB_URL, type PortalHome } from "@/lib/portalApi";
 import { useAuth } from "@/lib/auth";
 import { money } from "@/lib/format";
 import { greetingWord } from "@/lib/quotes";
-import { Av, Bars, Btn, Card, CardTitle, CountUp, Empty, Eyebrow, Evt, Pill, Row, Strip, Track, CalendarArt, PlantArt, type Stat } from "@/components/gv";
-import { FamBell } from "@/components/FamBell";
+import { CountUp, CalendarArt, PlantArt } from "@/components/gv";
+import { DateTile, FamBellO, FamBrand, Face, Hero, Loading, MiniBars, NextCard, OBtn, Panel, SectionHead, Stepper, toneFor } from "@/components/orchard/family/FamKit";
+import FamSteps from "@/components/orchard/family/FamSteps";
 
 /**
- * The family's home — the client portal, in the app. Reads the SAME
+ * ORCHARD (2026-11-05): a mint hero with the name on a lime highlight,
+ * ONE lime "up next" card, colour tiles, the journey stepper, light
+ * money card (never coral), white panels below.
+ *
+ * The family's home: the client portal, in the app. Reads the SAME
  * payload the web portal renders (GET /api/portal/me, bearer token) and
  * keeps its rules: the interview gate first, focus mode until the plan
  * is signed, then the full picture (journey, sessions, meetings, team,
@@ -43,7 +49,12 @@ export function FamilyHomePage() {
   };
 
   const name = d?.firstNames || firstWord(d?.name) || firstWord(family?.name) || "there";
-  const greeting = `${greetingWord()}, ${name}`;
+  const fullName = d?.name || family?.name || "Your family";
+
+  // Where the family is on their plan, for the hero scene and its line.
+  const pathSteps: Raw[] = Array.isArray(d?.journey?.steps) ? d!.journey.steps : [];
+  const pathDone: number = typeof d?.journey?.doneCount === "number" ? d!.journey.doneCount : pathSteps.filter((s) => s.status === "done" || s.done).length;
+  const pathTotal: number = typeof d?.journey?.total === "number" ? d!.journey.total : pathSteps.length;
 
   const menu = () => presentSheet({
     header: d?.name || family?.name || "Your family",
@@ -56,39 +67,47 @@ export function FamilyHomePage() {
 
   return (
     <IonPage>
-      <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
+      <IonContent style={{ "--background": "var(--oc-ground)" } as React.CSSProperties}>
         <IonRefresher slot="fixed" onIonRefresh={refresh}><IonRefresherContent /></IonRefresher>
-        <div style={{ padding: "calc(env(safe-area-inset-top) + 14px) 16px 110px" }}>
+        <div className="ocf2 ocf2-page">
           {/* top bar */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-            <img src="/ck-logo.png" alt="Collective Kindness" style={{ width: 128, height: "auto" }} />
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <FamBell />
-              <button aria-label="Menu" onClick={menu} style={{ background: "none", border: 0, padding: 0, cursor: "pointer" }}>
-                <Av name={d?.name || family?.name || "F"} size={38} round tint="mint" />
-              </button>
+          <div className="ocf2-top">
+            <FamBrand />
+            <div className="ocf2-top-r">
+              <FamBellO />
+              <button type="button" className="ocf2-round is-lilac" aria-label="Menu" onClick={menu}>{initials(fullName)}</button>
             </div>
           </div>
 
-          <h1 className="gv-h1 gv-rise" style={{ marginTop: 18 }}>{greeting}</h1>
-          <p className="gv-sub gv-rise" style={{ "--i": 1, marginTop: 6 } as React.CSSProperties}>
-            {q.isLoading ? "Getting your page ready…" : d?.preview ? "Staff preview of this family's page." : "Here's where things stand."}
-          </p>
+          {/* The hero: the greeting over a moving scene of the family's own
+              path (Shalom 2026-11-11). One marker per plan step, the sky by
+              the clock. The second line leads with what is already done. */}
+          <Hero
+            lead={`${greetingWord()}, `}
+            mark={name}
+            line2={q.isLoading ? "Getting your page ready." : d?.preview ? "Staff preview of this page."
+              : pathTotal > 0 && pathDone >= pathTotal ? "Every step done. That took real work."
+              : pathDone > 0 ? `${pathDone} of ${pathTotal} steps done. One at a time.`
+              : "Glad you are here. One step at a time."}
+          >
+            <HeroScene done={pathDone} total={pathTotal} />
+          </Hero>
 
           {q.isLoading && <Loading />}
           {q.isError && !d && (
-            <Card i={2} style={{ marginTop: 18 }}>
-              <p style={{ margin: 0, fontSize: 14, color: "var(--gv-mid)", lineHeight: 1.5 }}>We couldn't load your page just now. This may be on us.</p>
-              <div style={{ marginTop: 12 }}><Btn sm ghost onClick={() => q.refetch()}>Try again</Btn></div>
-            </Card>
+            <Panel>
+              <p className="ocf2-p">We couldn't load your page just now. This may be on us.</p>
+              <div><OBtn kind="light" sm onClick={() => q.refetch()}>Try again</OBtn></div>
+            </Panel>
           )}
           {d && <Body d={d} />}
 
-          <div style={{ display: "flex", justifyContent: "center", gap: 18, marginTop: 26 }}>
-            <a href={`${PORTAL_WEB_URL}/login`} target="_blank" rel="noreferrer" className="gv-link" style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "var(--gv-quiet)" }}>
+          <div style={{ display: "flex", justifyContent: "center", gap: 6, flexWrap: "wrap", marginTop: 4 }}>
+            <a href={`${PORTAL_WEB_URL}/login`} target="_blank" rel="noreferrer" className="ocf2-quiet">
               Open the web portal <ArrowSquareOut size={14} />
             </a>
-            <button className="gv-link" style={{ color: "var(--gv-quiet)" }} onClick={() => void signOut().then(() => router.push("/start", "root", "replace"))}>Sign out</button>
+            <button type="button" className="ocf2-quiet" onClick={() => router.push("/app-settings")}>Settings and feedback</button>
+            <button type="button" className="ocf2-quiet" onClick={() => void signOut().then(() => router.push("/start", "root", "replace"))}>Sign out</button>
           </div>
         </div>
       </IonContent>
@@ -96,28 +115,7 @@ export function FamilyHomePage() {
   );
 }
 
-/** Day-of-month over a short month, on a 36px white tile inside an Evt row
- *  (14px number, 11px bold uppercase month: nothing under the type floor). */
-function DateTile({ iso }: { iso?: string | null }) {
-  const d = iso ? new Date(iso) : null;
-  const ok = !!d && !Number.isNaN(d.getTime());
-  return (
-    <span aria-hidden style={{ width: 36, height: 36, margin: 0, borderRadius: 10, background: "var(--gv-card)", display: "grid", placeItems: "center", alignContent: "center", textAlign: "center", lineHeight: 1, flex: "none" }}>
-      <b className="tnum" style={{ display: "block", fontSize: 14, fontWeight: 800, color: "var(--gv-ink)" }}>{ok ? d!.getDate() : ""}</b>
-      <span style={{ display: "block", fontSize: 11, fontWeight: 700, letterSpacing: ".04em", color: "var(--gv-mid)", textTransform: "uppercase", margin: "2px 0 0" }}>{ok ? d!.toLocaleDateString("en-US", { month: "short" }) : ""}</span>
-    </span>
-  );
-}
-
-function Loading() {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 18 }}>
-      {[0, 1, 2].map((k) => (
-        <div key={k} className="gv-card gv-rise" style={{ "--i": k + 2, height: k === 0 ? 150 : 96, background: "linear-gradient(90deg, #fff 25%, #F4F6F2 50%, #fff 75%)", backgroundSize: "200% 100%", animation: "ck-shimmer 1.3s ease-in-out infinite" } as React.CSSProperties} />
-      ))}
-    </div>
-  );
-}
+const initials = (n: string) => String(n || "?").replace(/[^A-Za-z\s]/g, " ").trim().split(/\s+/).filter((w) => !/^(and)$/i.test(w)).map((w) => w[0]).join("").slice(0, 2).toUpperCase() || "F";
 
 function Body({ d }: { d: PortalHome }) {
   const qc = useQueryClient();
@@ -133,269 +131,208 @@ function Body({ d }: { d: PortalHome }) {
   const meetings: Raw[] = Array.isArray(d.meetings) ? d.meetings : [];
   const members: Raw[] = Array.isArray(d.team?.members) ? d.team.members : Array.isArray(d.team) ? d.team : [];
   const coordinator: Raw | null = d.team?.coordinator || null;
+  // Everyone the family can reach, the coordinators last. Tovi is on every
+  // family's team; her WhatsApp and booking link show once the CRM sends them.
+  const coords: Raw[] = Array.isArray(d.team?.coordinators) ? d.team.coordinators : coordinator ? [coordinator] : [];
+  const people: Raw[] = [...members, ...coords.map((c) => ({ ...c, coord: true }))];
+  if (people.length > 0 && !people.some((p) => /^tovi\b/i.test(String(p.name || "")))) people.push({ name: "Tovi Cremisi", role: "Family coordinator", coord: true });
   const cf: Raw = d.cashFlow || {};
   const history: Raw[] = Array.isArray(cf.history) ? cf.history : [];
   const cur: Raw | null = cf.current || (history.length ? history[history.length - 1] : null);
   const debt: Raw | null = d.debtNumbers && typeof d.debtNumbers.total === "number" ? d.debtNumbers : null;
-  const docs: Raw[] = Array.isArray(d.documents) ? d.documents : [];
+  const pct = (v: unknown) => (typeof v === "number" ? `${v}%` : null);
+  const usd = (v: unknown) => (typeof v === "number" ? money(v) : null);
+  const baRows = debt ? [
+    { k: "You owe", was: usd(debt.atAssessment), now: usd(debt.total) },
+    { k: "Each month", was: usd(debt.monthlyAtAssessment), now: usd(debt.monthlyPayments) },
+    { k: "Card rate", was: pct(debt.aprAtAssessment), now: pct(debt.aprPct) },
+  ].filter((r) => r.was || r.now) : [];
   const focus = !!d.focusMode;
+  const gateOpen = !!gate && !gate.booked;
 
-  // homework with optimistic ticks
+  // homework with optimistic ticks (the steps list shows and ticks them)
   const [hw, setHw] = useState<Raw[] | null>(null);
+  const [hwBusy, setHwBusy] = useState<string | null>(null);
+  const [stepsSlot, setStepsSlot] = useState<HTMLElement | null>(null);
+  const [pickMonth, setPickMonth] = useState<number | null>(null);
   const homework: Raw[] = hw ?? (Array.isArray(d.homework) ? d.homework : []);
-  const openHw = homework.filter((h) => !h.done).length;
   const toggle = async (h: Raw) => {
+    if (hwBusy) return;
+    setHwBusy(String(h.id));
     const nextList = homework.map((x) => (x.id === h.id ? { ...x, done: !x.done } : x));
     setHw(nextList);
     try { await setHomeworkDone(String(h.id), !h.done); qc.invalidateQueries({ queryKey: ["portalHome"] }); }
     catch { setHw(homework); }
+    finally { setHwBusy(null); }
   };
 
-  const stats = useMemo(() => {
-    const s: Stat[] = [];
-    if (total) s.push({ label: "Journey", value: doneCount, unit: `of ${total}` });
-    if (!sessions.locked && sessions.total) s.push({ label: "Budget sessions", value: Number(sessions.done || 0), unit: `of ${sessions.total}` });
-    if (homework.length) s.push({ label: "Homework", value: openHw, unit: "open", warn: openHw > 0 });
-    return s;
-  }, [total, doneCount, sessions.locked, sessions.total, sessions.done, homework.length, openHw]);
-
-  let i = 2;
-  const barsData = history.slice(-6).map((h, k, arr) => ({
-    label: monthShort(String(h.date || h.month || h.monthLabel || "")),
-    value: Math.abs(Number(h.net ?? 0)),
-    on: k === arr.length - 1 && Number(h.net ?? 0) < 0,
-    go: k === arr.length - 1 && Number(h.net ?? 0) >= 0,
-  }));
+  // Bars: the size of each month's gap or surplus, mint, the latest forest. Never coral.
+  // A tap on a month opens that month in the card (Leivi 2026-11-11).
+  const last6 = history.slice(-6);
+  const pickK = pickMonth != null && pickMonth < last6.length ? pickMonth : last6.length - 1;
+  const shown: Raw | null = pickMonth != null && last6[pickK] ? last6[pickK] : cur;
+  const shownLatest = pickMonth == null || pickK === last6.length - 1;
+  const signed$ = (n: number) => `${n < 0 ? "-" : ""}${money(Math.abs(n))}`;
+  const barsData = last6.map((h, k) => {
+    const label = monthShort(String(h.date || h.month || h.monthLabel || ""));
+    const parts = [typeof h.income === "number" ? `in ${money(h.income)}` : null, typeof h.expenses === "number" ? `out ${money(h.expenses)}` : null].filter(Boolean).join(", ");
+    return { label, n: Math.abs(Number(h.net ?? 0)), hi: k === pickK, tip: `${label}: ${signed$(Number(h.net ?? 0))} left over${parts ? ` (${parts})` : ""}` };
+  });
 
   return (
     <>
       {/* ── the interview gate comes first, like the portal ── */}
-      {gate && !gate.booked && (
-        <Card i={i++} style={{ marginTop: 18 }}>
-          <Pill tint="lime">First step</Pill>
-          <h2 className="gv-h2" style={{ fontSize: 20, marginTop: 10 }}>Book your intake interview</h2>
-          <p className="gv-sub" style={{ marginTop: 6 }}>{gate.interviewerName || "Our interviewer"} meets every family first. {gate.mode === "yossi" ? "Send a WhatsApp and pick a time together." : "Pick a time that works for you."}</p>
-          <div style={{ display: "flex", justifyContent: "center", margin: "6px 0 2px" }}><CalendarArt width={170} /></div>
-          {gate.calendly && <Btn block href={gate.calendly}><CalendarBlank size={18} weight="bold" /> Pick a time</Btn>}
-          {!gate.calendly && gate.whatsapp && <Btn block href={gate.whatsapp}><ChatCircleText size={18} weight="bold" /> WhatsApp {firstWord(gate.interviewerName)}</Btn>}
-          {gate.bookingExpired && <div className="gv-gentle" style={{ marginTop: 10 }}>Your booking window passed. Pick a new time and we will take it from there.</div>}
-        </Card>
+      {gateOpen && (
+        <NextCard kicker="First step" title="Book your intake interview"
+          body={<>{gate!.interviewerName || "Our interviewer"} meets every family first. {gate!.mode === "yossi" ? "Send a WhatsApp and pick a time together." : "Pick a time that works for you."}</>}
+          art={<CalendarArt width={130} />}>
+          {gate!.calendly && <OBtn href={gate!.calendly}><CalendarBlank size={18} weight="bold" /> Pick a time</OBtn>}
+          {!gate!.calendly && gate!.whatsapp && <OBtn href={gate!.whatsapp}><ChatCircleText size={18} weight="bold" /> WhatsApp {firstWord(gate!.interviewerName)}</OBtn>}
+          {gate!.bookingExpired && <div className="ocf2-note" style={{ flexBasis: "100%" }}>Your booking window passed. Pick a new time and we will take it from there.</div>}
+        </NextCard>
       )}
+
       {gate && gate.booked && (
-        <div className="gv-rise" style={{ "--i": i++, marginTop: 18 } as React.CSSProperties}>
-          <Evt tint="mint" icon={<Check size={16} weight="bold" color="var(--gv-mintInk)" />} title="Interview booked" sub={gate.booked.start ? `${fmtDay(gate.booked.start)} · ${fmtTime(gate.booked.start)}` : "We will see you soon."} />
-        </div>
+        <Panel tone="mint" style={{ flexDirection: "row", alignItems: "center", gap: 12, padding: "12px 14px" }}>
+          <span className="ocf2-tick is-done"><Check size={15} weight="bold" /></span>
+          <span className="ocf2-row-t"><b>Interview booked</b><small style={{ color: "#46594F" }}>{gate.booked.start ? `${fmtDay(gate.booked.start)} · ${fmtTime(gate.booked.start)}` : "We will see you soon."}</small></span>
+        </Panel>
       )}
 
-      {/* ── up next ── */}
-      {next && (
-        <Card i={i++} style={{ marginTop: gate ? 12 : 18 }}>
-          <Pill tint={next.kind === "done" || next.kind === "ok" ? "mint" : "lime"}>{next.kind === "done" ? "Milestone" : "Up next"}</Pill>
-          <h2 className="gv-h2" style={{ fontSize: 20, marginTop: 10 }}>{next.title}</h2>
-          {next.body && <p className="gv-sub" style={{ marginTop: 6 }}>{next.body}</p>}
-          {next.hint && <p className="gv-meta" style={{ marginTop: 8, lineHeight: 1.5 }}>{next.hint}</p>}
-          {next.kind === "ok" && <div style={{ display: "flex", justifyContent: "center", marginTop: 6 }}><PlantArt width={120} /></div>}
-          <div style={{ display: "flex", gap: 8, marginTop: 14, flexWrap: "wrap" }}>
-            {next.whatsapp && <Btn href={next.whatsapp} style={{ flex: 1 }}><ChatCircleText size={18} weight="bold" /> WhatsApp {next.cmFirst || ""}</Btn>}
-            {next.calendly && <Btn href={next.calendly} ghost={!!next.whatsapp} style={{ flex: 1 }}><CalendarBlank size={18} weight="bold" /> Book a time</Btn>}
-            {next.kind === "book" && sessions.bookUrl && <Btn href={sessions.bookUrl} style={{ flex: 1 }}><CalendarBlank size={18} weight="bold" /> Book a session</Btn>}
-            {(next.kind === "review_plan" || next.kind === "sign") && (
-              <Btn onClick={() => router.push("/fam/plan")} style={{ flex: 1 }}><FileText size={18} weight="bold" /> {next.kind === "sign" ? "Read and sign the plan" : "Read the plan"}</Btn>
-            )}
-            {next.kind === "homework" && <Btn ghost onClick={() => document.getElementById("fam-homework")?.scrollIntoView({ behavior: "smooth", block: "start" })} style={{ flex: 1 }}>See the homework</Btn>}
-          </div>
-        </Card>
-      )}
-
-      {stats.length > 0 && !focus && <div style={{ marginTop: 12 }}><Strip i={i++} stats={stats} /></div>}
-
-      {/* ── journey ── */}
+      {/* ── steps 1, 2, 3 with the real tasks (same rules as the web portal,
+          Minsky 2026-11-08). The interview card above holds "right now"
+          while the interview is still to book. ── */}
       {steps.length > 0 && (
-        <>
-          <Eyebrow>Your journey</Eyebrow>
-          <Card i={i++}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-              <span style={{ fontSize: 14, fontWeight: 700, color: "var(--gv-ink)" }}><CountUp to={doneCount} /> of {total} done</span>
-              {currentIdx >= 0 && <Pill tint="lime">{steps[currentIdx]?.label}</Pill>}
-            </div>
-            <Track total={total} done={doneCount} current={currentIdx >= 0 ? currentIdx : undefined} />
-            <div style={{ marginTop: 10 }}>
-              {steps.map((s, k) => {
-                const done = s.status === "done" || s.done;
-                const curr = k === currentIdx;
-                return (
-                  <Row key={s.key || k}>
-                    <span style={{ width: 24, height: 24, borderRadius: "50%", flex: "none", display: "grid", placeItems: "center", background: done ? "var(--gv-mint)" : curr ? "var(--gv-lime)" : "transparent", boxShadow: done || curr ? "none" : "inset 0 0 0 2px var(--gv-line)", color: "var(--gv-go)" }}>
-                      {done && <Check size={13} weight="bold" />}
-                    </span>
-                    <span className="t">
-                      <b style={{ fontWeight: curr ? 800 : done ? 700 : 600, color: done || curr ? "var(--gv-ink)" : "var(--gv-mid)" }}>{s.label}</b>
-                      {(s.date || s.target) && <span>{s.date ? `Done ${fmtDay(s.date)}` : s.target ? `Aim: ${s.target}` : ""}</span>}
-                    </span>
-                  </Row>
-                );
-              })}
-            </div>
-          </Card>
-        </>
+        <FamSteps
+          d={{ ...d, homework }}
+          onOpenPlan={() => router.push("/fam/plan")}
+          onToggleHomework={(h: Raw) => void toggle(h)}
+          hwBusy={hwBusy}
+          hideNow={gateOpen}
+          stepsSlot={stepsSlot}
+          stepsCollapsible
+        />
       )}
 
       {!focus && (
         <>
           {/* ── budgeting sessions ── */}
           {!sessions.locked && sessions.total > 0 && (
-            <>
-              <Eyebrow>Budgeting sessions</Eyebrow>
-              <Card i={i++}>
-                <CardTitle right={<Pill tint="mint">{sessions.done || 0} of {sessions.total}</Pill>}>{sessions.budgeterName ? `With ${sessions.budgeterName}` : "Your sessions"}</CardTitle>
-                <Track total={Number(sessions.total)} done={Number(sessions.done || 0)} current={Number(sessions.done || 0) < Number(sessions.total) ? Number(sessions.done || 0) : undefined} />
-                {Array.isArray(sessions.labels) && sessions.labels[Number(sessions.done || 0)] && (
-                  <p className="gv-meta" style={{ marginTop: 10 }}>Next: {sessions.labels[Number(sessions.done || 0)]}</p>
-                )}
-                {sessions.bookUrl && <div style={{ marginTop: 12 }}><Btn sm ghost href={sessions.bookUrl}><CalendarBlank size={16} weight="bold" /> Book the next one</Btn></div>}
-              </Card>
-            </>
+            <Panel tone="butter">
+              <div className="ocf2-panel-h"><h3>{sessions.budgeterName ? `Budgeting with ${sessions.budgeterName}` : "Your budgeting sessions"}</h3><span style={{ color: "#574A0E" }}>{sessions.done || 0} of {sessions.total}</span></div>
+              <Stepper total={Number(sessions.total)} done={Number(sessions.done || 0)} current={Number(sessions.done || 0) < Number(sessions.total) ? Number(sessions.done || 0) : undefined}
+                label={Array.isArray(sessions.labels) && sessions.labels[Number(sessions.done || 0)] ? <span style={{ color: "#574A0E" }}>Next: {sessions.labels[Number(sessions.done || 0)]}</span> : undefined} />
+              {sessions.bookUrl && <div><OBtn kind="light" sm href={sessions.bookUrl}><CalendarBlank size={16} weight="bold" /> Book the next one</OBtn></div>}
+            </Panel>
           )}
 
           {/* ── coming up ── */}
           {meetings.length > 0 && (
             <>
-              <Eyebrow right="All meetings" onRight={() => router.push("/fam/meetings")}>Coming up</Eyebrow>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <SectionHead aux="All meetings" onAux={() => router.push("/fam/meetings")}>Coming up</SectionHead>
+              <Panel tone="lilac" style={{ gap: 8, padding: 10 }}>
                 {meetings.slice(0, 4).map((m, k) => (
-                  <Evt
-                    key={k}
-                    i={i++}
-                    tint={k === 0 ? "yellow" : "lavender"}
-                    icon={<DateTile iso={m.startTime} />}
-                    title={m.title || "Meeting"}
-                    sub={[m.startTime ? `${fmtDay(m.startTime)} · ${fmtTime(m.startTime)}` : null, m.host ? `with ${m.host}` : null].filter(Boolean).join(" · ")}
-                    right={m.joinUrl ? <Btn sm ghost href={m.joinUrl} ariaLabel={`Join ${m.title || "meeting"}`} style={{ minWidth: 44, flex: "none" }}><VideoCamera size={15} weight="bold" /> Join</Btn> : undefined}
-                  />
+                  <div key={k} className="ocf2-meet ocf2-t-white" style={{ flexDirection: "row", alignItems: "center", gap: 12, borderRadius: 18, padding: "10px 10px 10px 10px" }}>
+                    <DateTile iso={m.startTime} tone={k === 0 ? "lime" : "lilac"} />
+                    <span className="ocf2-row-t">
+                      <b style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{m.title || "Meeting"}</b>
+                      <small>{[m.startTime ? fmtTime(m.startTime) : null, m.host ? `with ${firstWord(m.host)}` : null].filter(Boolean).join(" · ")}</small>
+                    </span>
+                    {m.joinUrl && <OBtn kind="ghost" sm href={m.joinUrl} ariaLabel={`Join ${m.title || "meeting"}`} style={{ flex: "none", padding: "0 12px" }}><VideoCamera size={15} weight="bold" /> Join</OBtn>}
+                  </div>
                 ))}
-              </div>
+              </Panel>
             </>
           )}
 
-          {/* ── cash flow ── */}
+          {/* ── cash flow: light card, ink numbers, never coral ── */}
           {(cur || history.length > 0) && (
-            <>
-              <Eyebrow>Your month</Eyebrow>
-              <Card i={i++}>
-                <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 12 }}>
-                  <div>
-                    <small style={{ fontSize: 12, fontWeight: 600, color: "var(--gv-mid)" }}>Left over each month</small>
-                    <div className="tnum" style={{ fontSize: 30, fontWeight: 800, letterSpacing: "-.02em", lineHeight: 1.05, marginTop: 4, color: Number(cur?.net ?? 0) < 0 ? "var(--gv-coral)" : "var(--gv-ink)" }}>
-                      {typeof cur?.net === "number" ? <>{cur.net < 0 ? "−" : ""}<CountUp to={Math.abs(cur.net)} fmt={money} /></> : "Building"}
-                    </div>
+            <section className="ocf2-money">
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
+                <div style={{ minWidth: 0 }}>
+                  <span className="ocf2-big-l">{shownLatest ? "Left over each month" : `Left over in ${barsData[pickK]?.label || "that month"}`}</span>
+                  <div className="ocf2-big" style={{ marginTop: 6 }}>
+                    {typeof shown?.net === "number" ? <>{shown.net < 0 ? "-" : ""}<CountUp key={pickK} to={Math.abs(shown.net)} fmt={money} /></> : "Building"}
                   </div>
-                  {typeof cur?.income === "number" && typeof cur?.expenses === "number" && (
-                    <div style={{ textAlign: "right", fontSize: 12.5, color: "var(--gv-mid)", lineHeight: 1.6 }}>
-                      <div>In <b style={{ color: "var(--gv-ink)" }}>{money(cur.income)}</b></div>
-                      <div>Out <b style={{ color: "var(--gv-ink)" }}>{money(cur.expenses)}</b></div>
-                    </div>
-                  )}
                 </div>
-                {barsData.length > 1 && <div style={{ marginTop: 14 }}><Bars bars={barsData} height={64} /></div>}
-              </Card>
-            </>
+                {shownLatest
+                  ? <span className="ocf2-chip" style={{ background: "rgba(255,255,255,.75)" }}>Your month</span>
+                  : <button type="button" className="ocf2-chip" style={{ background: "rgba(255,255,255,.75)", border: 0, font: "inherit", fontWeight: 800, cursor: "pointer", minHeight: 32 }} onClick={() => setPickMonth(null)}>Back to this month</button>}
+              </div>
+              {typeof shown?.income === "number" && typeof shown?.expenses === "number" && (
+                <div className="ocf2-kv"><span>In <b>{money(shown.income)}</b></span><span>Out <b>{money(shown.expenses)}</b></span></div>
+              )}
+              {barsData.length > 1 && <MiniBars bars={barsData} height={72} onPick={(k) => setPickMonth(k === last6.length - 1 ? null : k)} />}
+              {barsData.length > 1 && <p className="ocf2-money-hint">Tap a month to see it.</p>}
+            </section>
           )}
 
           {/* ── debt ── */}
           {debt && (
-            <>
-              <Eyebrow>Debt</Eyebrow>
-              <Card i={i++}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-                  <div>
-                    <small style={{ fontSize: 12, fontWeight: 600, color: "var(--gv-mid)" }}>On file today</small>
-                    <div className="tnum" style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-.02em", lineHeight: 1.05, marginTop: 4, color: "var(--gv-ink)" }}><CountUp to={Number(debt.total)} fmt={money} /></div>
-                  </div>
-                  {typeof debt.atAssessment === "number" && debt.atAssessment > debt.total && (
-                    <Pill tint="up" i={0}>↓ {money(debt.atAssessment - debt.total)}</Pill>
-                  )}
+            <Panel>
+              <div className="ocf2-debt-top">
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 8, minWidth: 0 }}>
+                  <h3 style={{ margin: 0, fontSize: 17, fontWeight: 800, letterSpacing: "-.015em" }}>Debt</h3>
+                  {typeof debt.atAssessment === "number" && debt.atAssessment > debt.total && <span className="ocf2-chip ocf2-t-mint">Down {money(debt.atAssessment - debt.total)}</span>}
                 </div>
-                <p className="gv-meta" style={{ marginTop: 10 }}>
-                  {[
-                    typeof debt.atAssessment === "number" && debt.atAssessment > debt.total ? `down from ${money(debt.atAssessment)} at assessment` : null,
-                    debt.aprPct != null ? `${debt.aprPct}% APR` : null,
-                    debt.monthlyPayments != null ? `${money(debt.monthlyPayments)} a month` : null,
-                    d.debtExpertName ? `with ${d.debtExpertName}` : null,
-                  ].filter(Boolean).join(" · ")}
-                </p>
-                {debt.inDefault && <div className="gv-gentle" style={{ marginTop: 10 }}>Some accounts are in default. Your debt expert is working through them with you.</div>}
-              </Card>
-            </>
-          )}
-
-          {/* ── homework ── */}
-          {homework.length > 0 && (
-            <>
-              <div id="fam-homework" /><Eyebrow right={openHw ? `${openHw} open` : "All done"}>Homework</Eyebrow>
-              <Card i={i++}>
-                {homework.map((h) => (
-                  <Row key={h.id} onClick={() => void toggle(h)}>
-                    <span style={{ width: 26, height: 26, borderRadius: 8, flex: "none", display: "grid", placeItems: "center", background: h.done ? "var(--gv-mint)" : "var(--gv-yellow)", color: h.done ? "var(--gv-mintInk)" : "var(--gv-yellowInk)" }}>
-                      {h.done ? <Check size={14} weight="bold" /> : <span style={{ width: 8, height: 8, borderRadius: 2, background: "currentColor", opacity: .5 }} />}
-                    </span>
-                    <span className="t"><b style={{ whiteSpace: "normal", fontWeight: 600, textDecoration: h.done ? "line-through" : "none", color: h.done ? "var(--gv-quiet)" : "var(--gv-ink)" }}>{h.text}</b></span>
-                  </Row>
+                <Oil name="stack" w={104} />
+              </div>
+              <div className="ocf2-ba" role="table" aria-label="Your debt, before and now">
+                <div role="row" className="ocf2-ba-h"><span role="columnheader" /><span role="columnheader">Before</span><span role="columnheader">Now</span></div>
+                {baRows.map((r) => (
+                  <div role="row" key={r.k} className="ocf2-ba-r">
+                    <span role="rowheader">{r.k}</span>
+                    <span role="cell" className="was">{r.was ?? "Not on file"}</span>
+                    <b role="cell">{r.now ?? "Not on file"}</b>
+                  </div>
                 ))}
-              </Card>
-            </>
+              </div>
+              {d.debtExpertName && <p className="ocf2-meta">With {d.debtExpertName}. "Before" is where things stood at your assessment.</p>}
+              {debt.inDefault && <div className="ocf2-note ocf2-t-butter">Some accounts are in default. Your debt expert is working through them with you.</div>}
+            </Panel>
           )}
 
-          {/* ── documents ── */}
-          {docs.length > 0 && (
-            <>
-              <Eyebrow>Your documents</Eyebrow>
-              <Card i={i++}>
-                {docs.map((doc, k) => (
-                  <Row key={k} onClick={() => window.open(doc.url, "_blank")}>
-                    <span className="gv-tile" style={{ background: doc.kind === "plan" ? "var(--gv-mint)" : "var(--gv-sky)" }}><FileText size={18} weight="regular" color={doc.kind === "plan" ? "var(--gv-mintInk)" : "var(--gv-skyInk)"} /></span>
-                    <span className="t"><b>{doc.label}</b><span>Opens in a new tab</span></span>
-                    <ArrowSquareOut size={16} color="var(--gv-quiet)" />
-                  </Row>
-                ))}
-              </Card>
-            </>
-          )}
-        </>
-      )}
-
-      {/* ── team ── */}
-      {(members.length > 0 || coordinator) && (
-        <>
-          <Eyebrow>Your team</Eyebrow>
-          <Card i={i++}>
-            {members.map((m, k) => (
-              <Row key={k}>
-                <Av name={String(m.name || "Team")} size={40} round />
-                <span className="t"><b>{m.name}</b><span>{m.role}</span></span>
-                {m.whatsapp && <Btn sm ghost href={m.whatsapp} ariaLabel={`WhatsApp ${m.name || "your team"}`} style={{ minWidth: 44, flex: "none" }}><ChatCircleText size={15} weight="bold" /> WhatsApp</Btn>}
-              </Row>
-            ))}
-            {coordinator && (
-              <Row>
-                <Av name={String(coordinator.name || "CK")} size={40} round tint="apricot" />
-                <span className="t"><b>{coordinator.name}</b><span style={{ whiteSpace: "normal" }}>{coordinator.role}</span></span>
-                {coordinator.whatsapp && <Btn sm ghost href={coordinator.whatsapp} ariaLabel={`Reach out to ${coordinator.name || "the coordinator"}`} style={{ minWidth: 44, flex: "none" }}><Phone size={15} weight="bold" /> Reach out</Btn>}
-              </Row>
-            )}
-          </Card>
         </>
       )}
 
       {members.length === 0 && !coordinator && steps.length === 0 && !next && !gate && (
-        <div style={{ marginTop: 18 }}><Empty>Your page is being set up. Your case manager will let you know when it is ready.</Empty></div>
+        <Panel className="oil-stack">
+          <Oil name="build" w={132} />
+          <p className="ocf2-p">Your page is being set up. Nothing is needed from you right now. Your case manager will let you know the moment it is ready.</p>
+        </Panel>
+      )}
+
+      {/* the steps list lands here: at the foot, folded shut (Leivi 2026-11-11) */}
+      <div ref={setStepsSlot} />
+
+      {/* ── team: at the foot, one tap to WhatsApp or book (Shalom 2026-11-11) ── */}
+      {people.length > 0 && (
+        <Panel>
+          <div className="ocf2-panel-h"><h3>Your team</h3></div>
+          <div className="ocf2-rows">
+            {people.map((m, k) => (
+              <div key={k} className="ocf2-row ocf2-teamrow">
+                <Face name={String(m.name || "Team")} tone={m.coord ? "peach" : toneFor(String(m.name || "Team"))} />
+                <span className="ocf2-row-t"><b>{m.name}</b><small>{m.role}</small></span>
+                <span className="ocf2-teamacts">
+                  {m.whatsapp && <a className="ocf2-teambtn is-wa" href={m.whatsapp} target="_blank" rel="noreferrer" aria-label={`WhatsApp ${m.name}`}><WhatsappLogo size={18} weight="fill" /></a>}
+                  {m.calendly && <a className="ocf2-teambtn" href={m.calendly} target="_blank" rel="noreferrer" aria-label={`Book a time with ${m.name}`}><CalendarPlus size={17} weight="bold" /><span>Book</span></a>}
+                </span>
+              </div>
+            ))}
+          </div>
+        </Panel>
       )}
 
       {/* ── weekly quote ── */}
       {d.quote?.text && (
-        <figure className="gv-rise" style={{ "--i": i++, margin: "26px 4px 0" } as React.CSSProperties}>
-          <blockquote style={{ margin: 0, fontSize: 15.5, fontWeight: 700, lineHeight: 1.4, color: "var(--gv-ink)", textWrap: "balance" } as React.CSSProperties}>&ldquo;{d.quote.text}&rdquo;</blockquote>
-          {d.quote.by && <figcaption style={{ marginTop: 6, fontSize: 12.5, fontWeight: 600, color: "var(--gv-go)", opacity: .85 }}>{d.quote.by}</figcaption>}
-        </figure>
+        <div className="oil-row is-quote" style={{ marginTop: 6 }}>
+          <figure className="ocf2-quote">
+            <blockquote>&ldquo;{d.quote.text}&rdquo;</blockquote>
+            {d.quote.by && <figcaption>{d.quote.by}</figcaption>}
+          </figure>
+          <Oil name="grow" w={74} className="oil-drop" />
+        </div>
       )}
     </>
   );

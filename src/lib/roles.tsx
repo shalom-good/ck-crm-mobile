@@ -26,7 +26,7 @@ export interface Role {
 }
 
 export const ROLES: Role[] = [
-  { key: "case_manager", label: "Case Manager", short: "CM", accent: "#2E5146", blurb: "Owns the family relationship end to end." },
+  { key: "case_manager", label: "Case Manager", short: "CM", accent: "#2F7556", blurb: "Owns the family relationship end to end." },
   { key: "debt_expert", label: "Debt Expert", short: "DE", accent: "#1F4E79", blurb: "Builds and runs the debt strategy." },
   { key: "budgeter", label: "Budgeter", short: "BG", accent: "#1F5E3A", blurb: "Keeps the monthly budget on track." },
   { key: "jpa", label: "Job Placement", short: "JPA", accent: "#8A4B10", blurb: "Moves clients toward income." },

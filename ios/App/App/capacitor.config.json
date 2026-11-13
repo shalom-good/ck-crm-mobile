@@ -1,0 +1,39 @@
+{
+	"appId": "net.collectivekindness.ckteam",
+	"appName": "Collective Kindness",
+	"webDir": "dist",
+	"backgroundColor": "#F3F5F1",
+	"ios": {
+		"contentInset": "always"
+	},
+	"plugins": {
+		"CapacitorHttp": {
+			"enabled": true
+		},
+		"Keyboard": {
+			"resize": "native"
+		},
+		"PushNotifications": {
+			"presentationOptions": [
+				"badge",
+				"sound",
+				"alert"
+			]
+		},
+		"SplashScreen": {
+			"launchShowDuration": 1200,
+			"backgroundColor": "#F3F5F1",
+			"showSpinner": false
+		}
+	},
+	"packageClassList": [
+		"AppPlugin",
+		"CAPBrowserPlugin",
+		"HapticsPlugin",
+		"KeyboardPlugin",
+		"PreferencesPlugin",
+		"PushNotificationsPlugin",
+		"StatusBarPlugin",
+		"NativeBiometric"
+	]
+}

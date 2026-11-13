@@ -22,7 +22,7 @@ export function DesignPage() {
   return (
     <IonPage>
       <IonContent>
-        <div style={{ padding: "calc(env(safe-area-inset-top) + 18px) 16px 0" }}>
+        <div style={{ padding: "calc(var(--ion-safe-area-top, 0px) + 18px) 16px 0" }}>
           <h1 className="gv-h1">Grove</h1>
           <div className="gv-meta" style={{ marginTop: 4 }}>The app's design system · every primitive once</div>
         </div>

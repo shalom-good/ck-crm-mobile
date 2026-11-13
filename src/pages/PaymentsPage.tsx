@@ -1,22 +1,28 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { IonPage, IonContent, useIonRouter } from "@ionic/react";
 import { Plus } from "@phosphor-icons/react";
 import { useAppData } from "@/lib/appData";
 import { useUI } from "@/lib/ui";
 import { money } from "@/lib/format";
 import type { Payment } from "@/lib/types";
-import { Strip, Chips, Empty } from "@/components/gv";
-import { PaymentRow } from "@/components/PaymentRow";
+import { ToolHero, ToolTiles, ToolEmpty } from "@/components/orchard/tools/ToolsKit";
+import { PaymentCard } from "@/components/orchard/tools/PaymentCard";
 
 type PStatus = "all" | "overdue" | "due" | "paid";
 
-/** `money`, compacted above $10k so three cells fit a 320 strip. */
+/** `money`, compacted above $10k so three tiles fit at 320. */
 const fmt = (n: number) => {
   if (n < 10000) return money(n);
   const k = n / 1000;
   return `$${Number.isInteger(k) ? k : k.toFixed(1)}k`;
 };
 
+/**
+ * Payments, in ORCHARD (2026-11-05). Hero, three money tiles (billed,
+ * collected, overdue; peach when something is late), status chips, then
+ * white billing cards coloured by meaning. Add billing stays the one
+ * forest button, floating bottom right.
+ */
 export function PaymentsPage() {
   const router = useIonRouter();
   const { payments } = useAppData();
@@ -39,41 +45,36 @@ export function PaymentsPage() {
 
   return (
     <IonPage>
-      <IonContent>
-        <div style={{ padding: "calc(env(safe-area-inset-top) + 18px) 16px 0" }}>
-          <h1 className="gv-h1">Payments</h1>
-          <div className="gv-meta" style={{ marginTop: 4 }}>Your recent billing</div>
+      <IonContent style={{ "--background": "var(--oc-ground)" } as CSSProperties}>
+        <div className="oc-root oco-page">
+          <ToolHero title="Payments." tone="Your recent billing." bg="var(--oc-sky)"
+            sub={payments.length ? `${payments.length} ${payments.length === 1 ? "line" : "lines"} · ${count("overdue")} overdue` : "Nothing billed yet"} />
 
-          {/* the one stat strip */}
-          <div style={{ marginTop: 16 }}>
-            <Strip
-              i={0}
-              stats={[
-                { label: "Billed", value: billed, fmt },
-                { label: "Collected", value: collected, fmt },
-                { label: "Overdue", value: overdue, fmt, warn: overdue > 0 },
-              ]}
-            />
+          <ToolTiles tiles={[
+            { key: "billed", label: "Billed", value: fmt(billed), bg: "var(--oc-card)" },
+            { key: "collected", label: "Collected", value: fmt(collected), bg: "var(--oc-mint)" },
+            { key: "overdue", label: "Overdue", value: fmt(overdue), bg: overdue > 0 ? "var(--oc-peach)" : "var(--oc-card)" },
+          ]} />
+
+          <div className="oc-chips" role="toolbar" aria-label="Status">
+            {chips.map((c) => (
+              <button key={c.key} type="button" className="oc-chip" aria-pressed={tab === c.key} onClick={() => setTab(c.key)}>
+                {c.label} · {c.count}
+              </button>
+            ))}
           </div>
 
-          <div style={{ marginTop: 14 }}><Chips items={chips} active={tab} onChange={setTab} /></div>
+          <div className="oco-list" style={{ minHeight: "30vh" }}>
+            {rows.length === 0 ? (
+              <ToolEmpty action="Add billing" onAction={() => openCapture("add")}>No billing in this bucket.</ToolEmpty>
+            ) : (
+              rows.map((p, k) => <PaymentCard key={p.id} payment={p} i={Math.min(k, 8)} onOpen={() => router.push(`/family/${p.familyId}`)} />)
+            )}
+          </div>
         </div>
 
-        <div style={{ padding: "12px 16px 120px", display: "flex", flexDirection: "column", gap: 10, minHeight: "40vh" }}>
-          {rows.length === 0 ? (
-            <Empty action="Add billing" onAction={() => openCapture("add")}>No billing in this bucket.</Empty>
-          ) : (
-            rows.map((p, k) => <PaymentRow key={p.id} payment={p} i={k + 1} onOpen={() => router.push(`/family/${p.familyId}`)} />)
-          )}
-        </div>
-
-        {/* Add billing — the one forest primary on this screen, bottom-right so it clears the raised Ask button */}
-        <button
-          aria-label="Add billing"
-          className="gv-btn"
-          onClick={() => openCapture("add")}
-          style={{ position: "absolute", right: 16, bottom: "calc(36px + env(safe-area-inset-bottom))", borderRadius: 999, zIndex: 5 }}
-        >
+        {/* Add billing: the one forest primary on this screen, bottom-right so it clears the raised Ask button */}
+        <button type="button" slot="fixed" aria-label="Add billing" className="oco-fab" onClick={() => openCapture("add")}>
           <Plus size={20} weight="bold" /> Add billing
         </button>
       </IonContent>

@@ -7,9 +7,11 @@ import { CaretLeft } from "@phosphor-icons/react";
  * history when there is one, otherwise to `href` with a back transition
  * (someone who landed on the page from a link still gets home).
  */
-export function BackButton({ href = "/start", label = "Back" }: { href?: string; label?: string }) {
+export function BackButton({ href = "/start", label = "Back", onClick }: { href?: string; label?: string; onClick?: () => void }) {
   const router = useIonRouter();
   const go = () => {
+    // A multi-step screen steps back through its own steps first.
+    if (onClick) { onClick(); return; }
     if (router.canGoBack()) router.goBack();
     else router.push(href, "back", "pop");
   };

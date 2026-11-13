@@ -1,0 +1,48 @@
+/* src/theme/orchard-raises.css: "Raises happening now" on the donor's page
+   (2026-11-11). CK's live campaigns as cards, the see-all row, and the quiet
+   "tell me when a new raise opens" ask. Everything here is .orz-*. Pastel
+   look: white round cards, lilac progress, soft wash on the ask, no dark
+   green panels. */
+.orz-list { display: flex; flex-direction: column; gap: 10px; }
+.orz-card { background: var(--oc-card, #fff); border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 1px 2px rgba(22,33,28,.04); min-width: 0; }
+.orz-tag { align-self: flex-start; font-size: 11.5px; font-weight: 800; color: #2D3766; background: #E4E1F6; border-radius: 999px; padding: 4px 10px; }
+.orz-name { margin: 0; font-size: 17px; line-height: 1.25; font-weight: 800; letter-spacing: -.02em; color: var(--oc-ink, #16211C); text-wrap: balance; overflow-wrap: anywhere; }
+.orz-line { margin: 0; font-size: 13.5px; line-height: 1.45; color: #46594F; }
+.orz-bar { height: 8px; border-radius: 999px; background: #ECEAF7; overflow: hidden; margin-top: 2px; }
+.orz-bar i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #9B8AE6, #C3A7EE); transform-origin: left; animation: orz-grow .9s cubic-bezier(.2,.8,.2,1) .15s backwards; }
+@keyframes orz-grow { from { transform: scaleX(0); } to { transform: none; } }
+.orz-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.orz-nums { font-size: 13.5px; color: #46594F; min-width: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 5px; }
+.orz-nums b { font-size: 17px; font-weight: 800; letter-spacing: -.02em; color: var(--oc-ink, #16211C); font-variant-numeric: tabular-nums; }
+.orz-nums small { flex-basis: 100%; font-size: 12px; font-weight: 600; color: var(--oc-mid, #5B6B62); }
+.orz-give.orz-give { flex: none; min-height: 44px; min-width: 84px; padding: 0 20px; font-size: 14.5px; }
+.orz-all { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 60px; padding: 10px 16px; border: 0; border-radius: 22px; background: linear-gradient(135deg, #DCE8F7 0%, #E4E1F6 100%); color: var(--oc-ink, #16211C); font: inherit; text-align: left; cursor: pointer; transition: transform .18s ease; }
+.orz-all:active { transform: scale(.98); }
+.orz-all span { display: flex; flex-direction: column; gap: 1px; font-size: 15px; font-weight: 800; letter-spacing: -.01em; }
+.orz-all small { font-size: 12.5px; font-weight: 600; color: #3F4A63; }
+.orz-ask { border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 6px; color: var(--oc-ink, #16211C); background:
+  radial-gradient(120% 95% at 100% 0%, #FAD3E2 0%, rgba(250,211,226,0) 58%),
+  radial-gradient(110% 95% at 0% 100%, #E2DBFA 0%, rgba(226,219,250,0) 62%),
+  #FBF6F3; }
+.orz-ask > b { font-size: 16px; font-weight: 800; letter-spacing: -.015em; }
+.orz-ask > p { margin: 0; font-size: 13.5px; line-height: 1.45; color: #5A4B66; }
+.orz-ask-a { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+.orz-ask-a .ocf2-btn { min-height: 46px; padding: 0 22px; }
+.orz-ask-a .ocf2-quiet { min-height: 44px; }
+.orz-ask.is-on { background: #EEF8C8; box-shadow: inset 0 0 0 2px var(--oc-forest, #2F7556); }
+.orz-ask.is-on > p { color: #3A4A2A; overflow-wrap: anywhere; }
+.orz-miss { color: #8A3B1B !important; font-weight: 700; }
+.orz-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--oc-card, #fff); border-radius: 20px; padding: 10px 14px; min-height: 60px; }
+.orz-foot span { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.orz-foot b { font-size: 14.5px; font-weight: 800; }
+.orz-foot small { font-size: 12.5px; color: var(--oc-mid, #5B6B62); overflow-wrap: anywhere; }
+.orz-switch { flex: none; width: 52px; height: 44px; border: 0; background: none; padding: 7px 0; cursor: pointer; position: relative; -webkit-tap-highlight-color: transparent; }
+.orz-switch::before { content: ""; position: absolute; left: 0; right: 0; top: 7px; height: 30px; border-radius: 999px; background: #DDE2DB; transition: background .2s ease; }
+.orz-switch i { position: absolute; top: 10px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(22,33,28,.25); transition: transform .2s cubic-bezier(.2,.8,.2,1); }
+.orz-switch.is-on::before { background: var(--oc-forest, #2F7556); }
+.orz-switch.is-on i { transform: translateX(22px); }
+.orz-switch:disabled { opacity: .6; }
+.orz-switch:focus-visible { outline: 2px solid var(--oc-forest, #2F7556); outline-offset: 2px; border-radius: 999px; }
+@media (max-width: 350px) { .orz-card { padding: 14px; } .orz-name { font-size: 16px; } .orz-give.orz-give { min-width: 72px; padding: 0 16px; } }
+@media (prefers-reduced-motion: reduce) { .orz-bar i { animation: none; } .orz-all, .orz-switch i, .orz-switch::before { transition: none; } }
+.orz-nums b.orz-first { font-size: 14px; letter-spacing: -.01em; }

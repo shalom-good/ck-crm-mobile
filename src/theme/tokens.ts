@@ -31,7 +31,7 @@ export const STAGES: Stage[] = [
   { key: "open", label: "Open", dot: "#1F4E79" },
   { key: "in_progress", label: "In Progress", dot: "#8A4B10" },
   { key: "open_deal", label: "Open Deal", dot: "#5B2D7A" },
-  { key: "won", label: "Won", dot: "#2E5146" },
+  { key: "won", label: "Won", dot: "#2F7556" },
   { key: "dead", label: "Dead", dot: "#86928C" },
 ];
 
@@ -86,7 +86,7 @@ export const palette = {
     title: "#1C2E29",
     body: "#5F6D68",
     muted: "#86928C",
-    tint: "#2E5146",
+    tint: "#2F7556",
     lime: "#D7F36E",
     coral: "#E8714F",
     danger: "#B8463A",
@@ -100,7 +100,7 @@ export const palette = {
     title: "#1C2E29",
     body: "#5F6D68",
     muted: "#86928C",
-    tint: "#2E5146",
+    tint: "#2F7556",
     lime: "#D7F36E",
     coral: "#E8714F",
     danger: "#B8463A",

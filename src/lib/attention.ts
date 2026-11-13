@@ -50,10 +50,10 @@ export function familyReasons(f: Family): { score: number; reasons: Reason[] } {
       score += 10;
     }
     if (days != null && days > 30) {
-      reasons.push({ kind: "stalled", label: `${days}d no note`, tone: "rose" });
+      reasons.push({ kind: "stalled", label: `No note in ${days} days`, tone: "rose" });
       score += 5;
     } else if (days != null && days >= 14) {
-      reasons.push({ kind: "risk", label: `${days}d no note`, tone: "gold" });
+      reasons.push({ kind: "risk", label: `No note in ${days} days`, tone: "gold" });
       score += 2;
     }
     if (typeof f.currentMonthlyNet === "number" && f.currentMonthlyNet < 0) {
@@ -72,10 +72,10 @@ export function familyReasons(f: Family): { score: number; reasons: Reason[] } {
       reasons.push({ kind: "new", label: "New intake, first contact", tone: "rose" });
       score += 6;
     } else if (days != null && days > 30) {
-      reasons.push({ kind: "stalled", label: `${days}d no note`, tone: "rose" });
+      reasons.push({ kind: "stalled", label: `No note in ${days} days`, tone: "rose" });
       score += 5;
     } else if (days != null && days >= 14) {
-      reasons.push({ kind: "risk", label: `${days}d no note`, tone: "gold" });
+      reasons.push({ kind: "risk", label: `No note in ${days} days`, tone: "gold" });
       score += 2;
     }
     if (f.paymentStatus === "behind") {

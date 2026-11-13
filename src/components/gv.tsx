@@ -205,7 +205,7 @@ export function HouseArt({ width = 220, strokeWidth = 2.4, still }: { width?: nu
       <path d="M160 92s-14-8-14-17a7 7 0 0 1 14-3 7 7 0 0 1 14 3c0 9-14 17-14 17z" stroke="#E8714F" />
       <circle className="fill" cx="268" cy="62" r="16" fill="#D7F36E" stroke="none" />
       <circle cx="268" cy="62" r="16" stroke="#B9D44A" />
-      <path d="M40 200c0-20 12-30 12-30s12 10 12 30" stroke="#2E5146" />
+      <path d="M40 200c0-20 12-30 12-30s12 10 12 30" stroke="#2F7556" />
     </svg>
   );
 }
@@ -220,10 +220,10 @@ export function TeamArt({ width = 220 }: { width?: number }) {
       <rect className="fill" x="74" y="114" width="92" height="12" rx="6" fill="#D7F36E" stroke="none" />
       <rect x="74" y="114" width="92" height="12" rx="6" />
       <rect x="74" y="140" width="140" height="12" rx="6" />
-      <rect x="190" y="112" width="56" height="44" rx="10" stroke="#2E5146" />
-      <path d="M204 134l8 8 16-18" stroke="#2E5146" />
+      <rect x="190" y="112" width="56" height="44" rx="10" stroke="#2F7556" />
+      <path d="M204 134l8 8 16-18" stroke="#2F7556" />
       <circle cx="262" cy="44" r="14" stroke="#E8714F" />
-      <path d="M250 198c0-26 12-36 12-36s12 10 12 36" stroke="#2E5146" />
+      <path d="M250 198c0-26 12-36 12-36s12 10 12 36" stroke="#2F7556" />
     </svg>
   );
 }
@@ -235,7 +235,7 @@ export function CalendarArt({ width = 200 }: { width?: number }) {
       <line x1="40" y1="78" x2="220" y2="78" />
       <line x1="84" y1="24" x2="84" y2="54" /><line x1="176" y1="24" x2="176" y2="54" />
       <rect className="fill" x="104" y="100" width="52" height="40" rx="10" fill="#D7F36E" stroke="none" />
-      <path d="M118 120l9 9 17-19" stroke="#2E5146" />
+      <path d="M118 120l9 9 17-19" stroke="#2F7556" />
       <circle cx="70" cy="110" r="4" /><circle cx="190" cy="110" r="4" /><circle cx="70" cy="150" r="4" /><circle cx="190" cy="150" r="4" stroke="#E8714F" />
     </svg>
   );
@@ -252,8 +252,8 @@ export function GiftArt({ width = 160, strokeWidth = 2.4 }: { width?: number; st
       <path d="M132 118V80a11 11 0 0 1 22 0v48" />
       <path d="M154 128c12-10 32-6 34 10 1 12-10 22-20 32l-8 8" />
       <path d="M48 114v50c0 18 12 28 32 28h56c12 0 20-6 24-14" />
-      <line x1="100" y1="180" x2="100" y2="130" stroke="#2E5146" />
-      <path d="M100 166c-18 0-30-11-30-25 16 0 30 9 30 25z" stroke="#2E5146" />
+      <line x1="100" y1="180" x2="100" y2="130" stroke="#2F7556" />
+      <path d="M100 166c-18 0-30-11-30-25 16 0 30 9 30 25z" stroke="#2F7556" />
       <path className="fill" d="M100 150c0-18 14-30 32-30 0 18-14 30-32 30z" fill="#D7F36E" stroke="none" />
       <path d="M100 150c0-18 14-30 32-30 0 18-14 30-32 30z" stroke="#B9D44A" />
     </svg>
@@ -278,7 +278,7 @@ export function BookArt({ width = 160, strokeWidth = 2.4 }: { width?: number; st
       <path d="M100 150c-16-12-42-16-70-10V60c28-6 54-2 70 10z" />
       <path d="M100 150c16-12 42-16 70-10V60c-28-6-54-2-70 10z" />
       <line x1="100" y1="70" x2="100" y2="150" />
-      <path d="M30 140l-4 10c28-6 56-2 74 12 18-14 46-18 74-12l-4-10" stroke="#2E5146" />
+      <path d="M30 140l-4 10c28-6 56-2 74 12 18-14 46-18 74-12l-4-10" stroke="#2F7556" />
       {/* lines of text */}
       <path d="M44 84c14-4 28-4 42 2" /><path d="M44 102c14-4 28-4 42 2" /><path d="M44 120c14-4 28-4 42 2" />
       <path d="M114 124c14-6 28-6 42-2" />
@@ -293,9 +293,9 @@ export function PlantArt({ width = 160 }: { width?: number }) {
   return (
     <svg className="gv-draw" width={width} viewBox="0 0 200 200" fill="none" stroke="#1C2E29" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
       <path d="M70 140h60l-8 44H78z" />
-      <line x1="100" y1="140" x2="100" y2="70" stroke="#2E5146" />
-      <path d="M100 110c-30 0-44-18-44-40 24 0 44 14 44 40z" stroke="#2E5146" />
-      <path d="M100 92c0-26 16-44 46-44 0 26-18 44-46 44z" stroke="#2E5146" />
+      <line x1="100" y1="140" x2="100" y2="70" stroke="#2F7556" />
+      <path d="M100 110c-30 0-44-18-44-40 24 0 44 14 44 40z" stroke="#2F7556" />
+      <path d="M100 92c0-26 16-44 46-44 0 26-18 44-46 44z" stroke="#2F7556" />
       <circle className="fill" cx="100" cy="64" r="9" fill="#D7F36E" stroke="none" />
       <circle cx="100" cy="64" r="9" stroke="#B9D44A" />
       <line x1="30" y1="184" x2="170" y2="184" stroke="#86928C" />

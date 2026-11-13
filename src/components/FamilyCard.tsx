@@ -104,9 +104,16 @@ export function FamilyCard({ family, onOpen, i }: Props) {
             }}>
               {idx != null ? JOURNEY[idx] : (family.stage || family.lifecycleStatus || "No stage on file")}
             </span>
-            <span className="gv-meta" style={{ flex: "none", fontWeight: 600 }}>
-              {family.program === "Kosher Debt Help" ? "KDH" : family.program}
-            </span>
+            {family.program === "Kosher Debt Help" ? (
+              <span className="gv-meta" style={{ flex: "none", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 5 }}>
+                <span aria-hidden="true" style={{ width: 18, height: 18, borderRadius: 6, background: "#2F7556", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+                  <img src="/kdh-mark.svg" alt="" style={{ width: 13, height: 13, display: "block" }} />
+                </span>
+                KDH
+              </span>
+            ) : (
+              <span className="gv-meta" style={{ flex: "none", fontWeight: 600 }}>{family.program}</span>
+            )}
             <Pill tint={q.tone === "warn" ? "rose" : q.tone === "ok" ? "mint" : "none"} style={{ flex: "none", fontVariantNumeric: "tabular-nums" }}>{q.label}</Pill>
           </div>
         </div>

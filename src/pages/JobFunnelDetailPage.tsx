@@ -1,28 +1,25 @@
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { BackButton } from "@/components/BackButton";
 import { useParams } from "react-router";
-import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons } from "@ionic/react";
-import { Phone, ChatText, CaretDown, CaretRight, Check } from "@phosphor-icons/react";
+import { IonPage, IonContent } from "@ionic/react";
+import { Phone, ChatText, Check } from "@phosphor-icons/react";
 import { useAppData } from "@/lib/appData";
 import { money } from "@/lib/format";
 import { AiSummary } from "@/components/AiSummary";
-import { Av, Btn, Card, CardTitle, Pill, Strip, type Stat, type Tint } from "@/components/gv";
 import { pipelineProgress, stageShort, stageTone, type EnrichedStep } from "@/lib/pipeline";
+import { initialsOf } from "@/components/orchard/Orchard";
+import { ToolTiles, type ToolTile } from "@/components/orchard/tools/ToolsKit";
+import { JF_STAGE_CHIP } from "@/components/orchard/tools/jobFunnelLook";
 
-// sky = early stages, yellow = in progress, mint = placed, plain = not started / on hold / closed
-const STAGE_TINT: Record<ReturnType<typeof stageTone>, Tint> = {
-  intake: "sky", mushki: "sky", jpa: "yellow", execution: "yellow", success: "mint", hold: "none", default: "none",
+const STEP_CHIP: Record<EnrichedStep["status"], { cls: string; label: string }> = {
+  completed: { cls: "oco-chip--mint", label: "Done" },
+  working: { cls: "oco-chip--sky", label: "Working" },
+  pending: { cls: "", label: "Pending" },
+  "on-hold": { cls: "oco-chip--butter", label: "On hold" },
+  closed: { cls: "", label: "Closed" },
 };
 
-const STEP_PILL: Record<EnrichedStep["status"], { tint: Tint; label: string }> = {
-  completed: { tint: "mint", label: "Done" },
-  working: { tint: "sky", label: "Working" },
-  pending: { tint: "none", label: "Pending" },
-  "on-hold": { tint: "yellow", label: "On hold" },
-  closed: { tint: "none", label: "Closed" },
-};
-
-/** `money`, compacted above $10k so three cells fit a 320 strip. */
+/** `money`, compacted above $10k so three tiles fit at 320. */
 const fmt = (n: number) => {
   if (n < 10000) return money(n);
   const k = n / 1000;
@@ -30,19 +27,34 @@ const fmt = (n: number) => {
 };
 
 function StepCheck({ status }: { status: EnrichedStep["status"] }) {
-  const base: React.CSSProperties = { width: 20, height: 20, borderRadius: 999, display: "grid", placeItems: "center", flex: "none" };
-  if (status === "completed") return <span style={{ ...base, background: "var(--gv-go)" }}><Check size={12} color="#fff" weight="bold" /></span>;
-  if (status === "working") return <span style={{ ...base, boxShadow: "inset 0 0 0 2px var(--gv-go)" }}><span style={{ width: 6, height: 6, borderRadius: 999, background: "var(--gv-go)" }} /></span>;
-  return <span style={{ ...base, boxShadow: "inset 0 0 0 1.5px var(--gv-line)" }} />;
+  if (status === "completed") return <span className="oco-check is-done"><Check size={12} weight="bold" /></span>;
+  if (status === "working") return <span className="oco-check is-working" />;
+  return <span className="oco-check" />;
 }
 
+/**
+ * Job Funnel client, in ORCHARD (2026-11-05): a mint profile hero (who,
+ * stage, pipeline bar, Call / Text), income tiles, the AI rundown, the
+ * collapsible pipeline checklist and the JPA running notes.
+ */
 export function JobFunnelDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { getJfClient } = useAppData();
   const [pipeOpen, setPipeOpen] = useState(false);
   const c = getJfClient(id);
 
-  if (!c) return <IonPage><IonContent className="ion-padding">Client not found.</IonContent></IonPage>;
+  if (!c) {
+    return (
+      <IonPage>
+        <IonContent style={{ "--background": "var(--oc-ground)" } as CSSProperties}>
+          <div className="oc-root oco-page">
+            <div className="oco-hero-top" style={{ margin: 0 }}><BackButton href="/tabs/job-funnel" /></div>
+            <div className="oco-empty">Client not found.</div>
+          </div>
+        </IonContent>
+      </IonPage>
+    );
+  }
 
   const prog = pipelineProgress(c.stage, c.pipelineSteps);
   const gap = c.targetIncome != null && c.currentIncome != null ? c.targetIncome - c.currentIncome : null;
@@ -50,97 +62,98 @@ export function JobFunnelDetailPage() {
   const noteBlocks = (c.jpaLatestNote ?? "").split(/\n\s*\n/).map((s) => s.trim()).filter(Boolean).slice(0, 8);
   const place = [c.city, c.state].filter(Boolean).join(", ");
   const meta = [place || null, c.jpa ? `JPA · ${c.jpa}` : "No JPA", c.daysInStage != null ? `${c.daysInStage}d in stage` : null].filter(Boolean).join(" · ");
+  const tel = (c.phone || "").trim();
+  const stageCls = JF_STAGE_CHIP[stageTone(c.stage)];
+  const off = (on: boolean) => (on ? undefined : ("true" as const));
 
-  // income → target as the one stat strip; the gap is the emphasised (coral) number when short
-  const stats: Stat[] = [];
-  if (c.currentIncome != null) stats.push({ label: "Current", value: c.currentIncome, fmt });
-  if (c.targetIncome != null) stats.push({ label: "Target", value: c.targetIncome, fmt });
-  if (gap != null) stats.push({ label: gap >= 0 ? "To target" : "Over target", value: Math.abs(gap), fmt, warn: gap > 0 });
+  // income → target as tiles; the gap is peach when short, mint when over
+  const tiles: ToolTile[] = [];
+  if (c.currentIncome != null) tiles.push({ key: "cur", label: "Current", value: fmt(c.currentIncome), bg: "var(--oc-card)" });
+  if (c.targetIncome != null) tiles.push({ key: "tgt", label: "Target", value: fmt(c.targetIncome), bg: "var(--oc-sky)" });
+  if (gap != null) tiles.push({ key: "gap", label: gap >= 0 ? "To target" : "Over target", value: fmt(Math.abs(gap)), bg: gap > 0 ? "var(--oc-peach)" : "var(--oc-mint)" });
 
   return (
     <IonPage>
-      <IonHeader className="ion-no-border">
-        <IonToolbar>
-          <IonButtons slot="start"><BackButton href="/tabs/job-funnel" /></IonButtons>
-          <div className="gv-meta" style={{ textAlign: "center", fontWeight: 700, padding: "0 8px" }}>Job Funnel</div>
-          <IonButtons slot="end"><span style={{ width: 40 }} /></IonButtons>
-        </IonToolbar>
-      </IonHeader>
-
-      <IonContent>
-        <div style={{ padding: "4px 16px 120px", display: "flex", flexDirection: "column", gap: 12 }}>
-
-          {/* header: who, where they are, what to do */}
-          <div className="gv-rise" style={{ ["--i" as string]: 0 } as React.CSSProperties}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <Av name={c.name} size={52} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <h1 className="gv-h1" style={{ fontSize: 24, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name}</h1>
-                <div className="gv-meta" style={{ marginTop: 3, lineHeight: 1.4 }}>{meta}</div>
+      <IonContent style={{ "--background": "var(--oc-ground)" } as CSSProperties}>
+        <div className="oc-root">
+          {/* Mint hero */}
+          <div className="oc-hero">
+            <div className="oc-hero-top">
+              <BackButton href="/tabs/job-funnel" />
+              <span>Job Funnel</span>
+              <span style={{ width: 44 }} aria-hidden="true" />
+            </div>
+            <div className="oco-id">
+              <span className="oco-id-av" aria-hidden="true">{initialsOf(c.name)}</span>
+              <div style={{ minWidth: 0, flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
+                <h1 className="oco-id-name">{c.name}</h1>
+                <span className="oco-id-meta">{meta}</span>
+                <div className="oco-chips">
+                  <span className={`oco-chip ${stageCls}`} style={stageCls ? undefined : { background: "var(--oc-card)" }}>{stageShort(c.stage)}</span>
+                  {idle && <span className="oco-chip oco-chip--peach">Idle · {c.daysSinceLastNote}d</span>}
+                  {c.daysInFunnel != null && <span className="oco-chip" style={{ background: "var(--oc-card)" }}>{c.daysInFunnel}d in funnel</span>}
+                </div>
               </div>
             </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 12 }}>
-              <Pill tint={STAGE_TINT[stageTone(c.stage)]} i={0}>{stageShort(c.stage)}</Pill>
-              {idle && <Pill tint="yellow" i={1}>Idle · {c.daysSinceLastNote}d</Pill>}
-              {c.daysInFunnel != null && <Pill i={2}>{c.daysInFunnel}d in funnel</Pill>}
+            <div className="oco-progress">
+              <div className="oco-bar" style={{ background: "rgba(255,255,255,.7)" }}><i style={{ width: `${prog.pct}%` }} /></div>
+              <b>{prog.special ? stageShort(c.stage) : `${prog.completed} / ${prog.total}`}</b>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 14 }}>
-              <div className="gv-track"><i style={{ right: `${100 - prog.pct}%` }} /></div>
-              <span className="tnum" style={{ fontSize: 12.5, fontWeight: 800, color: "var(--gv-ink)", flex: "none" }}>
-                {prog.special ? stageShort(c.stage) : `${prog.completed} / ${prog.total}`}
-              </span>
-            </div>
-            <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
-              <Btn ghost sm href={`tel:${c.phone}`} style={{ flex: 1 }}><Phone size={16} /> Call</Btn>
-              <Btn ghost sm href={`sms:${c.phone}`} style={{ flex: 1 }}><ChatText size={16} /> Text</Btn>
+            <div className="oco-quick">
+              <a className="is-primary" href={tel ? `tel:${tel}` : undefined} aria-disabled={off(!!tel)}><Phone size={18} weight="bold" /> Call</a>
+              <a href={tel ? `sms:${tel}` : undefined} aria-disabled={off(!!tel)}><ChatText size={18} weight="bold" /> Text</a>
             </div>
           </div>
 
-          {stats.length > 0 && <Strip i={1} stats={stats} />}
+          <div style={{ padding: "14px 16px 130px", display: "flex", flexDirection: "column", gap: 12 }}>
+            {tiles.length > 0 && <ToolTiles tiles={tiles} />}
 
-          {/* AI summary — thorough auto-run rundown. */}
-          <AiSummary id={c.id} />
+            {/* AI summary: thorough auto-run rundown. */}
+            <AiSummary id={c.id} className="oco-panel oco-ai" />
 
-          {/* Pipeline — collapsible */}
-          <Card i={2}>
-            <button onClick={() => setPipeOpen((o) => !o)} style={{ width: "100%", background: "none", border: 0, padding: 0, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, cursor: "pointer", font: "inherit", color: "inherit", textAlign: "left" }}>
-              <span style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
-                {pipeOpen ? <CaretDown size={14} weight="bold" color="var(--gv-quiet)" /> : <CaretRight size={14} weight="bold" color="var(--gv-quiet)" />}
-                <span className="gv-h2" style={{ fontSize: 15.5 }}>Pipeline</span>
-                <span className="gv-meta tnum" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prog.completed}/{prog.total}{c.stage ? ` · ${stageShort(c.stage)}` : ""}</span>
-              </span>
-              <span className="gv-link" style={{ flex: "none" }}>{pipeOpen ? "Hide" : "Show"}</span>
-            </button>
-            {pipeOpen && (
-              <div style={{ marginTop: 10, display: "flex", flexDirection: "column" }}>
-                {prog.steps.map((s) => {
-                  const p = STEP_PILL[s.status] ?? STEP_PILL.pending;
-                  return (
-                    <div key={s.num} style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 0", paddingLeft: s.indent ? 18 : 0, borderTop: "1px solid var(--gv-hair)" }}>
-                      <StepCheck status={s.status} />
-                      <span className="tnum gv-meta" style={{ width: 26, flex: "none" }}>{s.num}</span>
-                      <span style={{ flex: 1, minWidth: 0, fontSize: s.indent ? 13.5 : 14, color: s.status === "pending" ? "var(--gv-mid)" : "var(--gv-ink)", fontWeight: s.status === "working" ? 700 : 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.title}</span>
-                      <Pill tint={p.tint} sm>{p.label}</Pill>
-                    </div>
-                  );
-                })}
+            {/* Pipeline: collapsible */}
+            <div className="oco-panel">
+              <button type="button" className="oco-toggle" aria-expanded={pipeOpen} onClick={() => setPipeOpen((o) => !o)}>
+                <span style={{ display: "flex", alignItems: "baseline", gap: 8, minWidth: 0 }}>
+                  <span style={{ fontSize: 15.5, fontWeight: 800 }}>Pipeline</span>
+                  <small style={{ fontSize: 12.5, fontWeight: 700, color: "var(--oc-mid)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {prog.completed}/{prog.total}{c.stage ? ` · ${stageShort(c.stage)}` : ""}
+                  </small>
+                </span>
+                <span className="oco-link">{pipeOpen ? "Hide" : "Show"}</span>
+              </button>
+              {pipeOpen && (
+                <div className="oco-steps">
+                  {prog.steps.map((s) => {
+                    const p = STEP_CHIP[s.status] ?? STEP_CHIP.pending;
+                    return (
+                      <div key={s.num} className="oco-step" style={{ paddingLeft: s.indent ? 18 : 0 }}>
+                        <StepCheck status={s.status} />
+                        <span className="oco-step-num">{s.num}</span>
+                        <span className="oco-step-title" style={{ fontSize: s.indent ? 13 : 13.5, color: s.status === "pending" ? "var(--oc-mid)" : "var(--oc-ink)", fontWeight: s.status === "working" ? 800 : 600 }}>{s.title}</span>
+                        <span className={`oco-chip ${p.cls}`}>{p.label}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* JPA running notes */}
+            <div className="oco-panel">
+              <div className="oco-panel-hd">
+                <span>JPA running notes</span>
+                {idle && <span className="oco-chip oco-chip--peach">Idle · {c.daysSinceLastNote}d</span>}
               </div>
-            )}
-          </Card>
-
-          {/* JPA running notes */}
-          <Card i={3}>
-            <CardTitle right={idle ? <Pill tint="yellow" sm>Idle · {c.daysSinceLastNote}d</Pill> : undefined}>JPA running notes</CardTitle>
-            {noteBlocks.length === 0 ? (
-              <div className="gv-sub" style={{ fontSize: 13.5 }}>No running notes yet.</div>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                {noteBlocks.map((b, i) => (
-                  <div key={i} style={{ fontSize: 13.5, lineHeight: 1.55, color: "var(--gv-text)", padding: "10px 0", borderTop: i === 0 ? 0 : "1px solid var(--gv-hair)", overflowWrap: "anywhere" }}>{b}</div>
-                ))}
-              </div>
-            )}
-          </Card>
+              {noteBlocks.length === 0 ? (
+                <div style={{ fontSize: 13.5, color: "var(--oc-mid)", fontWeight: 600 }}>No running notes yet.</div>
+              ) : (
+                <div>
+                  {noteBlocks.map((b, i) => <div key={i} className="oco-note">{b}</div>)}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </IonContent>
     </IonPage>

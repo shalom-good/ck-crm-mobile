@@ -1,0 +1,327 @@
+/* CK Academy inside the family page (2026-11-11): the join step, the
+   guidance counselor card and the Lesson I check-offs. Every class is
+   .olc-*; tokens come from orchard.css (--oc-*). Holds at 320 wide. */
+.olc-h2 { margin: 0; font-size: 23px; line-height: 1.15; font-weight: 800; letter-spacing: -.03em; color: var(--oc-ink); text-wrap: balance; }
+.olc-h3 { margin: 4px 0 0; font-size: 18px; line-height: 1.22; font-weight: 800; letter-spacing: -.02em; color: var(--oc-ink); text-wrap: balance; }
+.olc-q { margin: 4px 0 0; font-size: 14px; font-weight: 800; color: var(--oc-ink); line-height: 1.35; }
+
+/* join */
+.olc-join { gap: 10px; }
+.olc-join .olc-h2 { color: #1F2752; }
+.olc-list { list-style: none; margin: 2px 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+.olc-list li { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 700; color: #1F2752; line-height: 1.3; }
+.olc-list i { width: 22px; height: 22px; border-radius: 50%; background: rgba(255,255,255,.75); color: #2D3766; display: grid; place-items: center; flex: none; }
+.olc-who { margin: 2px 0 0; font-size: 13.5px; color: #2D3766; font-weight: 600; overflow-wrap: anywhere; }
+.olc-who b { color: #1F2752; font-weight: 800; }
+.olc-agree { display: flex; align-items: flex-start; gap: 11px; background: rgba(255,255,255,.72); border-radius: 16px; padding: 12px 13px; min-height: 48px; cursor: pointer; }
+.olc-agree input { width: 22px; height: 22px; margin: 1px 0 0; flex: none; accent-color: var(--oc-forest); }
+.olc-agree span { font-size: 13.5px; line-height: 1.42; font-weight: 600; color: var(--oc-ink); min-width: 0; }
+.olc-agree.is-plain { background: var(--oc-ground); }
+
+/* counselor */
+.olc-counselor { gap: 10px; }
+.olc-counselor-top { display: flex; align-items: center; gap: 12px; }
+.olc-name { display: block; font-size: 17px; font-weight: 800; letter-spacing: -.015em; color: var(--oc-ink); margin-top: 2px; overflow-wrap: anywhere; }
+.olc-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.olc-row > * { min-width: 132px; }
+
+/* summary row on the Learn tab */
+.olc-sum { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 68px; border: 0; background: var(--oc-card); border-radius: 22px; padding: 12px 14px; font: inherit; color: var(--oc-ink); text-align: left; cursor: pointer; box-shadow: 0 1px 2px rgba(22,33,28,.04); }
+.olc-sum:active { transform: scale(.985); }
+.olc-sum-n { width: 44px; height: 44px; border-radius: 15px; background: var(--oc-butter); color: #574A0E; display: grid; place-items: center; font-size: 13.5px; font-weight: 800; flex: none; font-variant-numeric: tabular-nums; }
+.olc-sum-n.is-done { background: var(--oc-forest); color: var(--oc-lime); }
+.olc-sum-t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.olc-sum-t b { font-size: 15px; font-weight: 800; letter-spacing: -.01em; }
+.olc-sum-t small { font-size: 12.5px; line-height: 1.35; color: var(--oc-mid); font-weight: 600; }
+
+/* the two steps */
+.olc-steps { display: flex; flex-direction: column; gap: 14px; }
+.olc-steps-h { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 6px 4px 0; }
+.olc-step { gap: 12px; }
+.olc-step-h { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.olc-step .ocf2-p b { color: var(--oc-ink); }
+.olc-opts { display: flex; flex-direction: column; gap: 7px; }
+.olc-opt { display: flex; align-items: flex-start; gap: 11px; width: 100%; min-height: 56px; border: 0; background: var(--oc-ground); border-radius: 16px; padding: 11px 13px; font: inherit; color: var(--oc-ink); text-align: left; cursor: pointer; box-shadow: inset 0 0 0 1.5px transparent; transition: background .15s ease, box-shadow .15s ease; }
+.olc-opt > i { width: 22px; height: 22px; border-radius: 50%; flex: none; margin-top: 1px; display: grid; place-items: center; box-shadow: inset 0 0 0 2px var(--oc-inset); color: var(--oc-lime); background: var(--oc-card); }
+.olc-opt > span { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.olc-opt b { font-size: 14.5px; font-weight: 800; line-height: 1.3; }
+.olc-opt small { font-size: 12.5px; color: var(--oc-mid); font-weight: 600; line-height: 1.35; }
+.olc-opt[aria-pressed="true"] { background: var(--oc-mint); box-shadow: inset 0 0 0 1.5px var(--oc-forest); }
+.olc-opt[aria-pressed="true"] > i { background: var(--oc-forest); box-shadow: none; }
+.olc-follow { display: flex; flex-direction: column; gap: 10px; padding-top: 2px; }
+.olc-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; align-items: end; }
+.olc-money { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.olc-money .ocf2-label { margin: 0; }
+.olc-money-in { display: flex; align-items: center; gap: 4px; min-height: 48px; background: var(--oc-ground); border-radius: 14px; padding: 0 13px; box-shadow: inset 0 0 0 1.5px var(--oc-hair); }
+.olc-money-in:focus-within { box-shadow: inset 0 0 0 2px var(--oc-forest); }
+.olc-money-in em { font-style: normal; font-weight: 800; color: var(--oc-mid); }
+.olc-money-in input { flex: 1; min-width: 0; width: 100%; border: 0; outline: 0; background: transparent; font: inherit; font-size: 16px; font-weight: 800; color: var(--oc-ink); padding: 0; font-variant-numeric: tabular-nums; }
+.olc-save { display: flex; flex-direction: column; gap: 8px; }
+.olc-saved { margin: 0; display: flex; align-items: flex-start; gap: 6px; font-size: 13px; line-height: 1.4; font-weight: 700; color: var(--oc-forest); }
+.olc-saved svg { flex: none; margin-top: 3px; }
+.olc-grow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
+.olc-grow > div { background: var(--oc-ground); border-radius: 16px; padding: 12px 8px; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.olc-grow b { font-size: clamp(14px, 4.1vw, 17px); white-space: nowrap; font-weight: 800; letter-spacing: -.04em; line-height: 1.05; color: var(--oc-ink); font-variant-numeric: tabular-nums; }
+.olc-grow small { font-size: 12px; font-weight: 700; color: var(--oc-mid); }
+.olc-grow > div.is-big { background: var(--oc-forest); }
+.olc-grow > div.is-big b { color: var(--oc-lime); }
+.olc-grow > div.is-big small { color: rgba(243,245,241,.78); }
+.olc-cta { background: var(--oc-butter); border-radius: 20px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.olc-cta .ocf2-p, .olc-cta .ocf2-meta { color: #574A0E; }
+.olc-cta .ocf2-p b { color: #3F360A; }
+.olc-cta .ocf2-chip { background: rgba(255,255,255,.7); color: #3F360A; }
+.olc-vid { align-self: center; min-height: 44px; }
+.olc-kids { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.olc-stepper { display: inline-flex; align-items: center; background: var(--oc-ground); border-radius: 999px; }
+.olc-stepper button { width: 44px; height: 44px; border: 0; background: none; font: inherit; font-size: 20px; font-weight: 800; color: var(--oc-ink); cursor: pointer; border-radius: 50%; }
+.olc-stepper output { min-width: 28px; text-align: center; font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; }
+
+/* locked */
+.olc-locked { gap: 10px; align-items: flex-start; }
+.olc-lock { width: 40px; height: 40px; border-radius: 14px; background: rgba(255,255,255,.7); color: #574A0E; display: grid; place-items: center; }
+.olc-rowlock { width: 26px; height: 26px; border-radius: 50%; background: var(--oc-ground); color: var(--oc-mid); display: grid; place-items: center; flex: none; }
+.olc-dim { opacity: .55; }
+
+@media (max-width: 340px) {
+  .olc-two { grid-template-columns: 1fr; }
+  .olc-grow { grid-template-columns: 1fr; }
+  .olc-grow > div { flex-direction: row; align-items: baseline; justify-content: space-between; padding: 10px 13px; }
+  .olc-grow small { order: -1; }
+  .olc-grow b { font-size: 18px; }
+}
+@media (prefers-reduced-motion: reduce) { .olc-opt, .olc-sum { transition: none; } .olc-sum:active { transform: none; } }
+
+/* ── Home: months you can open (2026-11-11). Lives here only because the
+   donor rework was editing orchard-family.css at the same time. ── */
+.ocf2-bars.is-pick .ocf2-bar { border: 0; background: none; padding: 0; margin: 0; font: inherit; cursor: pointer; position: relative; -webkit-tap-highlight-color: transparent; }
+.ocf2-bars.is-pick .ocf2-bar i { transition: filter .18s ease, transform .18s ease, box-shadow .18s ease; }
+.ocf2-bars.is-pick .ocf2-bar:hover i, .ocf2-bars.is-pick .ocf2-bar:focus-visible i { filter: saturate(1.35) brightness(.97); transform: translateY(-2px); }
+.ocf2-bars.is-pick .ocf2-bar:active i { transform: scale(.96); }
+.ocf2-bars.is-pick .ocf2-bar:focus-visible { outline: 2px solid var(--oc-forest); outline-offset: 3px; border-radius: 10px; }
+.ocf2-bars.is-pick .ocf2-bar[data-tip]:hover::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: var(--oc-ink, #16211C); color: #fff; font-size: 11.5px; font-weight: 700; line-height: 1.35; padding: 7px 10px; border-radius: 10px; width: max-content; max-width: 190px; white-space: normal; text-align: left; z-index: 5; pointer-events: none; box-shadow: 0 8px 18px -8px rgba(22,33,28,.5); }
+.ocf2-bars.is-pick .ocf2-bar:first-child[data-tip]:hover::after { left: 0; transform: none; }
+.ocf2-bars.is-pick .ocf2-bar:last-child[data-tip]:hover::after { left: auto; right: 0; transform: none; }
+@media (hover: none) { .ocf2-bars.is-pick .ocf2-bar[data-tip]:hover::after { display: none; } }
+.ocf2-money { overflow: visible; }
+.ocf2-money-hint { margin: -4px 0 0; font-size: 11.5px; font-weight: 600; color: #6B5C76; text-align: center; }
+
+/* ── Home: debt before and now, and the team's quick buttons (2026-11-11) ── */
+.ocf2-ba { display: grid; gap: 0; }
+.ocf2-ba-h, .ocf2-ba-r { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr) minmax(0, 1fr); gap: 8px; align-items: baseline; }
+.ocf2-ba-h span { font-size: 11.5px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--oc-mid, #5B6B62); padding-bottom: 6px; }
+.ocf2-ba-r { padding: 11px 0; border-top: 1px solid #EEF1EC; }
+.ocf2-ba-r > span:first-child { font-size: 13.5px; font-weight: 700; color: var(--oc-soft, #46594F); }
+.ocf2-ba-r .was { font-size: 15px; font-weight: 700; color: #7C8A82; text-decoration: line-through; text-decoration-color: rgba(124,138,130,.55); font-variant-numeric: tabular-nums; }
+.ocf2-ba-r b { font-size: 19px; font-weight: 800; letter-spacing: -.02em; color: var(--oc-ink, #16211C); font-variant-numeric: tabular-nums; }
+.ocf2-ba-r:first-of-type b, .ocf2-ba-h + .ocf2-ba-r b { font-size: 24px; }
+.ocf2-teamrow { gap: 10px; }
+.ocf2-teamacts { display: flex; gap: 6px; flex: none; }
+.ocf2-teambtn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-width: 44px; min-height: 44px; padding: 0 12px; border-radius: 999px; background: var(--oc-mint, #DDEFE3); color: var(--oc-forest, #2F7556); font-size: 13px; font-weight: 800; text-decoration: none; }
+.ocf2-teambtn.is-wa { background: #DDF7E6; color: #128C4A; padding: 0; }
+.ocf2-teambtn:active { transform: scale(.96); }
+@media (max-width: 350px) { .ocf2-teambtn span { display: none; } .ocf2-teambtn { padding: 0; } }
+/* six tabs: keep every label on one line down to 320 wide */
+ion-tab-bar.ocf2-tabbar ion-tab-button { min-width: 0; --padding-start: 0; --padding-end: 0; }
+ion-tab-bar.ocf2-tabbar ion-tab-button > svg { padding-left: 9px; padding-right: 9px; }
+@media (max-width: 350px) { ion-tab-bar.ocf2-tabbar ion-tab-button { font-size: 10px; } ion-tab-bar.ocf2-tabbar ion-tab-button > svg { padding-left: 6px; padding-right: 6px; } }
+
+/* ── Plan: every item can be checked off, in the app's own colours ── */
+.ocf2-plantask { width: 100%; min-height: 48px; border: 0; background: none; font: inherit; text-align: left; cursor: pointer; padding-left: 0; padding-right: 0; color: inherit; -webkit-tap-highlight-color: transparent; }
+.ocf2-plantask b { font-weight: 600; transition: color .2s ease; }
+.ocf2-plantick { width: 26px; height: 26px; border-radius: 9px; flex: none; display: grid; place-items: center; background: #fff; box-shadow: inset 0 0 0 1.8px #B9C9BF; color: var(--oc-forest, #2F7556); transition: background .18s ease, box-shadow .18s ease, transform .18s ease; }
+.ocf2-plantask:active .ocf2-plantick { transform: scale(.9); }
+.ocf2-plantask.is-done .ocf2-plantick { background: var(--oc-lime, #D7F36E); box-shadow: none; animation: gv-pop .22s ease; }
+.ocf2-plantask.is-done b { color: var(--oc-mid, #5B6B62); text-decoration: line-through; text-decoration-color: rgba(91,107,98,.5); }
+.ocf2-plancount { font-size: 12px; font-weight: 800; color: var(--oc-forest, #2F7556); background: var(--oc-mint, #DDEFE3); align-self: flex-start; border-radius: 999px; padding: 5px 10px; }
+
+/* ── No more dark green panels (Shalom 2026-11-11: "all this dark green
+   should be nixed", like the pastel "Also happening" tiles). The forest
+   tone is now a soft sky-to-lilac wash with ink text. Buttons, ticks and
+   small marks keep forest: that is the accent, not a panel. ── */
+.ocf2-t-forest.ocf2-t-forest { background: linear-gradient(135deg, #DCE8F7 0%, #E4E1F6 100%); color: var(--oc-ink, #16211C); }
+.okh-book .okh-book-eb.okh-book-eb { color: #2D3766; }
+.okh-book .ocf2-p.ocf2-p { color: #3F4A63; }
+.okp-first.okp-first > span { color: #2D3766; }
+.okp-first.okp-first > p:first-of-type { color: var(--oc-ink, #16211C); }
+.okp-first.okp-first > p + p { color: #3F4A63; }
+.okh-book .ocf2-btn--lime { background: var(--oc-forest, #2F7556); color: #fff; }
+.okh-book .ocf2-btn--light { background: #fff; color: var(--oc-ink, #16211C); }
+
+/* ── Meetings: the count under a day is a soft lilac dot, not dark green ── */
+.ocf2-day.has em { background: #DCD5F8; color: #3B2F7A; }
+.ocf2-day.is-on.has em { background: #fff; color: #26401A; }
+
+/* ── Learn tab colours (2026-11-11, "colors went off a drop"): the Academy's
+   logo on top, the next-up card in the soft pink, lilac and orange wash, and
+   no dark green blocks: watched marks are lime, progress is lilac. ── */
+.ocf2-learn-logo { height: 34px; width: auto; align-self: flex-start; display: block; margin: 2px 2px -4px; }
+.ocf2-learn .ocf2-next { color: var(--oc-ink, #16211C); background:
+  radial-gradient(120% 95% at 100% 0%, #FAD3E2 0%, rgba(250,211,226,0) 58%),
+  radial-gradient(110% 95% at 0% 100%, #E2DBFA 0%, rgba(226,219,250,0) 62%),
+  radial-gradient(85% 75% at 70% 115%, #FDDDBF 0%, rgba(253,221,191,0) 62%),
+  #FBF6F3; box-shadow: inset 0 0 0 1px rgba(255,255,255,.6), 0 10px 26px -18px rgba(150,90,140,.45); }
+.ocf2-learn .ocf2-next .ocf2-kicker { color: #5A4B66; }
+.ocf2-learn .ocf2-stepper-track i.done { background: linear-gradient(90deg, #9B8AE6, #B7A6F0); }
+.ocf2-learn .ocf2-stepper-track i.now, .ocf2-learn .ocf2-stepper-track i.current { background: #F5B4CE; box-shadow: none; }
+.ocf2-learn .ocf2-tick.is-done { background: var(--oc-lime, #D7F36E); color: var(--oc-forest, #2F7556); }
+
+/* ── Nothing slides under the clock (2026-11-11). Pages with no header bar
+   let their content scroll up behind the status bar, so titles collided
+   with the time. A strip in the page's own ground colour now covers the
+   status-bar zone on every headerless page. ── */
+.ion-page > ion-content:first-child::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: calc(var(--ion-safe-area-top, 0px) + 6px); background: linear-gradient(to bottom, var(--background, var(--oc-ground, #F3F5F1)) calc(100% - 6px), rgba(243,245,241,0)); z-index: 20; pointer-events: none; }
+
+/* ── The green, lighter everywhere (Shalom 2026-11-11: "we dont like the
+   dark green. fix throughout the app"). The action green is now a fresher
+   mid green; anything that used to turn a whole card dark when picked now
+   turns soft lime with a green ring and ink text; progress bars are lilac. ── */
+html:root { --oc-forest: #2F7556; --oc-forest-2: #276449; }
+.okp-opt.is-on, .okp-time.is-on, .ocf2-give-amt.is-on, .ocf2-ak-opt.is-on, .ocf2-dn-chip.is-on, .oad-chip.is-on { background: #EEF8C8; color: var(--oc-ink, #16211C); box-shadow: inset 0 0 0 2px var(--oc-forest); }
+.okp-opt.is-on .okp-plan-sub, .okp-time.is-on small { color: #46594F; }
+.okp-opt.is-on .okp-dot { border-color: var(--oc-forest); background: var(--oc-forest); box-shadow: inset 0 0 0 4px #EEF8C8; }
+.okp-opt.is-on *, .okp-time.is-on *, .ocf2-give-amt.is-on *, .ocf2-ak-opt.is-on *, .ocf2-dn-chip.is-on * { color: inherit; }
+.okp-opt.is-on .okp-plan-sub, .okp-time.is-on small { color: #46594F; }
+.okp-bar i, .ocf2-ak-prog i, .okh-track i.done, .ocf2-stepper-track i.done, .ocf2-dn-steps i.done, .ocf2-ak-steps i.is-on { background: linear-gradient(90deg, #9B8AE6, #C3A7EE); }
+.ps .ps-bar span.done { background: #9B8AE6; }
+/* KDH Plus: the step bar stays put under the clock and fits its label */
+.okp > .okp-top:first-child { position: sticky; top: calc(var(--ion-safe-area-top, 0px) + 2px); z-index: 15; background: var(--oc-ground, #F3F5F1); margin: -4px -4px 0; padding: 4px; border-radius: 0 0 14px 14px; }
+.okp-top .okp-step { flex: none; font-size: 12px; white-space: nowrap; }
+.okp-top .okp-bar { min-width: 40px; }
+ion-tab-bar.ocf2-tabbar.is-hidden { display: none; }
+
+/* ══ Fit sweep, 2026-11-11 (Shalom: "bar doesnt fit. do a deep dive and find
+   these issues all over"). Every client screen was walked at 390x844 and
+   320x568 in the phone frame. What follows are the fixes, shared rules first. ══ */
+/* The steps card keeps its own tokens: give it the lighter green too, and
+   make its done segments lilac like every other progress bar (the earlier
+   rule missed: the fill is an ::after). */
+.ps.ps { --ps-forest: #2F7556; }
+.ps.ps .ps-bar span.done::after { background: linear-gradient(90deg, #9B8AE6, #C3A7EE); }
+/* lime text on the lighter green was too faint: white reads */
+.ps.ps .ps-go-big, .ps.ps .ps-dbtn.done, .ps.ps .ps-seg .on { color: #fff; }
+/* Cards / List was 31px tall: same look, 44px touch area */
+.ps.ps .ps-seg button { position: relative; }
+.ps.ps .ps-seg button::after { content: ""; position: absolute; inset: -7px -2px; }
+/* KDH homework and sessions progress: lilac like the rest (the source rule is !important) */
+.okh-track.okh-track i.done { background: linear-gradient(90deg, #9B8AE6, #C3A7EE) !important; }
+/* KDH Plus step bar: sits flush under the status strip, nothing peeks between them */
+.okp > .okp-top:first-child { top: var(--ion-safe-area-top, 0px); box-shadow: 0 -10px 0 var(--oc-ground, #F3F5F1); }
+
+/* ── The tab bar, in the new look (Shalom 2026-11-11: "design this more
+   slickly. like the new look"). A floating white bar with round corners and
+   a soft shadow, sitting above the home indicator. The tab you are on is a
+   soft lime pill holding its icon and label; no separate blob behind the
+   icon. Staff bar gets the same treatment in the staff theme files. ── */
+ion-tabs { background: var(--oc-ground, #F3F5F1); }
+ion-tab-bar.ocf2-tabbar { height: 66px; margin: 0 12px calc(8px + var(--ion-safe-area-bottom, 0px)); padding: 6px; border-radius: 26px; border: 0; --background: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: 0 10px 26px -14px rgba(22,33,28,.32), 0 0 0 1px rgba(22,33,28,.05); gap: 2px; }
+ion-tab-bar.ocf2-tabbar ion-tab-button { --padding-top: 0; --padding-bottom: 0; --color: #5B6B62; --color-selected: var(--oc-ink, #16211C); border-radius: 20px; height: 54px; max-width: none; transition: background .2s ease; --ripple-color: transparent; }
+ion-tab-bar.ocf2-tabbar ion-tab-button > svg { width: 22px; height: 22px; padding: 0; background: none; border-radius: 0; transition: transform .2s cubic-bezier(.2,.8,.2,1); }
+ion-tab-bar.ocf2-tabbar ion-tab-button.tab-selected { background: #EEF8C8; }
+ion-tab-bar.ocf2-tabbar ion-tab-button.tab-selected > svg { background: none; color: var(--oc-forest, #2F7556); transform: translateY(-1px); }
+ion-tab-bar.ocf2-tabbar ion-tab-button ion-label { margin-top: 3px; line-height: 1.25; }
+/* Fit sweep on the floating bar: with six family tabs "Meetings" wrapped onto
+   two lines. Labels stay on one line; the bar gives the tabs more room on
+   narrow phones. */
+ion-tab-bar.ocf2-tabbar ion-tab-button { min-width: 0; flex: 1 1 0; --padding-start: 0; --padding-end: 0; }
+ion-tab-bar.ocf2-tabbar ion-tab-button ion-label { white-space: nowrap; overflow: visible; text-overflow: clip; letter-spacing: -.01em; }
+@media (max-width: 350px) {
+  ion-tab-bar.ocf2-tabbar { margin-left: 8px; margin-right: 8px; padding: 5px 4px; gap: 0; }
+  ion-tab-bar.ocf2-tabbar ion-tab-button { font-size: 10px; }
+}
+ion-tab-bar.ocf2-tabbar ion-tab-button { font-size: 11px; }
+ion-tab-bar.ocf2-tabbar ion-tab-button::part(native) { overflow: visible; padding-left: 0; padding-right: 0; }
+ion-tab-bar.ocf2-tabbar ion-tab-button ion-label { letter-spacing: -.02em; max-width: none; }
+@media (max-width: 350px) { ion-tab-bar.ocf2-tabbar ion-tab-button { font-size: 9.5px; } }
+ion-tab-bar.ocf2-tabbar ion-tab-button ion-label { font-size: 11.5px; }
+@media (max-width: 350px) { ion-tab-bar.ocf2-tabbar ion-tab-button ion-label { font-size: 10px; } }
+/* Adopt: the pinned gift button's small print ran under the home indicator */
+.oad-cta.oad-cta { padding-bottom: calc(10px + var(--ion-safe-area-bottom, 0px)); }
+.oad-cta .oad-fine { text-wrap: balance; }
+/* Picked states, second pass: the small line under a picked gift amount was
+   pale-on-lime (unreadable), and the Adopt region chip still turned solid
+   green because its file loads after this one. */
+.ocf2-give-amt.is-on small, .okp-time.is-on small, .ocf2-ak-opt.is-on small { color: #46594F; }
+.oad-chip.oad-chip.is-on { background: #EEF8C8; color: var(--oc-ink, #16211C); box-shadow: inset 0 0 0 2px var(--oc-forest); }
+/* Home, Debt before/now: "$18,400" broke onto two lines at 320 wide */
+.ocf2-ba-r b, .ocf2-ba-r .was { white-space: nowrap; }
+.ocf2-ba-r:first-of-type b, .ocf2-ba-h + .ocf2-ba-r b { font-size: clamp(18px, 5.8vw, 24px); }
+@media (max-width: 350px) { .ocf2-ba-h, .ocf2-ba-r { grid-template-columns: minmax(0, .95fr) minmax(0, .9fr) minmax(0, 1fr); gap: 6px; } .ocf2-ba-r .was { font-size: 14px; } }
+/* Contrast: #2F7556 as small text on the mint chips measured about 3.9:1.
+   One notch deeper (still far from the old dark green) reads at 4.6:1 on
+   mint and 5.5:1 on white, for text and for white-on-green buttons alike. */
+html:root { --oc-forest: #2F7556; --oc-forest-2: #276449; }
+.ps.ps { --ps-forest: #2F7556; }
+/* Narrow phones: cut-off lines that lost their meaning ("with Da…",
+   "Budget session …") may take a second line instead */
+@media (max-width: 350px) {
+  .ocf2-alert .ocf2-row-t small { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .ocf2-meet-top .ocf2-row-t b { white-space: normal; }
+}
+
+/* ── Settings and feedback, every door (2026-11-11) ── */
+.oas { gap: 12px; }
+.oas-card { background: #fff; border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 6px; box-shadow: 0 1px 2px rgba(22,33,28,.04); }
+.oas-fb { gap: 10px; background: radial-gradient(120% 95% at 100% 0%, #FAD3E2 0%, rgba(250,211,226,0) 55%), radial-gradient(110% 95% at 0% 100%, #E2DBFA 0%, rgba(226,219,250,0) 60%), #FBF6F3; }
+.oas-eb { font-size: 11.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #5A4B66; }
+.oas-who { font-size: 20px; font-weight: 800; letter-spacing: -.02em; }
+.oas-h { font-size: 18px; font-weight: 800; letter-spacing: -.02em; line-height: 1.25; }
+.oas-sub { margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--oc-soft, #46594F); }
+.oas-kinds { display: flex; flex-wrap: wrap; gap: 6px; }
+.oas-kind { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 13px; border: 0; border-radius: 999px; background: #fff; color: var(--oc-ink, #16211C); font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+.oas-kind.is-on { background: #EEF8C8; box-shadow: inset 0 0 0 2px var(--oc-forest); }
+.oas-text { min-height: 120px; resize: vertical; line-height: 1.45; padding-top: 12px; font-size: 16px; }
+.oas-done { display: flex; flex-direction: column; gap: 4px; background: #fff; border-radius: 18px; padding: 14px; }
+.oas-done b { font-size: 16px; }
+.oas-done span { font-size: 13.5px; color: var(--oc-soft, #46594F); }
+.oas-out { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; border: 0; border-radius: 999px; background: #fff; color: #9A3B2A; font: inherit; font-size: 15px; font-weight: 800; cursor: pointer; }
+.ocf2-gear { display: inline-grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%; background: #fff; color: var(--oc-ink, #16211C); cursor: pointer; box-shadow: 0 1px 2px rgba(22,33,28,.06); flex: none; }
+
+/* ── KDH "Next call": the debt expert's open times and the link's window ── */
+.okh-slots { display: flex; flex-direction: column; gap: 6px; }
+.okh-slots > span { font-size: 12px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: #2D3766; }
+.okh-slots ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.okh-slots li { background: #fff; border-radius: 999px; padding: 7px 12px; font-size: 13px; font-weight: 700; color: var(--oc-ink, #16211C); white-space: nowrap; }
+.okh-until { margin: 0; font-size: 12.5px; color: #3F4A63; }
+
+/* ── Bigger logos (Shalom 2026-11-11: "make logo bigger and wherever else
+   that is shown"): the KDH lockup at the top of KDH and KDH Plus, the logos
+   on the "what next" rows, the Learn logo and the four on the code screen. ── */
+.okp-top.is-brand img { height: 46px; max-width: calc(100% - 100px); object-fit: contain; }
+.ocf2-brand--logo img { height: 48px; max-width: 100%; object-fit: contain; object-position: left center; }
+.okn-row-logo { height: 27px; }
+.ocf2-learn-logo { height: 42px; }
+.ocf2-proglogos img { height: 32px; }
+.ocf2-proglogos img.is-tall { height: 40px; }
+.ocf2-fitpage:not([data-fit="0"]) .ocf2-proglogos img { height: 27px; }
+.ocf2-fitpage:not([data-fit="0"]) .ocf2-proglogos img.is-tall { height: 33px; }
+@media (max-width: 350px) { .okp-top.is-brand img { height: 38px; } .ocf2-brand--logo img { height: 40px; } .ocf2-proglogos img { height: 26px; } .ocf2-proglogos img.is-tall { height: 32px; } }
+/* The code screen is a one-page screen: the bigger logos pushed it into its
+   tightest step and hid them. There they keep the size that fits. */
+.ocf2-fitpage .ocf2-proglogos img { height: 28px; }
+.ocf2-fitpage .ocf2-proglogos img.is-tall { height: 34px; }
+.ocf2-fitpage:not([data-fit="0"]) .ocf2-proglogos img { height: 24px; }
+.ocf2-fitpage:not([data-fit="0"]) .ocf2-proglogos img.is-tall { height: 29px; }
+
+/* ── KDH homework: where you stand (debt, rate, goal) ── */
+.okh-debt { border-radius: 26px; padding: 18px; display: flex; flex-direction: column; gap: 12px; color: var(--oc-ink, #16211C); background:
+  radial-gradient(120% 95% at 100% 0%, #FAD3E2 0%, rgba(250,211,226,0) 58%),
+  radial-gradient(110% 95% at 0% 100%, #E2DBFA 0%, rgba(226,219,250,0) 62%),
+  radial-gradient(85% 75% at 70% 115%, #FDDDBF 0%, rgba(253,221,191,0) 62%),
+  #FBF6F3; box-shadow: inset 0 0 0 1px rgba(255,255,255,.6), 0 10px 26px -18px rgba(150,90,140,.45); }
+.okh-debt-eb { font-size: 11.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #5A4B66; }
+.okh-debt-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 1fr); gap: 8px; align-items: stretch; }
+.okh-debt-cell { background: rgba(255,255,255,.72); border-radius: 18px; padding: 11px 11px 10px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.okh-debt-cell small { font-size: 11.5px; font-weight: 700; color: #5A4B66; white-space: nowrap; }
+.okh-debt-cell b { font-size: clamp(19px, 6.2vw, 26px); font-weight: 800; letter-spacing: -.035em; line-height: 1.05; white-space: nowrap; }
+.okh-debt-cell em { font-style: normal; font-size: 11px; line-height: 1.3; color: #6B5C76; }
+.okh-debt-cell.is-goal { background: #EEF8C8; box-shadow: inset 0 0 0 2px var(--oc-forest); }
+.okh-debt-cell.is-goal small, .okh-debt-cell.is-goal em { color: #2E4A1E; }
+.okh-debt-bar { position: relative; height: 10px; border-radius: 999px; overflow: hidden; }
+.okh-debt-bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: linear-gradient(90deg, #F5B4CE, #F9BE8E); }
+.okh-debt-bar i.goal { background: var(--oc-forest); transform-origin: left; animation: okh-debt-in 1.1s cubic-bezier(.2,.8,.2,1) .4s backwards; }
+@keyframes okh-debt-in { from { width: 100%; } }
+.okh-debt-line { margin: 0; font-size: 14px; line-height: 1.5; color: #3D3347; }
+.okh-debt-line b { color: var(--oc-ink, #16211C); font-weight: 800; }
+.okh-debt-fine { margin: 0; font-size: 12px; line-height: 1.45; color: #6B5C76; }
+@media (max-width: 350px) { .okh-debt { padding: 14px; } .okh-debt-grid { gap: 6px; } .okh-debt-cell { padding: 9px 8px 8px; } .okh-debt-cell em { font-size: 10px; } }
+@media (prefers-reduced-motion: reduce) { .okh-debt-bar i.goal { animation: none; } }

@@ -1,0 +1,117 @@
+/* ────────────────────────────────────────────────────────────────────
+   orchard-fam-budget.css — the family Budget tab (2026-11-11).
+   Shalom: "show previous months. and add encouragement... collapse most
+   stuff and make it easier on the eyes. less is more up front", "add the
+   image animation", "show a 6 month pipeline... met first time and then 6
+   times after that", "more encouraging and kind to families who are
+   struggling".
+
+   One card for the month (a number, a kind line, six months to tap), one
+   for the sessions (seven stops), then the plan as one row per category
+   that opens on a tap, and "More". Motion is slow and stops under
+   prefers-reduced-motion. Loaded by FamilyBudgetPage.tsx only.
+   ──────────────────────────────────────────────────────────────────── */
+
+/* ── 1. the month ── */
+.obg-hero { gap: 12px; padding: 16px 16px 14px; }
+.obg-hero-top { display: flex; align-items: center; gap: 4px; }
+.obg-hero-t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.obg-big.obg-big { font-size: 48px; }
+.obg-cheer { margin: -4px 0 0; font-size: 14.5px; line-height: 1.4; font-weight: 700; color: var(--oc-ink, #16211C); text-wrap: pretty; animation: obg-in .5s ease both; }
+
+/* the drawing: a jar that fills, a sprout that grows, a coin on its way in */
+.obg-art { flex: none; margin: -12px -8px -8px 0; line-height: 0; pointer-events: none; }
+.obg-art svg { width: 100%; height: auto; display: block; overflow: visible; }
+.obg-art .obg-coin { opacity: 0; transition: opacity .3s ease; }
+.obg-art .obg-coin.is-on { opacity: 1; animation: obg-coin-in .6s cubic-bezier(.2, .8, .2, 1) backwards; }
+.obg-art .obg-grow { transition: transform .8s cubic-bezier(.2, .8, .2, 1); }
+.obg-art .obg-sway { animation: obg-sway 4.8s ease-in-out infinite; }
+.obg-art .obg-drop { animation: obg-drop 3.8s ease-in infinite; }
+.obg-art .obg-glow { animation: obg-glow 3.8s ease-in-out infinite; }
+.obg-art .obg-glow--2 { animation-delay: 1.2s; }
+.obg-art .obg-glow--3 { animation-delay: 2.1s; }
+@keyframes obg-coin-in { from { opacity: 0; transform: translateY(-18px); } to { opacity: 1; transform: none; } }
+@keyframes obg-sway { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-4deg); } }
+@keyframes obg-drop { 0% { opacity: 0; transform: translateY(-24px); } 16% { opacity: 1; } 52% { opacity: 1; transform: translateY(18px); } 64%, 100% { opacity: 0; transform: translateY(24px); } }
+@keyframes obg-glow { 0%, 100% { opacity: .3; } 50% { opacity: 1; } }
+@keyframes obg-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+/* the last six months: taller means more left over; the picked one is lime */
+.obg-months { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 0; margin: 0 -4px; }
+.obg-month { border: 0; background: none; font: inherit; color: inherit; margin: 0; padding: 6px 4px 7px; min-height: 78px; display: flex; flex-direction: column; justify-content: flex-end; gap: 5px; border-radius: 15px; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background .2s ease, box-shadow .2s ease; }
+.obg-month-bar { height: 44px; display: flex; align-items: flex-end; justify-content: center; }
+.obg-month-bar i { display: block; width: 100%; max-width: 30px; border-radius: 9px 9px 6px 6px; background: linear-gradient(180deg, #CFC4F7, #E6DFFB); transform-origin: bottom; animation: obg-bar-up .7s cubic-bezier(.2, .8, .2, 1) both; }
+.obg-month small { font-size: 11.5px; font-weight: 700; color: #6B5C76; text-align: center; white-space: nowrap; }
+.obg-month.is-on { background: #EEF8C8; box-shadow: inset 0 0 0 2px var(--oc-forest, #2F7556); }
+.obg-month.is-on .obg-month-bar i { background: linear-gradient(180deg, #9B8AE6, #C3A7EE); }
+.obg-month.is-on small { color: var(--oc-ink, #16211C); font-weight: 800; }
+.obg-month:focus-visible, .obg-cat-h:focus-visible, .obg-more:focus-visible, .obg-back:focus-visible { outline: 2px solid var(--oc-forest, #2F7556); outline-offset: 2px; }
+@keyframes obg-bar-up { from { transform: scaleY(.2); opacity: .4; } to { transform: none; opacity: 1; } }
+.obg-back { border: 0; background: none; font: inherit; font-size: 12.5px; font-weight: 800; color: var(--oc-forest-2, #276449); min-height: 44px; padding: 0 12px; margin: -14px 0; cursor: pointer; }
+
+/* this month at the bank: one quiet line */
+.obg-bank { margin: 0; display: flex; gap: 7px; align-items: flex-start; font-size: 12.5px; line-height: 1.4; font-weight: 600; color: #5A4B66; background: rgba(255, 255, 255, .62); border-radius: 14px; padding: 9px 11px; }
+.obg-bank svg { flex: none; margin-top: 1px; }
+
+/* ── 2. the sessions: first meeting, then six monthly ones ── */
+.obg-pipe .obg-count { font-size: 13px; font-weight: 800; color: var(--oc-ink, #16211C); background: #EEF8C8; border-radius: 999px; padding: 4px 11px; }
+.obg-stops { list-style: none; margin: 4px 0 0; padding: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.obg-stops li { position: relative; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.obg-stops li + li::before { content: ""; position: absolute; top: 13px; right: 50%; width: 100%; height: 4px; border-radius: 4px; background: var(--oc-inset, #E6EAE5); }
+.obg-stops li.is-done + li.is-done::before, .obg-stops li.is-done + li.is-next::before { background: linear-gradient(90deg, #9B8AE6, #C3A7EE); }
+.obg-stops li.is-done + li.is-next::before { background: linear-gradient(90deg, #C3A7EE, var(--oc-inset, #E6EAE5)); }
+.obg-dot { position: relative; z-index: 1; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--oc-inset, #E6EAE5); color: #fff; box-shadow: 0 0 0 3px var(--oc-card, #fff); }
+.obg-stops .is-done .obg-dot { background: linear-gradient(135deg, #9B8AE6, #C3A7EE); animation: obg-pop .45s cubic-bezier(.2, .8, .2, 1) backwards; animation-delay: calc(var(--k, 0) * 70ms); }
+.obg-stops .is-next .obg-dot { background: #EEF8C8; box-shadow: 0 0 0 3px var(--oc-card, #fff), inset 0 0 0 2px var(--oc-forest, #2F7556); }
+.obg-stops .is-next .obg-dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; animation: obg-ring 3.4s ease-out infinite; }
+.obg-stops small { font-size: 11.5px; font-weight: 700; color: var(--oc-mid, #5B6B62); white-space: nowrap; }
+.obg-stops .is-done small { color: var(--oc-ink, #16211C); }
+.obg-stops .is-next small { color: var(--oc-forest-2, #276449); font-weight: 800; }
+@keyframes obg-pop { from { opacity: 0; transform: scale(.5); } to { opacity: 1; transform: none; } }
+@keyframes obg-ring { 0% { box-shadow: 0 0 0 0 rgba(47, 117, 86, .34); } 60%, 100% { box-shadow: 0 0 0 10px rgba(47, 117, 86, 0); } }
+.obg-pipe-line { margin: 0; font-size: 14px; line-height: 1.4; font-weight: 700; color: var(--oc-ink, #16211C); text-wrap: balance; }
+.obg-booked { display: flex; align-items: center; gap: 9px; background: var(--oc-mint, #DDEFE3); color: var(--oc-forest-2, #276449); border-radius: 15px; padding: 10px 12px; font-size: 13px; line-height: 1.35; font-weight: 700; }
+.obg-booked svg { flex: none; }
+.obg-booked span { text-wrap: balance; }
+
+/* ── 3. the plan: one row per category ── */
+.obg-cats.obg-cats { padding: 4px 14px 12px; gap: 0; }
+.obg-cat + .obg-cat { border-top: 1px solid var(--oc-hair, #EEF1EC); }
+.obg-cat-h { width: 100%; border: 0; background: none; font: inherit; color: inherit; text-align: left; display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.obg-cat-h .ocf2-row-t b { font-size: 15px; font-weight: 800; }
+.obg-cat-h .ocf2-row-amt, .obg-line .ocf2-row-amt { white-space: nowrap; }
+.obg-caret { flex: none; color: var(--oc-mid, #5B6B62); transition: transform .25s ease; }
+.obg-cat.is-open > .obg-cat-h .obg-caret, .obg-more.is-open .obg-caret { transform: rotate(180deg); }
+.obg-lines { margin: 0 0 12px; background: var(--oc-ground, #F3F5F1); border-radius: 16px; padding: 2px 12px; animation: obg-open .28s ease both; }
+.obg-line { display: flex; align-items: center; gap: 10px; min-height: 46px; padding: 7px 0; }
+.obg-line + .obg-line { border-top: 1px solid rgba(22, 33, 28, .06); }
+.obg-line .ocf2-row-t b { font-weight: 600; }
+.obg-line .ocf2-row-amt { font-size: 14px; }
+.obg-mark { width: 22px; height: 22px; border-radius: 7px; flex: none; display: grid; place-items: center; background: #fff; box-shadow: inset 0 0 0 1.5px var(--oc-inset, #E6EAE5); color: #fff; }
+.obg-mark b { font-size: 12px; font-weight: 800; }
+.obg-mark.is-done { background: var(--oc-forest, #2F7556); box-shadow: none; }
+.obg-mark.is-flag { background: var(--oc-butter, #FBEFA6); color: #574A0E; box-shadow: none; }
+.obg-cats-foot { padding-top: 11px; border-top: 1px solid var(--oc-hair, #EEF1EC); }
+@keyframes obg-open { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+/* ── 4. more ── */
+.obg-more { width: 100%; border: 0; font: inherit; color: var(--oc-ink, #16211C); text-align: left; display: flex; align-items: center; gap: 12px; min-height: 62px; padding: 10px 16px; background: var(--oc-card, #fff); border-radius: 22px; box-shadow: 0 1px 2px rgba(22, 33, 28, .04); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.obg-more .ocf2-row-t b { font-size: 15px; font-weight: 800; }
+.obg-more-body { display: flex; flex-direction: column; gap: 14px; animation: obg-open .28s ease both; }
+
+/* narrow phones */
+@media (max-width: 350px) {
+  .obg-hero { padding: 14px 14px 12px; }
+  .obg-big.obg-big { font-size: 40px; }
+  .obg-art { width: 108px !important; margin-right: -6px; }
+  .obg-cheer { font-size: 13.5px; }
+  .obg-month { padding-left: 3px; padding-right: 3px; }
+  .obg-dot { width: 26px; height: 26px; }
+  .obg-stops li + li::before { top: 11px; }
+  .obg-cat-h { gap: 10px; }
+  .obg-cat-h .ocf2-ico { width: 36px; height: 36px; border-radius: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .obg *, .obg *::before, .obg *::after { animation: none !important; transition: none !important; }
+}

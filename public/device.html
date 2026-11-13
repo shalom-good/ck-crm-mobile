@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#F3F5F1" />
+<title>Collective Kindness app</title>
+<meta name="description" content="The Collective Kindness app, running live in the browser. Switch between iPhone and Android." />
+<meta property="og:title" content="Collective Kindness app" />
+<meta property="og:description" content="The whole app, live in the browser. Switch between iPhone and Android." />
+<meta property="og:image" content="https://ck-crm-mobile.vercel.app/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="icon" type="image/png" href="/icon-192.png" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="preload" href="/fonts/PlusJakartaSans-latin.woff2" as="font" type="font/woff2" crossorigin />
+<style>
+  @font-face { font-family: "Plus Jakarta Sans"; src: url("/fonts/PlusJakartaSans-latin.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+  :root { --paper: #F3F5F1; --ink: #1C2E29; --soft: #5E6F69; --forest: #2F7556; --lime: #D7F36E; --hair: rgba(28,46,41,.1); }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif; color: var(--ink);
+    background:
+      radial-gradient(560px 440px at 10% 6%, rgba(215,243,110,.3), transparent 60%),
+      radial-gradient(680px 540px at 90% 94%, rgba(47,117,86,.11), transparent 60%),
+      var(--paper);
+    display: grid; grid-template-rows: auto 1fr; overflow: hidden;
+  }
+
+  /* ---------- the bar ---------- */
+  .bar { display: flex; align-items: center; gap: 14px; padding: 14px 20px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 15px; letter-spacing: -.01em; margin-right: auto; min-width: 0; }
+  .brand img { width: 32px; height: 32px; border-radius: 9px; }
+  .brand small { display: block; font-weight: 600; font-size: 12px; color: var(--soft); letter-spacing: 0; }
+  .seg { position: relative; display: grid; grid-template-columns: 1fr 1fr; background: #fff; border-radius: 999px; padding: 4px; box-shadow: 0 1px 2px rgba(28,46,41,.06), 0 8px 24px -12px rgba(28,46,41,.25); }
+  .seg::before { content: ""; position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 999px; background: var(--forest); transition: transform .32s cubic-bezier(.3,1.3,.5,1); }
+  .seg[data-device="android"]::before { transform: translateX(100%); }
+  .seg button { position: relative; border: 0; background: none; font: inherit; font-weight: 800; font-size: 14px; color: var(--soft); padding: 9px 18px; min-width: 112px; border-radius: 999px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; transition: color .2s; }
+  .seg button[aria-pressed="true"] { color: #fff; }
+  .seg button:focus-visible, .tool:focus-visible { outline: 2px solid var(--forest); outline-offset: 2px; }
+  .seg svg { width: 16px; height: 16px; }
+  .tools { display: flex; gap: 8px; margin-left: auto; }
+  .tool { border: 0; background: #fff; font: inherit; font-weight: 700; font-size: 13px; color: var(--ink); padding: 9px 14px; border-radius: 999px; cursor: pointer; box-shadow: 0 1px 2px rgba(28,46,41,.06); text-decoration: none; white-space: nowrap; }
+  .tool:hover { background: #fbfcfa; }
+  .bar > .brand, .bar > .tools { flex: 1 1 0; }
+  .tools { justify-content: flex-end; }
+
+  /* ---------- the stage ---------- */
+  .stage { position: relative; min-height: 0; display: grid; place-items: center; padding: 4px 16px 20px; }
+  .fit { transform-origin: center center; }
+  .phone { position: relative; background: #0d0f0e; transition: width .35s ease, height .35s ease, border-radius .35s ease; }
+  .screen { position: absolute; overflow: hidden; background: var(--paper); }
+  .screen iframe { width: 100%; height: 100%; border: 0; display: block; background: var(--paper); }
+  .screen.swap iframe { animation: swap .38s ease; }
+  @keyframes swap { from { opacity: 0; transform: scale(.985); } to { opacity: 1; transform: none; } }
+  .chrome { position: absolute; inset: 0; pointer-events: none; z-index: 2; color: #111; font-weight: 700; }
+  .btn { position: absolute; background: #1b1e1d; border-radius: 3px; }
+
+  /* iPhone 15 Pro: 393 x 852 */
+  .phone[data-device="ios"] { width: 417px; height: 876px; border-radius: 67px; box-shadow: 0 0 0 2px #3a3d3c, 0 0 0 5px #8f918d, 0 0 0 6px #5a5c59, 0 40px 90px -20px rgba(28,46,41,.45); }
+  .phone[data-device="ios"] .screen { inset: 12px; border-radius: 55px; }
+  .ios-only, .and-only { display: none; }
+  .phone[data-device="ios"] .ios-only { display: block; }
+  .phone[data-device="android"] .and-only { display: block; }
+  .island { position: absolute; top: 11px; left: 50%; width: 124px; height: 36px; margin-left: -62px; border-radius: 20px; background: #000; }
+  .ios-time { position: absolute; top: 18px; left: 0; width: 134px; text-align: center; font-size: 17px; font-weight: 700; letter-spacing: -.02em; font-family: -apple-system, "SF Pro Text", "Plus Jakarta Sans", sans-serif; }
+  .ios-icons { position: absolute; top: 20px; right: 0; width: 134px; display: flex; justify-content: center; align-items: center; gap: 6px; }
+  .home-bar { position: absolute; bottom: 8px; left: 50%; width: 139px; height: 5px; margin-left: -69.5px; border-radius: 3px; background: #111; opacity: .9; }
+  .phone[data-device="ios"] .b1 { left: -8px; top: 150px; width: 4px; height: 30px; }
+  .phone[data-device="ios"] .b2 { left: -8px; top: 208px; width: 4px; height: 58px; }
+  .phone[data-device="ios"] .b3 { left: -8px; top: 278px; width: 4px; height: 58px; }
+  .phone[data-device="ios"] .b4 { right: -8px; top: 240px; width: 4px; height: 92px; }
+
+  /* Pixel 8: 412 x 915 */
+  .phone[data-device="android"] { width: 432px; height: 935px; border-radius: 46px; box-shadow: 0 0 0 2px #2a2c2b, 0 0 0 4px #b9bbb6, 0 40px 90px -20px rgba(28,46,41,.45); }
+  .phone[data-device="android"] .screen { inset: 10px; border-radius: 36px; }
+  .punch { position: absolute; top: 9px; left: 50%; width: 20px; height: 20px; margin-left: -10px; border-radius: 50%; background: #000; box-shadow: inset 0 0 0 4px #0b0b0b, inset 0 0 0 6px #17191c; }
+  .and-time { position: absolute; top: 10px; left: 26px; font-size: 14px; font-weight: 600; font-family: Roboto, "Google Sans", "Plus Jakarta Sans", sans-serif; letter-spacing: .01em; }
+  .and-icons { position: absolute; top: 10px; right: 24px; display: flex; align-items: center; gap: 5px; }
+  .nav-pill { position: absolute; bottom: 9px; left: 50%; width: 108px; height: 4px; margin-left: -54px; border-radius: 2px; background: #111; opacity: .8; }
+  .phone[data-device="android"] .b1 { right: -7px; top: 190px; width: 4px; height: 52px; }
+  .phone[data-device="android"] .b2 { right: -7px; top: 272px; width: 4px; height: 104px; }
+  .phone[data-device="android"] .b3, .phone[data-device="android"] .b4 { display: none; }
+
+  .hint { position: absolute; left: 20px; bottom: 16px; max-width: 250px; font-size: 12.5px; line-height: 1.5; color: var(--soft); }
+  .hint b { color: var(--ink); }
+  @media (max-width: 980px) { .hint { display: none; } .brand small { display: none; } }
+  @media (max-width: 760px) { .tools .opt { display: none; } .seg button { min-width: 0; padding: 9px 14px; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+  <header class="bar">
+    <div class="brand">
+      <img src="/icon-192.png" alt="" />
+      <div>Collective Kindness <small>The app, live</small></div>
+    </div>
+
+    <div class="seg" id="seg" role="group" aria-label="Phone" data-device="ios">
+      <button type="button" data-set="ios" aria-pressed="true">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.9-.8-3.1-.8-1.6 0-3.1.9-3.9 2.4-1.7 2.9-.4 7.2 1.2 9.5.8 1.1 1.7 2.4 3 2.4 1.2-.1 1.7-.8 3.1-.8 1.4 0 1.9.8 3.1.7 1.3 0 2.1-1.2 2.9-2.3.9-1.3 1.3-2.6 1.3-2.7-.1 0-2.7-1-2.7-4zM14.1 5.6c.6-.8 1.1-1.9 1-3-1 0-2.1.6-2.8 1.4-.6.7-1.1 1.8-1 2.9 1.1.1 2.2-.5 2.8-1.3z"/></svg>
+        iPhone
+      </button>
+      <button type="button" data-set="android" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.6 9.5 19.4 6.3a.5.5 0 0 0-.9-.5l-1.9 3.2a11 11 0 0 0-9.2 0L5.5 5.8a.5.5 0 0 0-.9.5l1.8 3.2A10.4 10.4 0 0 0 1 18h22a10.4 10.4 0 0 0-5.4-8.5zM7 15.2a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zm10 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4z"/></svg>
+        Android
+      </button>
+    </div>
+
+    <div class="tools">
+      <button type="button" class="tool opt" id="reload" title="Load the current screen again">Reload</button>
+      <button type="button" class="tool" id="reset" title="Sign out and go back to the first screen">Start over</button>
+      <a class="tool opt" id="bare" href="/?bare=1" title="The app on its own, no phone around it">Without the phone</a>
+    </div>
+  </header>
+
+  <main class="stage" id="stage">
+    <div class="fit" id="fit">
+      <div class="phone" id="phone" data-device="ios">
+        <span class="btn b1"></span><span class="btn b2"></span><span class="btn b3"></span><span class="btn b4"></span>
+        <div class="screen" id="screen">
+          <iframe id="app" title="Collective Kindness app" allow="clipboard-write; web-share; autoplay; fullscreen; picture-in-picture; payment"></iframe>
+          <div class="chrome" aria-hidden="true">
+            <div class="ios-only">
+              <div class="ios-time" data-clock></div>
+              <div class="island"></div>
+              <div class="ios-icons">
+                <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+                <svg width="17" height="12" viewBox="0 0 17 12" fill="currentColor"><path d="M8.5 2.5c2.3 0 4.4.9 6 2.4l1.1-1.2A10.3 10.3 0 0 0 8.5.8C5.8.8 3.3 1.9 1.4 3.7l1.1 1.2a8.6 8.6 0 0 1 6-2.4zm0 3.4c1.4 0 2.7.5 3.7 1.4l1.1-1.2a7.1 7.1 0 0 0-9.6 0l1.1 1.2c1-.9 2.3-1.4 3.7-1.4zm0 3.3c-.7 0-1.3.3-1.8.7l1.8 1.9 1.8-1.9c-.5-.4-1.1-.7-1.8-.7z"/></svg>
+                <svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x=".5" y=".5" width="23" height="12" rx="3.5" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="20" height="9" rx="2.2" fill="currentColor"/><path d="M25 4.5v4c.8-.3 1.5-1.1 1.5-2s-.7-1.7-1.5-2z" fill="currentColor" opacity=".45"/></svg>
+              </div>
+              <div class="home-bar"></div>
+            </div>
+            <div class="and-only">
+              <div class="and-time" data-clock></div>
+              <div class="punch"></div>
+              <div class="and-icons">
+                <svg width="16" height="13" viewBox="0 0 16 13" fill="currentColor"><path d="M8 13 0 3.6A11.6 11.6 0 0 1 8 .5c3.1 0 5.9 1.2 8 3.1L8 13z"/></svg>
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor"><path d="M13 0v13H0L13 0z"/></svg>
+                <svg width="9" height="14" viewBox="0 0 9 14" fill="currentColor"><path d="M3 0h3v1.3h1.7c.7 0 1.3.6 1.3 1.3v10.1c0 .7-.6 1.3-1.3 1.3H1.3C.6 14 0 13.4 0 12.7V2.6c0-.7.6-1.3 1.3-1.3H3V0z"/></svg>
+              </div>
+              <div class="nav-pill"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="hint"><b>Works like the phone.</b> Click to tap, drag to swipe, scroll to scroll. Switching phones keeps you signed in and on the same screen.</p>
+  </main>
+
+<script>
+(function () {
+  var SIZE = { ios: { w: 417, h: 876 }, android: { w: 432, h: 935 } };
+  var KEY = "ck.frame.device";
+  var seg = document.getElementById("seg"), phone = document.getElementById("phone"),
+      fit = document.getElementById("fit"), stage = document.getElementById("stage"),
+      screenEl = document.getElementById("screen"), app = document.getElementById("app");
+
+  var params = new URLSearchParams(location.search);
+  var device = params.get("device");
+  if (device !== "ios" && device !== "android") { try { device = localStorage.getItem(KEY); } catch (e) {} }
+  if (device !== "ios" && device !== "android") device = "ios";
+
+  /* Where the app should open: ?p=<path the visitor asked for> (index.html
+     sends desktop visitors here and keeps their address, Google's
+     sign-in hand-back included). */
+  var start = params.get("p") || "/";
+  if (start.charAt(0) !== "/" || start.charAt(1) === "/" || start.indexOf("/device.html") === 0) start = "/";
+  if (params.has("p") || params.has("device")) history.replaceState(null, "", "/device.html");
+
+  function withDevice(path, d) {
+    var u = new URL(path, location.origin);
+    u.searchParams.delete("bare");
+    u.searchParams.set("device", d);
+    return u.pathname + u.search + u.hash;
+  }
+  function currentPath() {
+    try {
+      var l = app.contentWindow.location;
+      if (l.origin === location.origin && l.pathname !== "blank") return l.pathname + l.search + l.hash;
+    } catch (e) {}
+    return start;
+  }
+  function rescale() {
+    var s = SIZE[device];
+    var k = Math.min(1, (stage.clientHeight - 28) / s.h, (stage.clientWidth - 32) / s.w);
+    fit.style.transform = "scale(" + k + ")";
+    /* a scaled box still takes its full layout size: pull the margins in */
+    fit.style.margin = (-(s.h * (1 - k)) / 2) + "px " + (-(s.w * (1 - k)) / 2) + "px";
+  }
+  function load(path) {
+    screenEl.classList.remove("swap"); void screenEl.offsetWidth; screenEl.classList.add("swap");
+    app.src = withDevice(path, device);
+  }
+  function setDevice(d, first) {
+    var path = first ? start : currentPath();
+    device = d;
+    try { localStorage.setItem(KEY, d); } catch (e) {}
+    seg.dataset.device = d; phone.dataset.device = d;
+    seg.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.set === d)); });
+    rescale();
+    load(path);
+  }
+
+  seg.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-set]");
+    if (b && b.dataset.set !== device) setDevice(b.dataset.set);
+  });
+  document.getElementById("reload").addEventListener("click", function () { load(currentPath()); });
+  document.getElementById("reset").addEventListener("click", function () {
+    /* The app keeps its session in this origin's storage (Capacitor
+       Preferences on the web); the phone choice is the frame's own. */
+    try {
+      Object.keys(localStorage).forEach(function (k) { if (k !== KEY) localStorage.removeItem(k); });
+      app.contentWindow.sessionStorage.clear();
+    } catch (e) {}
+    load("/start");
+  });
+
+  function tick() {
+    var t = new Date(), h = t.getHours() % 12 || 12, m = String(t.getMinutes()).padStart(2, "0");
+    document.querySelectorAll("[data-clock]").forEach(function (el) { el.textContent = h + ":" + m; });
+  }
+  tick(); setInterval(tick, 15000);
+  window.addEventListener("resize", rescale);
+  setDevice(device, true);
+})();
+</script>
+</body>
+</html>

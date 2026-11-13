@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { BackButton } from "@/components/BackButton";
 import { IonPage, IonContent, IonHeader, IonToolbar, IonButtons, IonRefresher, IonRefresherContent, useIonRouter, type RefresherEventDetail } from "@ionic/react";
-import { CaretRight, ArrowSquareOut } from "@phosphor-icons/react";
+import { CaretRight, ArrowSquareOut, Bank, CalendarBlank, ChatCircleText, Info, ListChecks, PenNib, PlayCircle } from "@phosphor-icons/react";
 import { useFamilyAlerts, type FamilyAlert } from "@/lib/familyAlerts";
-import { Btn, Card, Eyebrow, Pill, PlantArt } from "@/components/gv";
+import { Oil } from "@/components/orchard/Illos";
+import { Panel, SectionHead, SoftError, type Tone } from "@/components/orchard/family/FamKit";
 
 /** Alerts — what needs the family now, soon, and for later. Each row goes
  *  where it is handled (a tab in the app or the booking / join link).
  *  Opening the screen marks everything seen (the bell badge clears); rows
- *  that were new when it opened keep a coral dot for the visit. */
+ *  that were new when it opened keep a lime "New" tag for the visit.
+ *  ORCHARD (2026-11-05): white rows with a pastel icon tile, no status dots. */
 export function FamilyAlertsPage() {
   const router = useIonRouter();
   const { alerts, loading, error, refetch, seenLoaded, markAllSeen } = useFamilyAlerts();
@@ -44,64 +46,77 @@ export function FamilyAlertsPage() {
     if (a.href && !a.to.startsWith("/fam/meetings") && a.key !== "book") { window.open(a.href, "_blank"); return; }
     router.push(a.to);
   };
-  let i = 1;
   return (
     <IonPage>
       <IonHeader className="ion-no-border">
-        <IonToolbar>
+        <IonToolbar style={{ "--background": "var(--oc-ground)" } as React.CSSProperties}>
           <IonButtons slot="start"><BackButton href="/fam/home" /></IonButtons>
         </IonToolbar>
       </IonHeader>
-      <IonContent style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
+      <IonContent style={{ "--background": "var(--oc-ground)" } as React.CSSProperties}>
         <IonRefresher slot="fixed" onIonRefresh={async (e: CustomEvent<RefresherEventDetail>) => { refetch(); setTimeout(() => e.detail.complete(), 700); }}><IonRefresherContent /></IonRefresher>
-        <div style={{ padding: "0 16px 120px" }}>
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
-            <div>
-              <h1 className="gv-h1 gv-rise">Alerts</h1>
-              <p className="gv-sub gv-rise" style={{ "--i": 1, marginTop: 6 } as React.CSSProperties}>
-                {loading ? "Looking…" : needs === 0 ? "Nothing is waiting on you. Keep going." : needs === 1 ? "One thing needs you." : `${needs} things need you.`}
+        <div className="ocf2 ocf2-page--door" style={{ paddingBottom: 120 }}>
+          <div className="ocf2-head">
+            <div style={{ minWidth: 0 }}>
+              <h1 className="ocf2-title">Alerts</h1>
+              <p className="ocf2-sub">
+                {loading ? "Looking." : needs === 0 ? "Nothing is waiting on you. You are doing fine." : needs === 1 ? "One small thing when you have a minute." : `${needs} small things. One at a time is plenty.`}
               </p>
             </div>
-            {needs > 0 && <Pill tint="lime" i={0} style={{ marginTop: 6 }}>{needs}</Pill>}
+            {needs > 0 && <span className="ocf2-chip ocf2-t-lime" style={{ marginTop: 6, fontSize: 14, padding: "6px 12px" }}>{needs}</span>}
           </div>
 
-          {error && <Card i={i++} style={{ marginTop: 16 }}><p className="gv-sub">We couldn't check just now.</p><div style={{ marginTop: 12 }}><Btn sm ghost onClick={refetch}>Try again</Btn></div></Card>}
+          {error && <SoftError onRetry={refetch}>We couldn't check just now.</SoftError>}
 
           {!loading && alerts.length === 0 && (
-            <Card i={i++} style={{ marginTop: 16, textAlign: "center" }}>
-              <PlantArt width={130} />
-              <p className="gv-sub" style={{ marginTop: 4 }}>All clear. We will show meetings, homework and anything to sign here.</p>
-            </Card>
+            <Panel tone="mint" className="oil-stack">
+              <Oil name="kite" w={150} />
+              <p className="ocf2-p" style={{ color: "#276449" }}>All clear. Enjoy it. When there is a meeting, homework or something to sign, it shows up here.</p>
+            </Panel>
           )}
 
           {groups.map((g) => {
             const rows = alerts.filter((a) => a.level === g.key);
             if (!rows.length) return null;
             return (
-              <div key={g.key}>
-                <Eyebrow>{g.label}</Eyebrow>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {rows.map((a) => (
-                    <Card key={a.key} i={i++} onClick={() => open(a)} style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 14px" }}>
-                      <span style={{ width: 10, height: 10, borderRadius: "50%", background: `var(--gv-${a.tint === "lime" ? "lime" : a.tint})`, boxShadow: a.tint === "lime" ? "0 0 0 4px var(--gv-lime-soft)" : "none", flex: "none" }} />
-                      <span style={{ flex: 1, minWidth: 0 }}>
-                        <b style={{ display: "block", fontSize: 14.5, fontWeight: 700, color: "var(--gv-ink)", lineHeight: 1.3 }}>
-                          {fresh?.has(a.key) && <span role="img" aria-label="New" style={{ display: "inline-block", width: 7, height: 7, borderRadius: "50%", background: "var(--gv-coral)", marginRight: 7, verticalAlign: "middle", position: "relative", top: -1 }} />}
-                          {a.title}
-                        </b>
-                        {a.sub && <span style={{ display: "block", fontSize: 12.5, color: "var(--gv-mid)", marginTop: 2, lineHeight: 1.4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.sub}</span>}
+              <div key={g.key} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <SectionHead aux={String(rows.length)}>{g.label}</SectionHead>
+                <div style={{ height: 2 }} />
+                {rows.map((a) => {
+                  const external = !!a.href && a.key !== "book" && !a.to.startsWith("/fam/meetings");
+                  return (
+                    <button type="button" key={a.key} className="ocf2-alert" onClick={() => open(a)}>
+                      <span className={`ocf2-ico ocf2-t-${TONE[a.tint] ?? "mint"}`}>{iconFor(a)}</span>
+                      <span className="ocf2-row-t">
+                        <b>{fresh?.has(a.key) && <span className="ocf2-new">New</span>}{a.title}</b>
+                        {a.sub && <small>{a.sub}</small>}
                       </span>
-                      {a.href && a.key !== "book" && !a.to.startsWith("/fam/meetings") ? <ArrowSquareOut size={16} color="var(--gv-quiet)" /> : <CaretRight size={16} weight="bold" color="var(--gv-quiet)" />}
-                    </Card>
-                  ))}
-                </div>
+                      {external ? <ArrowSquareOut size={16} color="#5B6B62" /> : <CaretRight size={16} weight="bold" color="#5B6B62" />}
+                    </button>
+                  );
+                })}
               </div>
             );
           })}
 
-          <p className="gv-meta" style={{ textAlign: "center", marginTop: 22, lineHeight: 1.5 }}>Alerts come from your plan, meetings, homework and budget. Pull down to refresh.</p>
+          <p className="ocf2-meta" style={{ textAlign: "center", marginTop: 6 }}>Alerts come from your plan, meetings, homework and budget. Pull down to refresh.</p>
         </div>
       </IonContent>
     </IonPage>
   );
+}
+
+/** Pastel per alert tint. Rose (an interview to book, a bank to reconnect)
+ *  reads as warm peach; nothing here is red. */
+const TONE: Partial<Record<string, Tone>> = { rose: "peach", sky: "sky", lime: "lime", mint: "mint", yellow: "butter", lavender: "lilac" };
+
+function iconFor(a: FamilyAlert) {
+  const p = { size: 19, weight: "bold" as const };
+  if (a.key === "gate" || a.key === "book" || a.key.startsWith("meet-") || a.key === "meetcm") return <CalendarBlank {...p} />;
+  if (a.key === "sign") return <PenNib {...p} />;
+  if (a.key === "hw") return <ListChecks {...p} />;
+  if (a.key === "review") return <ChatCircleText {...p} />;
+  if (a.key === "bank") return <Bank {...p} />;
+  if (a.key === "learn") return <PlayCircle {...p} />;
+  return <Info {...p} />;
 }

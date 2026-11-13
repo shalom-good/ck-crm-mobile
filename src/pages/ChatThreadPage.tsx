@@ -16,22 +16,23 @@ import { useAuth } from "@/lib/auth";
 import { useUI } from "@/lib/ui";
 import { dayLabel } from "@/lib/time";
 import { success, tapLight } from "@/lib/haptics";
-import { Av, Empty, Pill, type Tint } from "@/components/gv";
+import { Chip, SquareAv, type ChipTone } from "@/components/orchard/team/TeamKit";
 
 /**
- * One family's Experts Chat thread in the Grove look. Bubbles: mine on
- * the right in forest with white text, theirs on the left as a white
- * card with the author's name and a role pill; day separators as quiet
- * eyebrows; alert messages carry a rose left accent. The composer is a
- * white pill with a small alert toggle, @mention suggestions and a round
- * forest send button. Long-press (or right-click) a message to save it
+ * One family's Experts Chat thread in the ORCHARD look (2026-11-05).
+ * Bubbles on the pale ground: mine on the right in forest with white
+ * text, theirs on the left in white with the author's name and a pastel
+ * role chip; day separators as small inset pills; alert messages turn
+ * rose (theirs) or carry a rose ring (mine). The composer is a white
+ * rounded bar with an alert toggle chip, @mention suggestions and a
+ * round forest send button. Long-press (or right-click) a message to save it
  * to the family record as a note. Polls every 15s while open.
  */
 
 const ROLE_TAG: Record<string, string> = {
   cm: "CM", debt: "Debt", budget: "Budget", oversight: "Oversight", other: "Team",
 };
-const ROLE_TINT: Record<string, Tint> = { cm: "plum", debt: "sky", budget: "mint" };
+const ROLE_TONE: Record<string, ChipTone> = { cm: "lilac", debt: "sky", budget: "mint" };
 
 const NOTE_CATEGORIES: NoteCategory[] = ["General", "Case", "Budgeting", "Debt"];
 
@@ -194,39 +195,37 @@ export function ChatThreadPage() {
   return (
     <IonPage>
       <IonHeader className="ion-no-border">
-        <IonToolbar>
+        <IonToolbar className="oct-bar">
           <IonButtons slot="start"><BackButton href="/tabs/chats" /></IonButtons>
-          <span className="gv-eyebrow" style={{ padding: "0 8px" }}>Experts chat</span>
+          <span className="oct-bar-label">Experts chat</span>
         </IonToolbar>
         {/* Family strip under the toolbar */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "2px 16px 10px", background: "var(--gv-paper)", minWidth: 0 }}>
-          <Av name={title} size={40} />
-          <div style={{ minWidth: 0, flex: 1 }}>
-            <div className="gv-h2" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</div>
-            {people > 0 && <div className="gv-meta" style={{ marginTop: 1 }}>{people} {people === 1 ? "person" : "people"}</div>}
+        <div className="oct-fam">
+          <SquareAv name={title} />
+          <div className="oct-fam-t">
+            <b>{title}</b>
+            {people > 0 && <span>{people} {people === 1 ? "person" : "people"} in this chat</span>}
           </div>
         </div>
       </IonHeader>
 
-      <IonContent ref={contentRef} style={{ "--background": "var(--gv-paper)" } as React.CSSProperties}>
+      <IonContent ref={contentRef} style={{ "--background": "var(--oc-ground)" } as React.CSSProperties}>
         <IonRefresher slot="fixed" onIonRefresh={refresh}><IonRefresherContent /></IonRefresher>
 
-        <div style={{ padding: "6px 14px 16px", display: "flex", flexDirection: "column", gap: 4 }}>
+        <div className="oc-root" style={{ padding: "4px 14px 16px", display: "flex", flexDirection: "column", gap: 4 }}>
           {q.isLoading ? (
             <div style={{ padding: "40px 0", display: "flex", justifyContent: "center" }}><span className="ck-spin" /></div>
           ) : q.isError ? (
-            <div style={{ margin: "20px 2px" }}><Empty>Could not open this chat. This may be on us. Pull down to retry.</Empty></div>
+            <div className="oct-empty" style={{ margin: "20px 2px" }}>Could not open this chat. This may be on us. Pull down to retry.</div>
           ) : messages.length === 0 ? (
-            <div style={{ margin: "20px 2px" }}><Empty>No messages yet. Say hello. The family's care team is here automatically.</Empty></div>
+            <div className="oct-empty" style={{ margin: "20px 2px" }}>No messages yet. Say hello. The family's care team is here automatically.</div>
           ) : (
             messages.map((m, i) => {
               const prev = messages[i - 1];
               const newDay = !prev || new Date(prev.at).toDateString() !== new Date(m.at).toDateString();
               return (
-                <div key={m.id}>
-                  {newDay && (
-                    <div className="gv-eyebrow" style={{ textAlign: "center", margin: "14px 0 8px" }}>{dayLabel(m.at)}</div>
-                  )}
+                <div key={m.id} style={{ display: "flex", flexDirection: "column" }}>
+                  {newDay && <div className="oct-day">{dayLabel(m.at)}</div>}
                   <Bubble
                     m={m}
                     showAuthor={!m.mine && (!prev || prev.email !== m.email || newDay)}
@@ -242,31 +241,30 @@ export function ChatThreadPage() {
       </IonContent>
 
       {/* Composer */}
-      <div style={{ background: "var(--gv-paper)", padding: "8px 14px calc(10px + env(safe-area-inset-bottom))" }}>
+      <div className="oct-composer">
         {suggestions.length > 0 && (
-          <div className="gv-chips no-scrollbar" style={{ paddingBottom: 8 }}>
+          <div className="oct-mentions">
             {suggestions.map((p) => (
-              <button key={p.email} className="gv-chip" onClick={() => pickMention(p)} style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "0 12px 0 6px" }}>
-                <Av name={p.name} size={24} round />
-                <span style={{ color: "var(--gv-ink)" }}>{p.name}</span>
-                {p.role && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--gv-quiet)" }}>{ROLE_TAG[p.role] ?? p.role}</span>}
+              <button key={p.email} type="button" className="oct-mention" onClick={() => pickMention(p)}>
+                <SquareAv name={p.name} sm />
+                <span>{p.name}</span>
+                {p.role && <small>{ROLE_TAG[p.role] ?? p.role}</small>}
               </button>
             ))}
           </div>
         )}
         {isAlert && (
-          <div className="gv-gentle" style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 8, padding: "8px 12px", fontSize: 12.5, fontWeight: 600 }}>
+          <div className="oct-alert-note">
             <Warning size={14} weight="fill" style={{ flex: "none" }} /> Sending as an alert. It pins the chat for everyone.
           </div>
         )}
-        <div style={{ display: "flex", alignItems: "flex-end", gap: 8, background: "var(--gv-card)", borderRadius: 18, boxShadow: "inset 0 0 0 1px var(--gv-line)", padding: "6px 6px 6px 8px", minWidth: 0 }}>
+        <div className="oct-input">
           <button
             type="button"
             aria-label="Toggle alert"
             aria-pressed={isAlert}
             onClick={() => { setIsAlert((v) => !v); void tapLight(); }}
-            className={`gv-pill${isAlert ? " rose" : ""}`}
-            style={{ border: 0, cursor: "pointer", flex: "none", height: 28, padding: "0 9px", marginBottom: 4 }}
+            className="oct-alert-toggle"
           >
             <Warning size={14} weight={isAlert ? "fill" : "bold"} /> Alert
           </button>
@@ -277,31 +275,12 @@ export function ChatThreadPage() {
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(); } }}
             placeholder="Message the team. @ to tag."
             rows={1}
-            style={{
-              flex: 1, minWidth: 0, minHeight: 36, maxHeight: 110, resize: "none",
-              border: 0, background: "transparent", outline: "none",
-              color: "var(--gv-ink)", fontSize: 15, lineHeight: "20px", padding: "8px 4px",
-            }}
           />
-          <button
-            type="button"
-            aria-label="Send"
-            onClick={() => void send()}
-            disabled={!canSend}
-            style={{
-              width: 36, height: 36, borderRadius: "50%", flex: "none", border: 0, padding: 0,
-              background: "var(--gv-go)", color: "#fff", opacity: canSend ? 1 : 0.4,
-              display: "grid", placeItems: "center", cursor: canSend ? "pointer" : "default",
-              boxShadow: canSend ? "0 8px 18px -8px rgba(46,81,70,.6)" : "none",
-              transition: "opacity .15s",
-            }}
-          >
+          <button type="button" aria-label="Send" className="oct-send" onClick={() => void send()} disabled={!canSend}>
             <PaperPlaneRight size={17} weight="fill" />
           </button>
         </div>
-        <div className="gv-meta" style={{ marginTop: 6, fontSize: 11, textAlign: "center" }}>
-          Hold a message to save it to the family record as a note.
-        </div>
+        <div className="oct-hint">Hold a message to save it to the family record as a note.</div>
       </div>
     </IonPage>
   );
@@ -316,12 +295,11 @@ function Bubble({ m, showAuthor, onPressStart, onPressEnd, onContext }: {
 }) {
   const mine = m.mine;
   const roleTag = m.role ? ROLE_TAG[m.role] ?? m.role : null;
-  const roleTint: Tint = (m.role && ROLE_TINT[m.role]) || "apricot";
-  const accent = mine ? "var(--gv-rose)" : "var(--gv-roseInk)";
-  const quiet = mine ? "rgba(255,255,255,.72)" : "var(--gv-quiet)";
+  const roleTone: ChipTone = (m.role && ROLE_TONE[m.role]) || "butter";
   return (
-    <div style={{ display: "flex", justifyContent: mine ? "flex-end" : "flex-start", marginTop: 4, minWidth: 0 }}>
+    <div className={`oct-bubble-wrap${mine ? " is-mine" : ""}`}>
       <div
+        className={`oct-bubble${mine ? " is-mine" : ""}${m.isAlert ? " is-alert" : ""}`}
         onTouchStart={onPressStart}
         onTouchEnd={onPressEnd}
         onTouchMove={onPressEnd}
@@ -329,52 +307,32 @@ function Bubble({ m, showAuthor, onPressStart, onPressEnd, onContext }: {
         onMouseUp={onPressEnd}
         onMouseLeave={onPressEnd}
         onContextMenu={onContext}
-        style={{
-          maxWidth: "84%",
-          minWidth: 0,
-          background: mine ? "var(--gv-go)" : "var(--gv-card)",
-          color: mine ? "#fff" : "var(--gv-ink)",
-          boxShadow: [
-            m.isAlert ? `inset 3px 0 0 ${accent}` : null,
-            mine ? null : "var(--gv-shadow)",
-          ].filter(Boolean).join(", ") || undefined,
-          borderRadius: 18,
-          borderBottomRightRadius: mine ? 6 : 18,
-          borderBottomLeftRadius: mine ? 18 : 6,
-          padding: m.isAlert ? "9px 13px 8px 15px" : "9px 13px 8px",
-          userSelect: "none",
-          WebkitUserSelect: "none",
-        }}
       >
         {!mine && showAuthor && (
-          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4, minWidth: 0 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: "var(--gv-ink)", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.author}</span>
-            {roleTag && <Pill tint={roleTint} sm style={{ flex: "none" }}>{roleTag}</Pill>}
+          <div className="oct-bubble-who">
+            <b>{m.author}</b>
+            {roleTag && <Chip tone={roleTone}>{roleTag}</Chip>}
           </div>
         )}
         {m.isAlert && (
-          <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 3, color: accent, fontSize: 11.5, fontWeight: 700 }}>
-            <Warning size={13} weight="fill" /> Alert
-          </div>
+          <div className="oct-bubble-alert"><Warning size={13} weight="fill" /> Alert</div>
         )}
-        <div style={{ fontSize: 14.5, lineHeight: 1.45, whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
-          {m.body}
-        </div>
+        <div className="oct-bubble-body">{m.body}</div>
         {m.attachments.length > 0 && m.attachments.map((a, i) => (
           a?.url ? (
-            <a key={i} href={a.url} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 6, fontSize: 12.5, fontWeight: 700, color: mine ? "#fff" : "var(--gv-go)", textDecoration: mine ? "underline" : "none", maxWidth: "100%" }}>
+            <a key={i} href={a.url} target="_blank" rel="noreferrer" className="oct-bubble-file">
               <FileText size={14} weight="bold" style={{ flex: "none" }} />
-              <span style={{ minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.name || "Attachment"}</span>
+              <span>{a.name || "Attachment"}</span>
             </a>
           ) : null
         ))}
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4, justifyContent: "flex-end" }}>
+        <div className="oct-bubble-meta">
           {m.noteId && (
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 10.5, fontWeight: 700, color: mine ? "rgba(255,255,255,.85)" : "var(--gv-up)" }}>
+            <span className="oct-noted">
               <NotePencil size={11} weight="bold" /> In notes{m.noteCategory ? ` · ${m.noteCategory}` : ""}
             </span>
           )}
-          <span className="tnum" style={{ fontSize: 10.5, color: quiet }}>{fmtTime(m.at)}</span>
+          <time>{fmtTime(m.at)}</time>
         </div>
       </div>
     </div>

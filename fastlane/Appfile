@@ -1,0 +1,4 @@
+app_identifier("net.collectivekindness.ckteam")
+
+# apple_id / team_id are supplied at runtime via the App Store Connect API key
+# (ASC_* env vars) and APPLE_TEAM_ID — no personal Apple ID is stored here.

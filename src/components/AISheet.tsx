@@ -215,7 +215,7 @@ export function AISheet() {
         </div>
 
         {/* footer composer */}
-        <div style={{ padding: "10px 16px calc(26px + env(safe-area-inset-bottom))", borderTop: "1px solid var(--gv-hair)" }}>
+        <div style={{ padding: "10px 16px calc(26px + var(--ion-safe-area-bottom, 0px))", borderTop: "1px solid var(--gv-hair)" }}>
           {tab === "ask" ? (
             <>
               {msgs.length === 0 && (

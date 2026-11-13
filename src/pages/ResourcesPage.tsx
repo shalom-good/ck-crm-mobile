@@ -1,20 +1,31 @@
-import { useMemo, useState } from "react";
-import { IonPage, IonHeader, IonContent, IonSearchbar } from "@ionic/react";
+import { useMemo, useState, type CSSProperties } from "react";
+import { IonPage, IonContent } from "@ionic/react";
 import { useAppData } from "@/lib/appData";
-import { Btn, Chips, Eyebrow, Empty } from "@/components/gv";
-import { ResourceRow } from "@/components/ResourceRow";
+import { SearchBar } from "@/components/orchard/Orchard";
+import { ToolHero, ToolEmpty, tintOf } from "@/components/orchard/tools/ToolsKit";
+import { ResourceCard } from "@/components/orchard/tools/ResourceCard";
 import { SkeletonCard } from "@/components/Skeleton";
 
 /** Rows rendered per page; the directory is ~460 deep, so the list grows
- *  40 at a time from a ghost "Show 40 more" and resets on every search. */
+ *  40 at a time from "Show 40 more" and resets on every search. */
 const PAGE = 40;
-/** Category chips in the sticky header: All + the busiest categories. */
-const TOP_CATEGORIES = 6;
 const ALL = "all";
 const catKey = (c: string) => `c:${c}`;
 
+/**
+ * Resources, in ORCHARD (2026-11-05), mirroring the CRM directory: a sage
+ * hero ("Resources. N ways to help a family."), the search right under it,
+ * one scrolling row of pastel category chips, then white cards grouped by
+ * category with Call / Email / Website pills.
+ */
 export function ResourcesPage() {
-  const { resources, resourcesLoading } = useAppData();
+  const { resources: allResources, resourcesLoading } = useAppData();
+  // Signed confidentiality agreements / NDAs are people's files, not
+  // resources (the CRM hides them too, 2026-11-04), so they never list here.
+  const resources = useMemo(
+    () => allResources.filter((r) => !/confidential|\bnda\b|non[- ]?disclosure/i.test(`${r.category ?? ""} ${(r as { name?: string }).name ?? ""}`)),
+    [allResources],
+  );
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<string>(ALL);
   const [limit, setLimit] = useState(PAGE);
@@ -24,11 +35,12 @@ export function ResourcesPage() {
   const pick = (k: string) => { setCat(k); setLimit(PAGE); };
   const clear = () => { setQ(""); setCat(ALL); setLimit(PAGE); };
 
+  // Every category, busiest first; the row scrolls inside itself.
   const chips = useMemo(() => {
     const counts = new Map<string, number>();
     for (const r of resources) counts.set(r.category, (counts.get(r.category) ?? 0) + 1);
-    const top = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, TOP_CATEGORIES);
-    return [{ key: ALL, label: "All", count: resources.length }, ...top.map(([c, n]) => ({ key: catKey(c), label: c, count: n }))];
+    const all = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+    return [{ key: ALL, label: "All", count: resources.length }, ...all.map(([c, n]) => ({ key: catKey(c), label: c, count: n }))];
   }, [resources]);
 
   const filtered = useMemo(() => {
@@ -49,68 +61,69 @@ export function ResourcesPage() {
   const shown = Math.min(limit, filtered.length);
   const remaining = filtered.length - shown;
   const catLabel = cat === ALL ? null : cat.slice(2);
+  const term = q.trim();
   let k = 0; // running stagger index across groups (capped so late rows don't wait)
 
   return (
     <IonPage>
-      {/* Title, search and the category chips stay put while the list scrolls. */}
-      <IonHeader className="ion-no-border">
-        <div style={{ background: "var(--gv-paper)", padding: "calc(env(safe-area-inset-top) + 14px) 0 10px" }}>
-          <div style={{ padding: "0 16px" }}>
-            <h1 className="gv-h1">Resources</h1>
-            <div className="gv-meta" style={{ marginTop: 4 }}>{resourcesLoading ? "Loading…" : `${resources.length} in the directory`}</div>
-          </div>
-          {/* IonSearchbar handles mobile focus/keyboard reliably; themed globally */}
-          <IonSearchbar
-            value={q}
-            onIonInput={(e) => search(e.detail.value ?? "")}
-            onIonClear={() => search("")}
-            placeholder="Search resources"
-            debounce={100}
-            inputMode="search"
-            style={{ padding: "8px 12px 0" }}
+      <IonContent style={{ "--background": "var(--oc-ground)" } as CSSProperties}>
+        <div className="oc-root oco-page">
+          <ToolHero
+            title="Resources."
+            tone={resourcesLoading ? "Loading the directory" : `${resources.length} ways to help a family.`}
+            sub="Search by name, need or contact."
           />
-          {chips.length > 1 && (
-            <div style={{ padding: "8px 16px 0" }}><Chips items={chips} active={cat} onChange={pick} /></div>
-          )}
-        </div>
-      </IonHeader>
 
-      <IonContent>
-        <div style={{ padding: "0 16px 120px" }}>
+          <SearchBar value={q} onChange={search} count={term ? filtered.length : undefined}
+            placeholder="Search a name, a need, a contact" label="Search resources" />
+
+          {chips.length > 1 && (
+            <div className="oco-cats" role="toolbar" aria-label="Categories">
+              {chips.map((c) => {
+                const t = c.key === ALL ? { bg: "var(--oc-summary)", ink: "var(--oc-forest)" } : tintOf(c.label);
+                return (
+                  <button key={c.key} type="button" className="oco-cat" aria-pressed={cat === c.key}
+                    onClick={() => pick(cat === c.key && c.key !== ALL ? ALL : c.key)}>
+                    <i style={{ background: t.bg, color: t.ink }} aria-hidden="true">{c.key === ALL ? "✦" : c.label.trim().charAt(0).toUpperCase()}</i>
+                    <span>{c.label}</span><em>{c.count}</em>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
           {resourcesLoading && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 16 }}><SkeletonCard /><SkeletonCard /><SkeletonCard /></div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}><SkeletonCard /><SkeletonCard /><SkeletonCard /></div>
           )}
+
           {groups.map(([category, items]) => (
-            <div key={category}>
-              <Eyebrow>{category}</Eyebrow>
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {items.map((r) => (
-                  <ResourceRow
-                    key={r.id}
-                    resource={r}
-                    i={Math.min(k++, 8)}
-                    onOpen={() => {
-                      if (r.link) window.open(r.link.startsWith("http") ? r.link : `https://${r.link}`, "_blank");
-                      else if (r.phone) window.location.href = `tel:${r.phone}`;
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
+            <section key={category} className="oco-list" aria-label={category}>
+              <div className="oco-group">{category}<em>{items.length}</em></div>
+              {items.map((r) => (
+                <ResourceCard
+                  key={r.id}
+                  resource={r}
+                  i={Math.min(k++, 8)}
+                  onOpen={() => {
+                    if (r.link) window.open(r.link.startsWith("http") ? r.link : `https://${r.link}`, "_blank");
+                    else if (r.phone) window.location.href = `tel:${r.phone}`;
+                  }}
+                />
+              ))}
+            </section>
           ))}
+
           {remaining > 0 && (
-            <div style={{ marginTop: 14 }}>
-              <Btn ghost block onClick={() => setLimit((n) => n + PAGE)}>Show {Math.min(PAGE, remaining)} more</Btn>
-              <p className="gv-meta" style={{ textAlign: "center", margin: "8px 0 0" }}>Showing {shown} of {filtered.length}</p>
+            <div className="oco-more">
+              <button type="button" className="oc-btn oc-btn--light" onClick={() => setLimit((n) => n + PAGE)}>Show {Math.min(PAGE, remaining)} more</button>
+              <small>Showing {shown} of {filtered.length}</small>
             </div>
           )}
+
           {!resourcesLoading && groups.length === 0 && (
-            <div style={{ marginTop: 16 }}>
-              <Empty action={q || catLabel ? "Clear" : undefined} onAction={clear}>
-                {q ? <>No resources match “{q.trim()}”{catLabel ? <> in {catLabel}</> : null}.</> : catLabel ? <>Nothing filed under {catLabel} yet.</> : "No resources in the directory yet."}
-              </Empty>
-            </div>
+            <ToolEmpty action={q || catLabel ? "Clear" : undefined} onAction={clear}>
+              {q ? <>No resources match "{term}"{catLabel ? <> in {catLabel}</> : null}.</> : catLabel ? <>Nothing filed under {catLabel} yet.</> : "No resources in the directory yet."}
+            </ToolEmpty>
           )}
         </div>
       </IonContent>

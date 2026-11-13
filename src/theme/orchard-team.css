@@ -1,0 +1,175 @@
+/* src/theme/orchard-team.css: Orchard look for the team screens (2026-11-05).
+   Home, Chats, Chat thread, Ask. Opt-in .oct-* classes only, built on the
+   .oc-* tokens in theme/orchard.css (forest, lime, pastels, pale ground).
+   Colour by meaning: peach/rose = late, butter = soon, mint = good,
+   sky/lilac = neutral info. No status dots. */
+
+.oct { display: flex; flex-direction: column; gap: 14px; }
+.oct button { -webkit-tap-highlight-color: transparent; }
+
+/* top row: date chip + round initials (settings) */
+.oct-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.oct-date { display: inline-flex; align-items: center; font-size: 12px; font-weight: 800; background: var(--oc-forest); color: var(--oc-lime); border-radius: 999px; padding: 6px 12px; white-space: nowrap; }
+.oct-me { width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--oc-lilac); color: #4A3566; font: inherit; font-size: 13px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; flex: none; cursor: pointer; }
+
+/* greeting hero: name on lime, plain second line */
+.oct-hero { background: var(--oc-summary); border-radius: 28px; padding: 18px 18px 16px; display: flex; flex-direction: column; gap: 8px; position: relative; overflow: hidden; }
+.oct-hero::before { content: ""; position: absolute; right: -60px; top: -70px; width: 190px; height: 190px; border-radius: 50%; border: 36px solid rgba(255,255,255,.5); pointer-events: none; }
+.oct-hero > * { position: relative; }
+.oct-h1 { margin: 0; font-size: 28px; line-height: 1.08; font-weight: 800; letter-spacing: -.035em; color: var(--oc-ink); display: flex; flex-direction: column; gap: 2px; overflow-wrap: anywhere; }
+.oct-h1 mark { background: var(--oc-lime); color: inherit; padding: 0 .08em 0 .12em; border-radius: .2em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.oct-h1-2 { color: #5F7B6D; font-size: 22px; letter-spacing: -.025em; line-height: 1.15; margin-top: 4px; }
+.oct-hero-sub { font-size: 13px; font-weight: 700; color: var(--oc-soft); }
+
+/* lime next-step card */
+.oct-next { background: var(--oc-lime); border-radius: 24px; padding: 16px 16px 14px; color: #1D2B12; display: flex; flex-direction: column; gap: 4px; }
+.oct-kicker { font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; opacity: .62; }
+.oct-next-t { margin: 2px 0 0; font-size: 21px; line-height: 1.15; font-weight: 800; letter-spacing: -.025em; overflow-wrap: anywhere; }
+.oct-next-b { margin: 2px 0 0; font-size: 13.5px; line-height: 1.45; opacity: .78; }
+.oct-next-a { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.oct-btn { border: 0; font: inherit; font-size: 13.5px; font-weight: 800; padding: 0 18px; min-height: 44px; border-radius: 999px; background: var(--oc-forest); color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 7px; text-decoration: none; }
+.oct-btn--soft { background: rgba(255,255,255,.62); color: var(--oc-ink); }
+
+/* colour stat tiles */
+.oct-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.oct-tile { border: 0; font: inherit; text-align: left; border-radius: 22px; padding: 12px 12px 11px; min-height: 92px; display: flex; flex-direction: column; gap: 2px; cursor: pointer; color: var(--oc-ink); min-width: 0; }
+.oct-tile:disabled { cursor: default; }
+.oct-tile b { font-size: 32px; font-weight: 800; letter-spacing: -.045em; line-height: 1; font-variant-numeric: tabular-nums; margin-top: auto; }
+.oct-tile span { font-size: 11.5px; font-weight: 700; line-height: 1.2; opacity: .78; }
+.oct-t-mint { background: var(--oc-mint); color: #276449; }
+.oct-t-sky { background: var(--oc-sky); color: #23415F; }
+.oct-t-peach { background: var(--oc-peach); color: #5E2E18; }
+.oct-t-butter { background: var(--oc-butter); color: #574A0E; }
+.oct-t-lilac { background: #DEE3F2; color: #2D3766; }
+
+/* section head */
+.oct-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 6px 2px -4px; }
+.oct-head h2 { margin: 0; font-size: 16px; font-weight: 800; letter-spacing: -.015em; color: var(--oc-ink); }
+.oct-head button { border: 0; background: none; padding: 6px 0; font: inherit; font-size: 12.5px; font-weight: 800; color: var(--oc-forest); cursor: pointer; min-height: 32px; }
+.oct-head small { font-size: 12px; font-weight: 700; color: var(--oc-mid); }
+
+/* white list card + rows */
+.oct-card { background: var(--oc-card); border-radius: 24px; padding: 4px 14px; box-shadow: 0 1px 2px rgba(22,33,28,.04); }
+.oct-row { display: flex; align-items: center; gap: 12px; width: 100%; min-width: 0; padding: 12px 0; border: 0; background: none; font: inherit; color: inherit; text-align: left; cursor: pointer; }
+.oct-row + .oct-row { border-top: 1px solid var(--oc-hair); }
+.oct-row-t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.oct-row-t b { font-size: 14.5px; font-weight: 800; letter-spacing: -.01em; color: var(--oc-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.oct-row-t span { font-size: 12.5px; color: var(--oc-mid); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.oct-row-t span.is-unread { color: var(--oc-ink); font-weight: 700; }
+.oct-row-end { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex: none; }
+.oct-row-end time { font-size: 11.5px; font-weight: 700; color: var(--oc-mid); font-variant-numeric: tabular-nums; }
+
+/* square initials (pastel by name) */
+.oct-av { width: 42px; height: 42px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; flex: none; font-size: 14px; font-weight: 800; letter-spacing: -.01em; }
+.oct-av--sm { width: 26px; height: 26px; border-radius: 50%; font-size: 10px; }
+.oct-av--plus { background: var(--oc-hair); color: var(--oc-forest); }
+
+/* chips (pastel pills) */
+.oct-chips { display: flex; gap: 4px; }
+.oct-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 800; border-radius: 999px; padding: 4px 9px; white-space: nowrap; flex: none; font-variant-numeric: tabular-nums; background: var(--oc-hair); color: var(--oc-soft); }
+.oct-chip--mint { background: var(--oc-mint); color: #276449; }
+.oct-chip--peach { background: var(--oc-peach); color: #7A3618; }
+.oct-chip--rose { background: var(--oc-rose); color: var(--oc-bad); }
+.oct-chip--butter { background: var(--oc-butter); color: #574A0E; }
+.oct-chip--sky { background: var(--oc-sky); color: #23415F; }
+.oct-chip--lilac { background: var(--oc-lilac); color: #4A3566; }
+.oct-chip--go { background: var(--oc-forest); color: var(--oc-lime); }
+
+/* coming up (butter = soon) */
+.oct-soon { display: flex; align-items: center; gap: 12px; background: var(--oc-butter); border-radius: 22px; padding: 14px; color: #3D340A; }
+.oct-soon-ic { width: 42px; height: 42px; border-radius: 14px; background: rgba(255,255,255,.6); display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.oct-soon-t b { display: block; font-size: 14.5px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.oct-soon-t span { display: block; font-size: 12.5px; font-weight: 600; opacity: .75; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* link tiles (Payments, Job Funnel) */
+.oct-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.oct-link { border: 0; font: inherit; text-align: left; cursor: pointer; background: var(--oc-card); border-radius: 22px; padding: 12px; display: flex; align-items: center; gap: 10px; min-width: 0; color: var(--oc-ink); }
+.oct-link-ic { width: 38px; height: 38px; border-radius: 13px; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.oct-link-t b { display: block; font-size: 13.5px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.oct-link-t span { display: block; font-size: 11.5px; font-weight: 600; color: var(--oc-mid); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* empty / quiet note */
+.oct-empty { background: var(--oc-card); border-radius: 22px; padding: 18px 16px; font-size: 13.5px; font-weight: 600; color: var(--oc-mid); line-height: 1.45; }
+
+/* page title (Chats) */
+.oct-title-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
+
+/* ── chat thread ─────────────────────────────────────────────── */
+.oct-bar { --background: var(--oc-ground); --border-width: 0; }
+.oct-fam { display: flex; align-items: center; gap: 12px; padding: 2px 16px 12px; background: var(--oc-ground); min-width: 0; font-family: 'Plus Jakarta Sans', var(--gv-font, system-ui), sans-serif; }
+.oct-fam-t { flex: 1; min-width: 0; }
+.oct-fam-t b { display: block; font-size: 19px; font-weight: 800; letter-spacing: -.025em; color: var(--oc-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.oct-fam-t span { display: block; font-size: 12.5px; font-weight: 700; color: var(--oc-mid); }
+.oct-bar-label { font-family: 'Plus Jakarta Sans', var(--gv-font, system-ui), sans-serif; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--oc-soft); padding: 0 8px; }
+
+.oct-day { align-self: center; margin: 14px 0 8px; font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--oc-soft); background: var(--oc-inset); border-radius: 999px; padding: 4px 11px; }
+.oct-bubble-wrap { display: flex; margin-top: 4px; min-width: 0; }
+.oct-bubble-wrap.is-mine { justify-content: flex-end; }
+.oct-bubble { max-width: 84%; min-width: 0; border-radius: 22px; padding: 10px 14px 8px; background: var(--oc-card); color: var(--oc-ink); box-shadow: 0 1px 2px rgba(22,33,28,.05); user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.oct-bubble.is-mine { background: var(--oc-forest); color: #fff; border-bottom-right-radius: 8px; box-shadow: none; }
+.oct-bubble:not(.is-mine) { border-bottom-left-radius: 8px; }
+.oct-bubble.is-alert:not(.is-mine) { background: var(--oc-rose); }
+.oct-bubble.is-alert.is-mine { box-shadow: inset 0 0 0 2px #F2B9A6; }
+.oct-bubble-who { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; min-width: 0; }
+.oct-bubble-who b { font-size: 12.5px; font-weight: 800; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.oct-bubble-alert { display: inline-flex; align-items: center; gap: 5px; margin-bottom: 4px; font-size: 11.5px; font-weight: 800; color: var(--oc-bad); }
+.oct-bubble.is-mine .oct-bubble-alert { color: #FBD0C2; }
+.oct-bubble-body { font-size: 14.5px; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
+.oct-bubble-file { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 12.5px; font-weight: 800; color: var(--oc-forest); text-decoration: none; max-width: 100%; }
+.oct-bubble.is-mine .oct-bubble-file { color: var(--oc-lime); }
+.oct-bubble-file span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.oct-bubble-meta { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+.oct-bubble-meta time { font-size: 10.5px; font-weight: 600; color: var(--oc-mid); font-variant-numeric: tabular-nums; }
+.oct-bubble.is-mine .oct-bubble-meta time { color: rgba(255,255,255,.7); }
+.oct-noted { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 800; border-radius: 999px; padding: 2px 7px; background: var(--oc-mint); color: #276449; }
+.oct-bubble.is-mine .oct-noted { background: rgba(215,243,110,.18); color: var(--oc-lime); }
+
+/* composer (thread + ask) */
+.oct-composer { background: var(--oc-ground); padding: 8px 14px calc(10px + var(--ion-safe-area-bottom, 0px)); font-family: 'Plus Jakarta Sans', var(--gv-font, system-ui), sans-serif; }
+.oct-mentions { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 8px; }
+.oct-mentions::-webkit-scrollbar { display: none; }
+.oct-mention { flex: none; display: inline-flex; align-items: center; gap: 7px; border: 0; background: var(--oc-card); border-radius: 999px; padding: 0 12px 0 5px; min-height: 36px; font: inherit; font-size: 13px; font-weight: 700; color: var(--oc-ink); cursor: pointer; white-space: nowrap; }
+.oct-mention small { font-size: 11px; font-weight: 800; color: var(--oc-mid); }
+.oct-alert-note { display: flex; align-items: center; gap: 7px; margin-bottom: 8px; padding: 9px 12px; border-radius: 16px; background: var(--oc-rose); color: var(--oc-bad); font-size: 12.5px; font-weight: 700; }
+.oct-input { display: flex; align-items: flex-end; gap: 6px; background: var(--oc-card); border-radius: 24px; padding: 6px; min-width: 0; box-shadow: 0 1px 2px rgba(22,33,28,.05), inset 0 0 0 1.5px transparent; transition: box-shadow .15s; }
+.oct-input:focus-within { box-shadow: 0 10px 30px -18px rgba(22,33,28,.45), inset 0 0 0 2px var(--oc-forest); }
+.oct-input textarea, .oct-input input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; font-size: 16px; color: var(--oc-ink); }
+.oct-input textarea { min-height: 38px; max-height: 110px; resize: none; line-height: 20px; padding: 9px 4px; }
+.oct-input input { height: 40px; padding: 0 4px 0 10px; }
+.oct-input textarea::placeholder, .oct-input input::placeholder { color: #8A968F; }
+.oct-input textarea::placeholder { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.oct-alert-toggle { flex: none; border: 0; font: inherit; display: inline-flex; align-items: center; gap: 4px; height: 32px; margin: 3px 0; padding: 0 10px; border-radius: 999px; background: var(--oc-hair); color: var(--oc-soft); font-size: 12px; font-weight: 800; cursor: pointer; }
+.oct-alert-toggle[aria-pressed="true"] { background: var(--oc-rose); color: var(--oc-bad); }
+.oct-send { width: 40px; height: 40px; border-radius: 50%; flex: none; border: 0; padding: 0; background: var(--oc-forest); color: #fff; display: grid; place-items: center; cursor: pointer; transition: opacity .15s, transform .15s; }
+.oct-send:disabled { opacity: .35; cursor: default; }
+.oct-send:not(:disabled):active { transform: scale(.94); }
+.oct-ghost { width: 40px; height: 40px; flex: none; display: grid; place-items: center; background: none; border: 0; padding: 0; cursor: pointer; color: var(--oc-mid); border-radius: 50%; }
+.oct-hint { margin-top: 6px; font-size: 11px; font-weight: 600; color: var(--oc-mid); text-align: center; }
+
+/* ── ask ─────────────────────────────────────────────────────── */
+.oct-ask-list { display: flex; flex-direction: column; gap: 8px; }
+.oct-ask { border: 0; font: inherit; text-align: left; cursor: pointer; width: 100%; background: var(--oc-card); border-radius: 20px; padding: 12px 14px 12px 12px; display: flex; align-items: center; gap: 12px; color: var(--oc-ink); min-height: 60px; }
+.oct-ask-ic { width: 36px; height: 36px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.oct-ask b { flex: 1; min-width: 0; font-size: 13.5px; font-weight: 700; line-height: 1.35; }
+.oct-ask-wrap { position: absolute; left: 0; right: 0; bottom: 0; }
+.oct-ai-tag { display: inline-flex; align-items: center; gap: 5px; margin-bottom: 4px; font-size: 11.5px; font-weight: 800; color: var(--oc-forest); }
+
+@media (max-width: 340px) {
+  .oct-h1 { font-size: 25px; }
+  .oct-h1-2 { font-size: 19px; }
+  .oct-tile { padding: 11px 10px 10px; min-height: 84px; }
+  .oct-tile b { font-size: 27px; }
+  .oct-tile span { font-size: 11px; }
+  .oct-next-t { font-size: 19px; }
+  .oct-alert-toggle { padding: 0 9px; }
+}
+@media (prefers-reduced-motion: reduce) { .oct-send, .oct-input { transition: none; } }
+
+/* 2026-11-11: Home's next-step card in the soft wash the client side uses,
+   not a solid lime block. */
+.oct-next { background:
+  radial-gradient(120% 95% at 100% 0%, #FAD3E2 0%, rgba(250,211,226,0) 58%),
+  radial-gradient(110% 95% at 0% 100%, #E2DBFA 0%, rgba(226,219,250,0) 62%),
+  radial-gradient(85% 75% at 70% 115%, #FDDDBF 0%, rgba(253,221,191,0) 62%),
+  #FBF6F3; color: var(--oc-ink, #16211C); box-shadow: inset 0 0 0 1px rgba(255,255,255,.6), 0 10px 26px -18px rgba(150,90,140,.45); }
+.oct-next .oct-kicker { color: #5A4B66; }

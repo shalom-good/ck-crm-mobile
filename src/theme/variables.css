@@ -23,8 +23,8 @@
   --gv-mid: #5F6D68;        /* meta */
   --gv-quiet: #637069;      /* labels — 4.7:1 on paper (was #86928C, 2.9:1) */
   --gv-faint: #8A968F;      /* decorative only, never for words */
-  --gv-go: #2E5146;         /* forest — THE action color */
-  --gv-go-deep: #214948;
+  --gv-go: #2F7556;         /* forest — THE action color */
+  --gv-go-deep: #276449;
   --gv-lime: #D7F36E;       /* the ONE live thing on a screen */
   --gv-lime-soft: #EEF8C8;
   --gv-lime-pill: #DFF0A6;  /* active tab icon */
@@ -106,11 +106,11 @@
   --ion-item-background: var(--gv-card);
   --ion-backdrop-color: var(--ck-scrim);
 
-  --ion-color-primary: #2E5146;
-  --ion-color-primary-rgb: 46, 81, 70;
+  --ion-color-primary: #2F7556;
+  --ion-color-primary-rgb: 47, 117, 86;
   --ion-color-primary-contrast: #ffffff;
-  --ion-color-primary-shade: #214948;
-  --ion-color-primary-tint: #3E6457;
+  --ion-color-primary-shade: #276449;
+  --ion-color-primary-tint: #44836A;
 
   --ion-transition-duration: 340ms;
 }

@@ -4,6 +4,8 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
+    { "source": "/api/mobile/academy/:path*", "destination": "https://crm.collectivekindness.net/api/mobile/academy/:path*" },
+    { "source": "/api/public/:path*", "destination": "https://crm.collectivekindness.net/api/public/:path*" },
     { "source": "/api/mobile/:path*", "destination": "https://ck-crm.vercel.app/api/mobile/:path*" },
     { "source": "/api/portal/:path*", "destination": "https://crm.collectivekindness.net/api/portal/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }

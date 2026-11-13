@@ -31,7 +31,7 @@ export function LockScreen() {
       style={{
         position: "fixed", inset: 0, zIndex: 99999, background: "var(--gv-paper)",
         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center",
-        padding: "calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 28px)",
+        padding: "calc(var(--ion-safe-area-top, 0px) + 24px) 24px calc(var(--ion-safe-area-bottom, 0px) + 28px)",
       }}
     >
       <img src="/ck-logo.png" alt="Collective Kindness" style={{ width: 160, maxWidth: "70%", height: "auto", display: "block" }} />

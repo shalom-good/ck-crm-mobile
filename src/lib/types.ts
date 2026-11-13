@@ -17,6 +17,9 @@ export interface Family {
   email: string;
   photo?: string;
   program: "CK Debt" | "Kosher Debt Help" | "Job Funnel";
+  /** The roster's own program text when it sends one (e.g. "Collective
+   *  Kindness", "Kosher Debt Help", "Shluchim Thrive"). Display only. */
+  programLabel?: string;
   /** Free-form status labels → the pastel pills. From kdh_clients.labels[]. */
   labels: string[];
   paymentStatus: "current" | "behind" | "unknown";

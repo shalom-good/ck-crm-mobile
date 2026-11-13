@@ -39,6 +39,7 @@ function mapRosterRow(r: Raw): Family | null {
     email: String(r?.email ?? ""),
     photo: r?.photo ?? undefined,
     program: kind === "kdh" ? "Kosher Debt Help" : "CK Debt",
+    programLabel: typeof r?.program === "string" && r.program.trim() ? r.program.trim() : undefined,
     labels: Array.isArray(r?.labels) ? r.labels.map(String) : [],
     paymentStatus: r?.paymentStatus === "behind" || r?.paymentStatus === "current" ? r.paymentStatus : "unknown",
     assignments,
@@ -126,7 +127,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const families = q.data ?? [];
 
   // Resources directory — live, not provider-scoped.
-  const rq = useQuery({ queryKey: ["resources"], queryFn: fetchResources, staleTime: 0, refetchOnMount: "always", enabled: signedIn });
+  const rq = useQuery({ queryKey: ["resources"], queryFn: fetchResources, staleTime: 5 * 60_000, enabled: signedIn });
   const resources = rq.data ?? [];
 
   // Job Funnel caseload — still edge-fn native (shared team board).

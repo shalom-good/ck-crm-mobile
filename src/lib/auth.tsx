@@ -2,6 +2,8 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import { Preferences } from "@capacitor/preferences";
 import { setAuthToken, setOnUnauthorized, fetchMe, type ApiUser } from "./mobileApi";
 import { setPortalToken } from "./portalApi";
+import { setKdhToken } from "./kdhApi";
+import { setAcademyToken, type AcademyStudent } from "./academyApi";
 import { enablePushAfterSignIn } from "./push";
 
 /**
@@ -12,6 +14,11 @@ import { enablePushAfterSignIn } from "./push";
  *            teammate (drives ?as= on /families).
  *   family — the 7-letter portal code → portal token from /api/portal/login
  *            (client: "mobile"). Reads the same payload as the web portal.
+ *   academy — a CK Academy couple: sign up in the app, or the email they
+ *            signed up with on the website → 6-digit code → Academy token
+ *            from /api/mobile/academy/verify. Sees their course.
+ *   kdh    — a KDH client's 7-letter app code (same door as family) →
+ *            KDH token from /api/portal/kdh/login. Sees their homework.
  *
  * The session persists in Capacitor Preferences (localStorage on web) and
  * restores on launch. A 401 anywhere ends it and the app returns to /start.
@@ -22,6 +29,10 @@ const VIEW_AS_KEY = "ck_view_as";
 /** Set (sessionStorage) when a 401 ended the session, so the start screen
  *  can say so once. An explicit sign-out never sets it. */
 export const SESSION_ENDED_KEY = "ck_session_ended";
+/** Which door the person last signed in through (A-13): a family whose
+ *  session ended goes straight back to the family code screen. */
+export const LAST_DOOR_KEY = "ck_last_door";
+const rememberDoor = (d: SessionKind) => { try { localStorage.setItem(LAST_DOOR_KEY, d); } catch { /* noop */ } };
 
 /** Emails that always get the admin "View as" control, even if the token
  *  arrives without admin:true. */
@@ -32,7 +43,7 @@ export const ADMIN_EMAILS = [
 ];
 
 export type AuthStatus = "loading" | "signedOut" | "signedIn";
-export type SessionKind = "team" | "family";
+export type SessionKind = "team" | "family" | "kdh" | "academy";
 export interface FamilySession { name: string | null; clientId?: string | null }
 
 interface AuthValue {
@@ -48,6 +59,8 @@ interface AuthValue {
   viewAs: { email: string; name: string; role: string } | null;
   signIn: (token: string, user: ApiUser) => Promise<void>;
   signInFamily: (token: string, name: string | null) => Promise<void>;
+  signInKdh: (token: string, name: string | null) => Promise<void>;
+  signInAcademy: (token: string, student: AcademyStudent) => Promise<void>;
   signOut: () => Promise<void>;
   setViewAs: (v: { email: string; name: string; role: string } | null) => void;
 }
@@ -71,7 +84,9 @@ async function prefRemove(key: string) {
 
 type Saved =
   | { kind?: "team"; token: string; user: ApiUser }
-  | { kind: "family"; token: string; name: string | null };
+  | { kind: "family"; token: string; name: string | null }
+  | { kind: "kdh"; token: string; name: string | null }
+  | { kind: "academy"; token: string; name: string | null };
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [status, setStatus] = useState<AuthStatus>("loading");
@@ -87,6 +102,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     setAuthToken(null);
     setPortalToken(null);
+    setKdhToken(null);
+    setAcademyToken(null);
     setToken(null);
     setUser(null);
     setFamily(null);
@@ -114,6 +131,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const saved = JSON.parse(raw) as Saved;
         if (!saved?.token) { setStatus("signedOut"); return; }
+
+        if (saved.kind === "kdh") {
+          setKdhToken(saved.token);
+          setToken(saved.token);
+          setFamily({ name: saved.name ?? null });
+          setKind("kdh");
+          setStatus("signedIn");
+          return;
+        }
+
+        if (saved.kind === "academy") {
+          setAcademyToken(saved.token);
+          setToken(saved.token);
+          setFamily({ name: saved.name ?? null });
+          setKind("academy");
+          setStatus("signedIn");
+          return;
+        }
 
         if (saved.kind === "family") {
           setPortalToken(saved.token);
@@ -151,12 +186,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = useCallback(async (newToken: string, newUser: ApiUser) => {
     setPortalToken(null);
+    setAcademyToken(null);
+    setKdhToken(null);
     setFamily(null);
     setAuthToken(newToken);
     setToken(newToken);
     setUser(newUser);
     setKind("team");
     setStatus("signedIn");
+    rememberDoor("team");
     await prefSet(SESSION_KEY, JSON.stringify({ kind: "team", token: newToken, user: newUser }));
     // Native only; quietly no-ops on web and when permission is denied.
     void enablePushAfterSignIn();
@@ -166,12 +204,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setAuthToken(null);
     setUser(null);
     setViewAsState(null);
+    setKdhToken(null);
+    setAcademyToken(null);
     setPortalToken(newToken);
     setToken(newToken);
     setFamily({ name });
     setKind("family");
     setStatus("signedIn");
+    rememberDoor("family");
     await prefSet(SESSION_KEY, JSON.stringify({ kind: "family", token: newToken, name }));
+    await prefRemove(VIEW_AS_KEY);
+  }, []);
+
+  // KDH clients come in through the same family door, so the door they
+  // return to is "family" too.
+  const signInKdh = useCallback(async (newToken: string, name: string | null) => {
+    setAuthToken(null);
+    setUser(null);
+    setViewAsState(null);
+    setPortalToken(null);
+    setAcademyToken(null);
+    setKdhToken(newToken);
+    setToken(newToken);
+    setFamily({ name });
+    setKind("kdh");
+    setStatus("signedIn");
+    rememberDoor("family");
+    await prefSet(SESSION_KEY, JSON.stringify({ kind: "kdh", token: newToken, name }));
+    await prefRemove(VIEW_AS_KEY);
+  }, []);
+
+  // CK Academy couples: their own door, their own token.
+  const signInAcademy = useCallback(async (newToken: string, student: AcademyStudent) => {
+    setAuthToken(null);
+    setUser(null);
+    setViewAsState(null);
+    setPortalToken(null);
+    setKdhToken(null);
+    setAcademyToken(newToken);
+    setToken(newToken);
+    setFamily({ name: student.name ?? null });
+    setKind("academy");
+    setStatus("signedIn");
+    rememberDoor("academy");
+    await prefSet(SESSION_KEY, JSON.stringify({ kind: "academy", token: newToken, name: student.name ?? null }));
     await prefRemove(VIEW_AS_KEY);
   }, []);
 
@@ -186,8 +262,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const isAdmin = kind === "team" && !!user && (user.admin === true || ADMIN_EMAILS.includes((user.email || "").toLowerCase()));
 
   const value = useMemo<AuthValue>(
-    () => ({ status, kind, token, user, family, isAdmin, viewAs: isAdmin ? viewAs : null, signIn, signInFamily, signOut, setViewAs }),
-    [status, kind, token, user, family, isAdmin, viewAs, signIn, signInFamily, signOut, setViewAs],
+    () => ({ status, kind, token, user, family, isAdmin, viewAs: isAdmin ? viewAs : null, signIn, signInFamily, signInKdh, signInAcademy, signOut, setViewAs }),
+    [status, kind, token, user, family, isAdmin, viewAs, signIn, signInFamily, signInKdh, signInAcademy, signOut, setViewAs],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

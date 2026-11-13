@@ -10,7 +10,7 @@ interface Props {
  */
 export function AskBar({ onOpen }: Props) {
   return (
-    <div style={{ background: "var(--gv-go)", borderRadius: 20, padding: 20, boxShadow: "0 14px 32px -14px rgba(46,81,70,.6)" }}>
+    <div style={{ background: "var(--gv-go)", borderRadius: 20, padding: 20, boxShadow: "0 14px 32px -14px rgba(47,117,86,.6)" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
         <span style={{ width: 30, height: 30, borderRadius: 999, background: "rgba(255,255,255,.14)", display: "grid", placeItems: "center", flex: "none" }}>
           <Sparkle size={16} weight="fill" color="var(--gv-lime)" />

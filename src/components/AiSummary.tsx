@@ -13,7 +13,7 @@ type State =
   | { kind: "not-configured" }
   | { kind: "error"; message: string };
 
-export function AiSummary({ id }: { id: string }) {
+export function AiSummary({ id, title = "AI rundown", className = "gv-card" }: { id: string; title?: string; className?: string }) {
   const [state, setState] = useState<State>({ kind: "loading" });
   const ran = useRef<string | null>(null);
 
@@ -40,9 +40,9 @@ export function AiSummary({ id }: { id: string }) {
   if (state.kind === "not-configured") return null;
 
   return (
-    <div className="gv-card">
+    <div className={className}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: state.kind === "ok" ? 10 : 8, minWidth: 0 }}>
-        <h3 className="gv-h2" style={{ fontSize: 15.5, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>AI rundown</h3>
+        <h3 className="gv-h2" style={{ fontSize: 15.5, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</h3>
         <Pill tint="lime" sm>auto</Pill>
         {state.kind === "ok" && (
           <button type="button" onClick={run} aria-label="Regenerate"
