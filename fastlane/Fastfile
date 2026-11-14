@@ -21,7 +21,9 @@ require "base64"
 default_platform(:ios)
 
 APP_ID = "net.collectivekindness.ckteam"
-PROJECT = "ios/App/App.xcodeproj"
+# Capacitor apps must build the CocoaPods-generated workspace, not the bare
+# .xcodeproj — otherwise the Pods (incl. the Capacitor module) aren't linked.
+WORKSPACE = "ios/App/App.xcworkspace"
 SCHEME = "App"
 
 def asc_api_key
@@ -52,7 +54,7 @@ platform :ios do
            "-authenticationKeyIssuerID #{ENV.fetch('ASC_ISSUER_ID')}"
 
     build_app(
-      project: PROJECT,
+      workspace: WORKSPACE,
       scheme: SCHEME,
       configuration: "Release",
       export_method: "app-store",
